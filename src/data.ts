@@ -7,6 +7,46 @@ import { Project, CVExperience, CVEducation, CVAward, SkillCategory } from './ty
 
 export const projects: Project[] = [
   {
+    id: 'optimized-house',
+    title: 'Optimized House',
+    category: 'Residential',
+    location: 'Basel, Switzerland',
+    area: '2,500 sq ft',
+    year: '2026',
+    type: 'Single Family Residence',
+    client: 'Private Client',
+    heroImage: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1600',
+    gallery: [
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200'
+    ],
+    descriptor: 'An optimized, sustainable smart home designed with advanced 3D spatial intelligence.',
+    narrative: {
+      problem: 'Need for a highly optimized residential footprint.',
+      process: 'Utilized advanced 3D modeling and sustainable materials to reduce carbon footprint.',
+      solution: 'A cohesive living space that perfectly balances natural light and thermal efficiency.'
+    },
+    technicalDrawings: [
+      {
+        id: 'oh-draw-1',
+        name: 'Optimized House Floor Plan',
+        type: 'Floor Plan',
+        description: 'General floor plan for the optimized house.',
+        svgType: 'floor-plan'
+      }
+    ],
+    specs: {
+      materials: [
+        { name: 'Primary Envelope', value: 'Optimized Timber and Glass' }
+      ],
+      structural: [
+        { name: 'Core System', value: 'Mass-Timber Frame' }
+      ],
+      environmental: [
+        { name: 'Energy Standard', value: 'Net Zero' }
+      ]
+    }
+  },
+  {
     id: 'obsidian-pavilion',
     title: 'The Obsidian Pavilion',
     category: 'Residential',

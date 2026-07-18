@@ -5,6 +5,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { RotateCcw, Play, Pause, Compass, Layers, Eye, Sliders, Sun, Palette } from 'lucide-react';
 
 interface ThreeModelViewerProps {
@@ -15,6 +18,8 @@ interface ThreeModelViewerProps {
 export default function ThreeModelViewer({ projectId, projectName }: ThreeModelViewerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [modelError, setModelError] = useState<string | null>(null);
+  const [modelStatus, setModelStatus] = useState<string | null>(null);
 
   // Interaction / UI States
   const [explodeFactor, setExplodeFactor] = useState(0); // 0 to 1
@@ -42,6 +47,12 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
   useEffect(() => {
     seasonRef.current = season;
   }, [season]);
+
+  // Ref for autoRotate to avoid reloading the entire scene when toggled
+  const autoRotateRef = useRef(true);
+  useEffect(() => {
+    autoRotateRef.current = autoRotate;
+  }, [autoRotate]);
 
   // Automatically cycle daylight from sunrise to sunset
   useEffect(() => {
@@ -423,6 +434,66 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
         });
       });
 
+    } else if (projectId === 'optimized-house') {
+      setModelStatus('Loading Model Assets...');
+      setModelError(null);
+      const loader = new GLTFLoader();
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+      loader.setDRACOLoader(dracoLoader);
+      loader.setMeshoptDecoder(MeshoptDecoder);
+      
+      loader.load('/house-optimized.glb', (gltf) => {
+        setModelStatus('Parsing Geometry...');
+        const model = gltf.scene;
+        model.updateMatrixWorld(true);
+        
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        
+        if (maxDim > 0) {
+          const scale = 10 / maxDim;
+          model.position.set(-center.x, -center.y, -center.z);
+          
+          const wrapper = new THREE.Group();
+          wrapper.add(model);
+          wrapper.scale.set(scale, scale, scale);
+          wrapper.position.y = 0;
+          
+          wrapper.traverse((child) => {
+            if ((child as THREE.Mesh).isMesh) {
+              const mesh = child as THREE.Mesh;
+              mesh.castShadow = true;
+              mesh.receiveShadow = true;
+              if (mesh.material) {
+                if (Array.isArray(mesh.material)) {
+                  mesh.material.forEach(m => { m.side = THREE.DoubleSide; m.needsUpdate = true; });
+                } else {
+                  mesh.material.side = THREE.DoubleSide;
+                  mesh.material.needsUpdate = true;
+                }
+              }
+            }
+          });
+          
+          scene.add(wrapper);
+          animatedObjects.push({
+            mesh: wrapper,
+            basePos: new THREE.Vector3(0, 0, 0),
+            explodeDir: new THREE.Vector3(0, 1, 0),
+            explodeScale: 0.5,
+          });
+          setModelStatus(null);
+        } else {
+          setModelError(`Failed to load. Bounding box maxDim is ${maxDim}.`);
+        }
+      }, undefined, (error) => {
+        console.error('Error loading GLB:', error);
+        setModelError(String(error.message || 'Unknown Error (Check Console)'));
+        setModelStatus(null);
+      });
     } else {
       // Fractal Plaza Canopy (Tokyo Shibuya Plaza)
       // Dark city plaza floor tiles
@@ -504,6 +575,7 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
     // Spherical coordinates for custom orbital camera controls
+    let currentView = 'perspective';
     let theta = Math.PI / 4; // Horizontal rotation angle
     let phi = Math.PI / 3;   // Vertical angle
     let radius = 13.0;        // Camera distance
@@ -531,7 +603,7 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      radius = Math.max(6.0, Math.min(22.0, radius + e.deltaY * 0.01));
+      radius = Math.max(0.1, Math.min(22.0, radius + e.deltaY * 0.01));
     };
 
     container.addEventListener('pointerdown', handlePointerDown);
@@ -635,7 +707,7 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
       scene.background = skyColor;
 
       // Simple auto-rotation if enabled & user is not dragging
-      if (autoRotate && !isDragging) {
+      if (autoRotateRef.current && !isDragging) {
         theta += 0.002;
       }
 
@@ -662,6 +734,7 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
 
     // Camera view controls API refs (for component state listeners)
     const setPresetView = (view: 'perspective' | 'plan' | 'elevation') => {
+      currentView = view;
       if (view === 'perspective') {
         theta = Math.PI / 4;
         phi = Math.PI / 3;
@@ -860,6 +933,18 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
           id="canvas-3d-container"
         >
           <canvas ref={canvasRef} className="w-full h-full block" />
+
+          {modelError && (
+            <div className="absolute inset-0 bg-[#121212]/90 flex flex-col items-center justify-center p-6 text-center z-50">
+              <span className="text-red-500 font-mono text-[10px] uppercase mb-2">Error Loading 3D Model</span>
+              <span className="text-red-300 font-mono text-[9px]">{modelError}</span>
+            </div>
+          )}
+          {modelStatus && !modelError && (
+            <div className="absolute inset-0 bg-[#121212]/60 flex items-center justify-center z-40">
+              <span className="text-[#F7F7F5] font-mono text-[10px] animate-pulse uppercase tracking-widest">{modelStatus}</span>
+            </div>
+          )}
 
           {/* Compass indicator overlay */}
           <div className="absolute top-4 right-4 pointer-events-none flex items-center gap-1.5 bg-[#121212]/80 border border-[#E0E0DE]/10 px-2.5 py-1 rounded-sm text-[10px] font-mono text-[#888888]">

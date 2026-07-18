@@ -10,10 +10,6 @@ import { Project } from '../types';
 import { projects } from '../data';
 import TechnicalDrawingViewer from './TechnicalDrawingViewer';
 import ThreeModelViewer from './ThreeModelViewer';
-import BIMSustainabilityEstimator from './BIMSustainabilityEstimator';
-import WindLoadSimulator from './WindLoadSimulator';
-import AcousticRayTracer from './AcousticRayTracer';
-import SolarShadowSimulator from './SolarShadowSimulator';
 
 interface ProjectDetailProps {
   projectId: string;
@@ -29,7 +25,7 @@ export default function ProjectDetail({ projectId, onBack, onSelectProject }: Pr
 
   const [activeDrawingId, setActiveDrawingId] = useState<string>('');
   const [openSection, setOpenSection] = useState<string | null>(null);
-  const [workbenchMode, setWorkbenchMode] = useState<'2d' | '3d' | 'sustainability' | 'wind' | 'acoustics' | 'solar'>('2d');
+  const [workbenchMode, setWorkbenchMode] = useState<'2d' | '3d'>('2d');
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
@@ -370,50 +366,6 @@ export default function ProjectDetail({ projectId, onBack, onSelectProject }: Pr
                 >
                   3D Model Study
                 </button>
-                <button
-                  onClick={() => setWorkbenchMode('sustainability')}
-                  className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider rounded-sm transition-all cursor-pointer ${
-                    workbenchMode === 'sustainability'
-                      ? 'bg-[#F7F7F5] text-[#121212] font-semibold'
-                      : 'text-[#888888] hover:text-[#F7F7F5]'
-                  }`}
-                  id="workbench-tab-sustainability"
-                >
-                  LCA Carbon & Cost Simulator
-                </button>
-                <button
-                  onClick={() => setWorkbenchMode('wind')}
-                  className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider rounded-sm transition-all cursor-pointer ${
-                    workbenchMode === 'wind'
-                      ? 'bg-[#F7F7F5] text-[#121212] font-semibold'
-                      : 'text-[#888888] hover:text-[#F7F7F5]'
-                  }`}
-                  id="workbench-tab-wind"
-                >
-                  Aero-Structural Wind Tunnel
-                </button>
-                 <button
-                  onClick={() => setWorkbenchMode('acoustics')}
-                  className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider rounded-sm transition-all cursor-pointer ${
-                    workbenchMode === 'acoustics'
-                      ? 'bg-[#F7F7F5] text-[#121212] font-semibold'
-                      : 'text-[#888888] hover:text-[#F7F7F5]'
-                  }`}
-                  id="workbench-tab-acoustics"
-                >
-                  Acoustic Decay Laboratory
-                </button>
-                <button
-                  onClick={() => setWorkbenchMode('solar')}
-                  className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider rounded-sm transition-all cursor-pointer ${
-                    workbenchMode === 'solar'
-                      ? 'bg-[#F7F7F5] text-[#121212] font-semibold'
-                      : 'text-[#888888] hover:text-[#F7F7F5]'
-                  }`}
-                  id="workbench-tab-solar"
-                >
-                  Passive Solar Heliodon
-                </button>
               </div>
 
               {/* Sub-selectors (Only visible in 2D mode) */}
@@ -439,37 +391,7 @@ export default function ProjectDetail({ projectId, onBack, onSelectProject }: Pr
           </div>
 
           {/* Interactive Drafting Canvas Workbench container */}
-          {workbenchMode === 'sustainability' ? (
-            <div className="w-full">
-              <BIMSustainabilityEstimator 
-                projectId={currentProject.id} 
-                projectName={currentProject.title} 
-                baseArea={currentProject.area} 
-              />
-            </div>
-          ) : workbenchMode === 'wind' ? (
-            <div className="w-full">
-              <WindLoadSimulator 
-                projectId={currentProject.id} 
-                projectName={currentProject.title} 
-              />
-            </div>
-          ) : workbenchMode === 'acoustics' ? (
-            <div className="w-full">
-              <AcousticRayTracer 
-                projectId={currentProject.id} 
-                projectName={currentProject.title} 
-              />
-            </div>
-          ) : workbenchMode === 'solar' ? (
-            <div className="w-full">
-              <SolarShadowSimulator 
-                projectId={currentProject.id} 
-                projectName={currentProject.title} 
-              />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               
               {/* Description details of selected drawing or 3D study */}
               <div className="lg:col-span-4 flex flex-col justify-between bg-[#121212]/40 p-8 border border-[#E0E0DE]/20">
@@ -555,7 +477,6 @@ export default function ProjectDetail({ projectId, onBack, onSelectProject }: Pr
               </div>
 
             </div>
-          )}
 
         </div>
       </div>
