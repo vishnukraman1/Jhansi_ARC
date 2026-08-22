@@ -70,9 +70,10 @@ interface TechnicalDrawingViewerProps {
 }
 
 export default function TechnicalDrawingViewer({ drawing, projectTitle }: TechnicalDrawingViewerProps) {
-  const [showGrid, setShowGrid] = useState(true);
-  const [showDimensions, setShowDimensions] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
+  const [showDimensions, setShowDimensions] = useState(false);
   const [showAnnotations, setShowAnnotations] = useState(true);
+  const [viewPreset, setViewPreset] = useState<'presentation' | 'technical'>('presentation');
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string | null>(null);
@@ -421,6 +422,46 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
         {/* Toolbar controls */}
         <div className="flex items-center gap-2 self-start sm:self-center flex-wrap">
+          {/* Master View Preset Toggle */}
+          <div className={`flex items-center rounded-sm border p-0.5 ${
+            isDark ? 'bg-[#1E1E1E] border-[#E0E0DE]/20' : 'bg-white border-[#121212]/20'
+          }`}>
+            <button
+              onClick={() => {
+                setViewPreset('presentation');
+                setShowDimensions(false);
+                setShowGrid(false);
+                setShowAnnotations(true);
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-[11px] font-mono transition-all duration-150 cursor-pointer ${
+                viewPreset === 'presentation'
+                  ? (isDark ? 'bg-[#38bdf8] text-[#0f172a] font-bold shadow-xs' : 'bg-[#0284c7] text-white font-bold shadow-xs')
+                  : (isDark ? 'text-[#888888] hover:text-[#F7F7F5]' : 'text-[#666666] hover:text-[#121212]')
+              }`}
+              title="Serene Presentation View (Clean Walls, Windows, and Room Titles)"
+              id="view-presentation-btn"
+            >
+              <span>🏛️ Presentation</span>
+            </button>
+            <button
+              onClick={() => {
+                setViewPreset('technical');
+                setShowDimensions(true);
+                setShowGrid(true);
+                setShowAnnotations(true);
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-[11px] font-mono transition-all duration-150 cursor-pointer ${
+                viewPreset === 'technical'
+                  ? (isDark ? 'bg-[#38bdf8] text-[#0f172a] font-bold shadow-xs' : 'bg-[#0284c7] text-white font-bold shadow-xs')
+                  : (isDark ? 'text-[#888888] hover:text-[#F7F7F5]' : 'text-[#666666] hover:text-[#121212]')
+              }`}
+              title="Complete Technical Blueprint (Full Dimensions, Grid, and Engineering Annotations)"
+              id="view-technical-btn"
+            >
+              <span>📐 Blueprint</span>
+            </button>
+          </div>
+
           {/* Precision Caliper Tool Toggle */}
           <button
             onClick={() => {
@@ -798,7 +839,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
                   id="dynamic-svg-root"
                   className={`w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full ${
                     !isDark ? 'cad-light' : ''
-                  }`}
+                  } ${viewPreset === 'technical' ? 'show-technical' : ''}`}
                   dangerouslySetInnerHTML={{ __html: svgContent }}
                 />
               )}

@@ -52,6 +52,18 @@ _Avoid_: Jump to room, auto zoom, center camera
 The horizontal interaction strip enabling direct viewport navigation, smooth camera focus, and spotlight highlighting for individual architectural spaces.
 _Avoid_: Room tabs, menu bar, room list
 
+**Presentation View Mode**:
+The serene, gallery-ready visual state emphasizing spatial volume, wall mass, and room titles with zero technical clutter.
+_Avoid_: Simple mode, basic view, clean view
+
+**Technical Blueprint Mode**:
+The comprehensive engineering state exposing all dimension strings, structural grids, and contractor specifications.
+_Avoid_: Full view, all layers, complex mode
+
+**Progressive Typographic Disclosure**:
+The UI discipline of showing clear, minimal room typography by default and revealing full dimensional specs upon user engagement.
+_Avoid_: Tooltip popups, hover text, info expansion
+
 **Precision Caliper Tool**:
 The interactive measurement caliper enabling two-point distance calculation and on-canvas architectural dimension readout in feet and fractional inches.
 _Avoid_: Distance ruler, measure tool, line drawer

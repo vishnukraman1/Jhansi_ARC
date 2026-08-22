@@ -335,7 +335,16 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        fill: rgba(2, 132, 199, 0.12) !important;",
         "      }",
         "      ",
-        "      /* Embedded Architectural Room Badges */",
+        "      /* Contractor micro-notes are tucked away by default to ensure serene clarity */",
+        "      .cad-contractor-note {",
+        "        display: none !important;",
+        "        opacity: 0.7;",
+        "      }",
+        "      .show-technical .cad-contractor-note {",
+        "        display: inline !important;",
+        "      }",
+        "      ",
+        "      /* Floating Architectural Room Typography */",
         "      .cad-room-badge-group {",
         "        cursor: pointer;",
         "        pointer-events: all;",
@@ -345,45 +354,50 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        transform: scale(1.08);",
         "      }",
         "      .cad-badge-plate {",
-        "        fill: #141416;",
-        "        stroke: #38bdf8;",
-        "        stroke-width: 1.2px;",
-        "        opacity: 0.95;",
-        "        filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.85));",
-        "        transition: stroke 0.2s ease, fill 0.2s ease, filter 0.2s ease;",
+        "        fill: transparent;",
+        "        stroke: transparent;",
+        "        transition: fill 0.2s ease, stroke 0.2s ease;",
         "      }",
         "      .cad-room-badge-group:hover .cad-badge-plate, .cad-room-badge-group.active .cad-badge-plate {",
-        "        stroke: #ffffff;",
-        "        fill: #0284c7;",
-        "        filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.7));",
+        "        fill: rgba(14, 14, 17, 0.90);",
+        "        stroke: #38bdf8;",
+        "        stroke-width: 1.0px;",
+        "        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));",
         "      }",
-        "      .cad-light .cad-badge-plate {",
-        "        fill: #ffffff;",
+        "      .cad-light .cad-room-badge-group:hover .cad-badge-plate, .cad-light .cad-room-badge-group.active .cad-badge-plate {",
+        "        fill: rgba(255, 255, 255, 0.94);",
         "        stroke: #0284c7;",
-        "        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));",
+        "        filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.3));",
         "      }",
         "      .cad-badge-title {",
-        "        fill: #ffffff;",
+        "        fill: #f8fafc;",
         "        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;",
-        "        font-size: 8px;",
+        "        font-size: 8.5px;",
         "        font-weight: 700;",
-        "        letter-spacing: 0.05em;",
+        "        letter-spacing: 0.06em;",
         "      }",
         "      .cad-light .cad-badge-title {",
         "        fill: #0f172a;",
         "      }",
         "      .cad-badge-sub {",
-        "        fill: #38bdf8;",
+        "        fill: #94a3b8;",
         "        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;",
         "        font-size: 6.5px;",
-        "        font-weight: 600;",
+        "        font-weight: 500;",
         "        letter-spacing: 0.02em;",
+        "        opacity: 0.85;",
         "      }",
         "      .cad-light .cad-badge-sub {",
-        "        fill: #0284c7;",
+        "        fill: #475569;",
         "      }",
         "      .cad-room-badge-group:hover .cad-badge-sub, .cad-room-badge-group.active .cad-badge-sub {",
-        "        fill: #ffffff;",
+        "        fill: #38bdf8;",
+        "        opacity: 1;",
+        "        font-weight: 600;",
+        "      }",
+        "      .cad-light .cad-room-badge-group:hover .cad-badge-sub, .cad-light .cad-room-badge-group.active .cad-badge-sub {",
+        "        fill: #0284c7;",
+        "        opacity: 1;",
         "      }",
         "      ",
         "      /* Spotlight Hover Preview for drafting buttons */",
@@ -459,6 +473,13 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
             if not clean_text:
                 return None
             
+            # Filter dense contractor micro-notes
+            is_contractor_note = any(kw in clean_text.upper() for kw in [
+                'GYP', 'STUDS', 'INSUL', 'FIRE RATED', 'TRUSS', 'SHEATHING', 'JOISTS',
+                'HEADER', 'FASTENER', 'PLYWOOD', 'VAPOR', 'FLASHING', 'DRYWALL',
+                '2X4', '2X6', 'R-38', 'R-19', 'R-13', 'R-30', 'CRAWL', 'VENT', 'SLOPE', 'BTM.'
+            ])
+            
             # Extract CAD character height in drawing units
             height = getattr(entity.dxf, 'height', None)
             if not height or height <= 0:
@@ -474,7 +495,8 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
                 transform_attr = f' transform="rotate({-rotation:.1f} {x:.3f} {y:.3f})"'
 
             escaped = clean_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{capped_height:.2f}" dominant-baseline="central" text-anchor="middle" data-label="{escaped}" class="cad-text-node"{transform_attr}>{escaped}</text>'
+            extra_class = " cad-contractor-note" if is_contractor_note else ""
+            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{capped_height:.2f}" dominant-baseline="central" text-anchor="middle" data-label="{escaped}" class="cad-text-node{extra_class}"{transform_attr}>{escaped}</text>'
 
     return None
 

@@ -62,7 +62,16 @@
         fill: rgba(2, 132, 199, 0.12) !important;
       }
       
-      /* Embedded Architectural Room Badges */
+      /* Contractor micro-notes are tucked away by default to ensure serene clarity */
+      .cad-contractor-note {
+        display: none !important;
+        opacity: 0.7;
+      }
+      .show-technical .cad-contractor-note {
+        display: inline !important;
+      }
+      
+      /* Floating Architectural Room Typography */
       .cad-room-badge-group {
         cursor: pointer;
         pointer-events: all;
@@ -72,45 +81,50 @@
         transform: scale(1.08);
       }
       .cad-badge-plate {
-        fill: #141416;
-        stroke: #38bdf8;
-        stroke-width: 1.2px;
-        opacity: 0.95;
-        filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.85));
-        transition: stroke 0.2s ease, fill 0.2s ease, filter 0.2s ease;
+        fill: transparent;
+        stroke: transparent;
+        transition: fill 0.2s ease, stroke 0.2s ease;
       }
       .cad-room-badge-group:hover .cad-badge-plate, .cad-room-badge-group.active .cad-badge-plate {
-        stroke: #ffffff;
-        fill: #0284c7;
-        filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.7));
+        fill: rgba(14, 14, 17, 0.90);
+        stroke: #38bdf8;
+        stroke-width: 1.0px;
+        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
       }
-      .cad-light .cad-badge-plate {
-        fill: #ffffff;
+      .cad-light .cad-room-badge-group:hover .cad-badge-plate, .cad-light .cad-room-badge-group.active .cad-badge-plate {
+        fill: rgba(255, 255, 255, 0.94);
         stroke: #0284c7;
-        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+        filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.3));
       }
       .cad-badge-title {
-        fill: #ffffff;
+        fill: #f8fafc;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 8px;
+        font-size: 8.5px;
         font-weight: 700;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
       }
       .cad-light .cad-badge-title {
         fill: #0f172a;
       }
       .cad-badge-sub {
-        fill: #38bdf8;
+        fill: #94a3b8;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         font-size: 6.5px;
-        font-weight: 600;
+        font-weight: 500;
         letter-spacing: 0.02em;
+        opacity: 0.85;
       }
       .cad-light .cad-badge-sub {
-        fill: #0284c7;
+        fill: #475569;
       }
       .cad-room-badge-group:hover .cad-badge-sub, .cad-room-badge-group.active .cad-badge-sub {
-        fill: #ffffff;
+        fill: #38bdf8;
+        opacity: 1;
+        font-weight: 600;
+      }
+      .cad-light .cad-room-badge-group:hover .cad-badge-sub, .cad-light .cad-room-badge-group.active .cad-badge-sub {
+        fill: #0284c7;
+        opacity: 1;
       }
       
       /* Spotlight Hover Preview for drafting buttons */
@@ -820,14 +834,14 @@
     <text x="-51.787" y="-4.256" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="BOLLARD, FOR W.H. PROTECTION" class="cad-text-node">BOLLARD, FOR W.H. PROTECTION</text>
   </g>
   <g id="layer-anntext" class="cad-anno" data-layer="ANNTEXT">
-    <text x="-114.236" y="80.949" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="FOR ROOFS. R-309.2" class="cad-text-node">FOR ROOFS. R-309.2</text>
+    <text x="-114.236" y="80.949" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="FOR ROOFS. R-309.2" class="cad-text-node cad-contractor-note">FOR ROOFS. R-309.2</text>
     <text x="-118.985" y="38.603" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="NOTE:" class="cad-text-node">NOTE:</text>
-    <text x="-114.236" y="51.156" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="5/8" TYPE "X" GYP. BD. ON CEILING" class="cad-text-node">5/8" TYPE "X" GYP. BD. ON CEILING</text>
+    <text x="-114.236" y="51.156" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="5/8" TYPE "X" GYP. BD. ON CEILING" class="cad-text-node cad-contractor-note">5/8" TYPE "X" GYP. BD. ON CEILING</text>
     <text x="-114.236" y="61.087" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="AND WALL BETWEEN GARAGE AND" class="cad-text-node">AND WALL BETWEEN GARAGE AND</text>
     <text x="-114.236" y="71.018" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="HOUSE, ALSO ON BEARING WALLS" class="cad-text-node">HOUSE, ALSO ON BEARING WALLS</text>
     <text x="-166.534" y="142.438" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="BRACED WALL PANEL 2'-8" MIN. a.b.p. 3/8" OSB PANEL WITH HD2A's @ EA. END. (2) 1/2"x10" A-B BETWEEN. FIELD &amp; PERIMETER NAILING PER CODE: 2006 IRC, SECTION R-602.10" class="cad-text-node">BRACED WALL PANEL 2'-8" MIN. a.b.p. 3/8" OSB PANEL WITH HD2A's @ EA. END. (2) 1/2"x10" A-B BETWEEN. FIELD &amp; PERIMETER NAILING PER CODE: 2006 IRC, SECTION R-602.10</text>
-    <text x="-299.463" y="-379.930" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label=""HEATILATOR" 42" GAS BURNING DIRECT VENT FIREPLACE, OR EQUAL" class="cad-text-node">"HEATILATOR" 42" GAS BURNING DIRECT VENT FIREPLACE, OR EQUAL</text>
-    <text x="-278.214" y="-208.460" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="INTERIOR WALL STUDS @ 16" O.C. INTERIOR NON BEARING HEADERS TO BE DBL. 2"x4" FLAT." class="cad-text-node">INTERIOR WALL STUDS @ 16" O.C. INTERIOR NON BEARING HEADERS TO BE DBL. 2"x4" FLAT.</text>
+    <text x="-299.463" y="-379.930" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label=""HEATILATOR" 42" GAS BURNING DIRECT VENT FIREPLACE, OR EQUAL" class="cad-text-node cad-contractor-note">"HEATILATOR" 42" GAS BURNING DIRECT VENT FIREPLACE, OR EQUAL</text>
+    <text x="-278.214" y="-208.460" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="INTERIOR WALL STUDS @ 16" O.C. INTERIOR NON BEARING HEADERS TO BE DBL. 2"x4" FLAT." class="cad-text-node cad-contractor-note">INTERIOR WALL STUDS @ 16" O.C. INTERIOR NON BEARING HEADERS TO BE DBL. 2"x4" FLAT.</text>
     <line x1="177.446" y1="-206.127" x2="155.020" y2="-206.127" />
     <polyline points="182.090,-206.127 166.233,-221.984 150.376,-206.127" fill="none" />
     <line x1="165.738" y1="-221.489" x2="166.728" y2="-221.489" />
