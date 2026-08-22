@@ -112,6 +112,49 @@ def compute_bounding_box(entities: List[Any]) -> Tuple[float, float, float, floa
     return (min_x, min_y, max_x, max_y)
 
 
+import re
+
+
+def sanitize_cad_text(text: str) -> str:
+    """Sanitize AutoCAD MTEXT/TEXT strings, converting stacked fractions and stripping escape codes."""
+    if not text:
+        return ""
+    
+    # 1. Replace stacked fractions e.g. {\H0.750000x;\S1/2;} or \S1/2; or 1/2
+    frac_map = {
+        '1/2': '½', '1/4': '¼', '3/4': '¾',
+        '1/8': '⅛', '3/8': '⅜', '5/8': '⅝', '7/8': '⅞',
+        '1/16': '¹/₁₆', '3/16': '³/₁₆', '5/16': '⁵/₁₆', '7/16': '⁷/₁₆',
+        '9/16': '⁹/₁₆', '11/16': '¹¹/₁₆', '13/16': '¹³/₁₆', '15/16': '¹⁵/₁₆',
+        '1/32': '¹/₃₂', '3/32': '³/₃₂'
+    }
+    def replace_frac(m):
+        f = m.group(1).strip()
+        return ' ' + frac_map.get(f, f)
+
+    text = re.sub(r'\{\\H[0-9.]+x;\\S([0-9]+/[0-9]+);\}', replace_frac, text, flags=re.IGNORECASE)
+    text = re.sub(r'\\S([0-9]+/[0-9]+);', replace_frac, text, flags=re.IGNORECASE)
+    
+    # 2. Replace AutoCAD special degree and tolerance symbols
+    text = text.replace('%%d', '°').replace('%%D', '°')
+    text = text.replace('%%p', '±').replace('%%P', '±')
+    text = text.replace('%%c', 'Ø').replace('%%C', 'Ø')
+    
+    # 3. Strip formatting tags and font definitions
+    text = re.sub(r'\{\\px[^;]*;', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\\f[A-Za-z0-9_.-]+(\|[a-z0-9]+)?;', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\\A[0-9];', '', text)
+    text = re.sub(r'\\[CcHhWwQqTt][0-9.]+;', '', text)
+    text = re.sub(r'%%[uUoO]', '', text)
+    text = re.sub(r'\\[LlOo]', '', text)
+    text = re.sub(r'\\P', ' ', text)
+    text = text.replace('{', '').replace('}', '').replace('\\~', ' ')
+    
+    # 4. Clean up whitespace
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+
 def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
     """Generate scoped architectural CSS rules with dual-theme variables from layer profiles."""
     lines = [
@@ -124,8 +167,8 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        --cad-glaze: #3b82f6;",
         "        --cad-door: #a3a3a3;",
         "        --cad-grid: #333333;",
-        "        --cad-dim: #737373;",
-        "        --cad-anno: #a3a3a3;",
+        "        --cad-dim: #64748b;",
+        "        --cad-anno: #9ca3af;",
         "        --cad-floor: #404040;",
         "        --cad-default: #737373;",
         "      }",
@@ -136,19 +179,24 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        --cad-glaze: #2563eb;",
         "        --cad-door: #4b5563;",
         "        --cad-grid: #d1d5db;",
-        "        --cad-dim: #4b5563;",
+        "        --cad-dim: #475569;",
         "        --cad-anno: #1f2937;",
         "        --cad-floor: #6b7280;",
         "        --cad-default: #4b5563;",
         "      }",
         "      .cad-root { background-color: var(--cad-bg); font-family: monospace; }",
-        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: var(--cad-wall-fill); stroke-linejoin: round; stroke-linecap: round; }",
-        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.5px; fill: var(--cad-wall-fill); stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-wall polygon { fill: var(--cad-wall-fill); }",
+        "      .cad-wall line, .cad-wall polyline, .cad-wall path { fill: none; }",
+        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none; stroke-linecap: round; }",
         "      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none; stroke-linecap: round; }",
         "      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none; }",
-        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.75px; fill: var(--cad-dim); font-size: 8px; }",
-        "      .cad-anno { fill: var(--cad-anno); stroke: none; font-size: 9px; font-family: monospace; }",
+        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: var(--cad-dim); }",
+        "      .cad-dim text { stroke: none; fill: var(--cad-dim); font-family: monospace; font-weight: 500; }",
+        "      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none; opacity: 0.75; }",
+        "      .cad-anno { fill: var(--cad-anno); stroke: none; font-family: monospace; }",
+        "      .cad-anno text { fill: var(--cad-anno); stroke: none; }",
         "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none; }",
         "    </style>",
@@ -216,8 +264,24 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
         if hasattr(entity.dxf, 'insert') and hasattr(entity.dxf, 'text'):
             x = entity.dxf.insert.x
             y = fy(entity.dxf.insert.y)
-            text = entity.dxf.text.strip().replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-            return f'<text x="{x:.3f}" y="{y:.3f}">{text}</text>'
+            raw_text = entity.dxf.text
+            clean_text = sanitize_cad_text(raw_text)
+            if not clean_text:
+                return None
+            
+            # Extract CAD character height in drawing units
+            height = getattr(entity.dxf, 'height', None)
+            if not height or height <= 0:
+                height = getattr(entity.dxf, 'char_height', 6.0)
+            
+            # Extract rotation angle
+            rotation = getattr(entity.dxf, 'rotation', 0.0)
+            transform_attr = ""
+            if rotation and abs(rotation) > 0.1:
+                transform_attr = f' transform="rotate({-rotation:.1f} {x:.3f} {y:.3f})"'
+
+            escaped = clean_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{height:.2f}" dominant-baseline="central" text-anchor="middle"{transform_attr}>{escaped}</text>'
 
     return None
 
