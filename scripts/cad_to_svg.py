@@ -222,8 +222,8 @@ ROOM_ZONES = [
         'num': '06',
         'name': 'Main Entry & Porch',
         'points': '-322.8,-125.4 -218.8,-125.4 -218.8,0.0 -322.8,0.0',
-        'cx': -270.8,
-        'cy': -62.7,
+        'cx': -260.0,
+        'cy': -35.0,
         'dim': "8'8\" × 10'5\"",
         'area': '90 SQ FT'
     },
@@ -253,7 +253,7 @@ ROOM_ZONES = [
         'name': 'Guest Bedroom 2',
         'points': '-642.8,-169.4 -478.8,-169.4 -478.8,-39.4 -642.8,-39.4',
         'cx': -560.8,
-        'cy': -104.4,
+        'cy': -60.0,
         'dim': "13'8\" × 10'10\"",
         'area': '148 SQ FT'
     },
@@ -263,7 +263,7 @@ ROOM_ZONES = [
         'name': 'Guest Bedroom 3',
         'points': '-474.8,-169.4 -326.8,-169.4 -326.8,-39.4 -474.8,-39.4',
         'cx': -400.8,
-        'cy': -104.4,
+        'cy': -60.0,
         'dim': "12'4\" × 10'10\"",
         'area': '133 SQ FT'
     }
@@ -510,13 +510,14 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
             if re.match(r"^\d+['\"]?(\s*[\d/]+)?\s*[xX×]\s*\d+['\"]?(\s*[\d/]+)?['\"]?$", clean_upper):
                 return None
 
-            # 3. Filter dense contractor micro-notes
-            is_contractor_note = any(kw in clean_upper for kw in [
+            # 3. Classify technical contractor micro-notes, door schedule codes (2668, 2468, etc.), and window tags
+            is_door_code = bool(re.match(r"^\d{4}(\s*S\.?G\.?D\.?|\s*SH|\s*XO)?$", clean_upper))
+            is_contractor_note = is_door_code or any(kw in clean_upper for kw in [
                 'GYP', 'STUDS', 'INSUL', 'FIRE RATED', 'TRUSS', 'SHEATHING', 'JOISTS',
                 'HEADER', 'FASTENER', 'PLYWOOD', 'VAPOR', 'FLASHING', 'DRYWALL',
                 '2X4', '2X6', 'R-38', 'R-19', 'R-13', 'R-30', 'CRAWL', 'VENT', 'SLOPE', 'BTM.',
                 'SHEAR PANELS', 'BRACED WALL', 'PROVIDE 20 MIN', 'ATTIC ACCESS', 'HEATILATOR',
-                'BOLLARD'
+                'BOLLARD', 'GAS FAU', 'TEMP.', 'WH', 'GAS', 'PLATFORM', 'DOOR', 'D-D', 'A6'
             ])
             
             # Extract CAD character height in drawing units

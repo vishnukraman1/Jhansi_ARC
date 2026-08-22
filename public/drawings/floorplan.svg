@@ -152,37 +152,37 @@
     </style>
   </defs>
   <g id="layer-a-text" class="cad-anno" data-layer="A-TEXT">
-    <text x="-117.681" y="224.123" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="16070 O.H. DOOR" class="cad-text-node">16070 O.H. DOOR</text>
-    <text x="-420.045" y="45.123" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="5050 XO" class="cad-text-node">5050 XO</text>
-    <text x="55.979" y="-101.724" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="3036 XO" class="cad-text-node" transform="rotate(-90.0 55.979 -101.724)">3036 XO</text>
-    <text x="-254.573" y="-31.877" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="3068" class="cad-text-node">3068</text>
-    <text x="-88.642" y="-100.379" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node" transform="rotate(-90.0 -88.642 -100.379)">2668</text>
-    <text x="-150.546" y="-100.427" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node" transform="rotate(-90.0 -150.546 -100.427)">2668</text>
-    <text x="-292.513" y="-31.877" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="1660" class="cad-text-node">1660</text>
-    <text x="-350.749" y="-166.553" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2468" class="cad-text-node">2468</text>
-    <text x="-466.286" y="-125.498" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node">2668</text>
-    <text x="-439.157" y="-162.037" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="6068" class="cad-text-node">6068</text>
-    <text x="-195.088" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="6040 XO" class="cad-text-node">6040 XO</text>
-    <text x="-440.973" y="-270.498" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node">2668</text>
-    <text x="-391.339" y="-288.401" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node" transform="rotate(-90.0 -391.339 -288.401)">2668</text>
-    <text x="-472.870" y="-288.401" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node" transform="rotate(-90.0 -472.870 -288.401)">2668</text>
-    <text x="-368.685" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="4010 XO" class="cad-text-node">4010 XO</text>
-    <text x="-574.045" y="21.123" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="5050 XO" class="cad-text-node">5050 XO</text>
-    <text x="-508.014" y="-125.498" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node">2668</text>
-    <text x="-516.350" y="-142.901" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2468" class="cad-text-node" transform="rotate(-90.0 -516.350 -142.901)">2468</text>
-    <text x="-506.719" y="-169.192" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node">2668</text>
-    <text x="-601.312" y="-125.498" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node">2668</text>
-    <text x="-579.269" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="6068 S.G.D." class="cad-text-node">6068 S.G.D.</text>
-    <text x="-297.439" y="-48.812" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="TEMP." class="cad-text-node">TEMP.</text>
+    <text x="-117.681" y="224.123" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="16070 O.H. DOOR" class="cad-text-node cad-contractor-note">16070 O.H. DOOR</text>
+    <text x="-420.045" y="45.123" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="5050 XO" class="cad-text-node cad-contractor-note">5050 XO</text>
+    <text x="55.979" y="-101.724" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="3036 XO" class="cad-text-node cad-contractor-note" transform="rotate(-90.0 55.979 -101.724)">3036 XO</text>
+    <text x="-254.573" y="-31.877" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="3068" class="cad-text-node cad-contractor-note">3068</text>
+    <text x="-88.642" y="-100.379" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note" transform="rotate(-90.0 -88.642 -100.379)">2668</text>
+    <text x="-150.546" y="-100.427" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note" transform="rotate(-90.0 -150.546 -100.427)">2668</text>
+    <text x="-292.513" y="-31.877" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="1660" class="cad-text-node cad-contractor-note">1660</text>
+    <text x="-350.749" y="-166.553" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2468" class="cad-text-node cad-contractor-note">2468</text>
+    <text x="-466.286" y="-125.498" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note">2668</text>
+    <text x="-439.157" y="-162.037" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="6068" class="cad-text-node cad-contractor-note">6068</text>
+    <text x="-195.088" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="6040 XO" class="cad-text-node cad-contractor-note">6040 XO</text>
+    <text x="-440.973" y="-270.498" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note">2668</text>
+    <text x="-391.339" y="-288.401" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note" transform="rotate(-90.0 -391.339 -288.401)">2668</text>
+    <text x="-472.870" y="-288.401" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note" transform="rotate(-90.0 -472.870 -288.401)">2668</text>
+    <text x="-368.685" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="4010 XO" class="cad-text-node cad-contractor-note">4010 XO</text>
+    <text x="-574.045" y="21.123" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="5050 XO" class="cad-text-node cad-contractor-note">5050 XO</text>
+    <text x="-508.014" y="-125.498" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note">2668</text>
+    <text x="-516.350" y="-142.901" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2468" class="cad-text-node cad-contractor-note" transform="rotate(-90.0 -516.350 -142.901)">2468</text>
+    <text x="-506.719" y="-169.192" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note">2668</text>
+    <text x="-601.312" y="-125.498" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2668" class="cad-text-node cad-contractor-note">2668</text>
+    <text x="-579.269" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="6068 S.G.D." class="cad-text-node cad-contractor-note">6068 S.G.D.</text>
+    <text x="-297.439" y="-48.812" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="TEMP." class="cad-text-node cad-contractor-note">TEMP.</text>
     <text x="-56.515" y="-27.606" font-size="6.40" dominant-baseline="central" text-anchor="middle" data-label="18&quot; MIN. RAISED" class="cad-text-node">18" MIN. RAISED</text>
-    <text x="-35.505" y="-17.013" font-size="6.40" dominant-baseline="central" text-anchor="middle" data-label="PLATFORM" class="cad-text-node">PLATFORM</text>
-    <text x="-339.349" y="-37.823" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="7068" class="cad-text-node" transform="rotate(-90.0 -339.349 -37.823)">7068</text>
-    <text x="-72.428" y="-41.997" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="3068" class="cad-text-node">3068</text>
+    <text x="-35.505" y="-17.013" font-size="6.40" dominant-baseline="central" text-anchor="middle" data-label="PLATFORM" class="cad-text-node cad-contractor-note">PLATFORM</text>
+    <text x="-339.349" y="-37.823" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="7068" class="cad-text-node cad-contractor-note" transform="rotate(-90.0 -339.349 -37.823)">7068</text>
+    <text x="-72.428" y="-41.997" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="3068" class="cad-text-node cad-contractor-note">3068</text>
     <circle cx="18.836" cy="-10.648" r="2.000" />
-    <text x="-305.972" y="-103.218" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2068" class="cad-text-node" transform="rotate(-90.0 -305.972 -103.218)">2068</text>
-    <text x="55.822" y="-245.483" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="6068 S.G.D." class="cad-text-node" transform="rotate(-90.0 55.822 -245.483)">6068 S.G.D.</text>
-    <text x="-93.939" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2050 SH" class="cad-text-node">2050 SH</text>
-    <text x="9.710" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2050 SH" class="cad-text-node">2050 SH</text>
+    <text x="-305.972" y="-103.218" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2068" class="cad-text-node cad-contractor-note" transform="rotate(-90.0 -305.972 -103.218)">2068</text>
+    <text x="55.822" y="-245.483" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="6068 S.G.D." class="cad-text-node cad-contractor-note" transform="rotate(-90.0 55.822 -245.483)">6068 S.G.D.</text>
+    <text x="-93.939" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2050 SH" class="cad-text-node cad-contractor-note">2050 SH</text>
+    <text x="9.710" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2050 SH" class="cad-text-node cad-contractor-note">2050 SH</text>
   </g>
   <g id="layer-a-dims-1" class="cad-dim" data-layer="A-DIMS-1">
     <line x1="47.227" y1="218.633" x2="47.227" y2="252.824" />
@@ -627,9 +627,9 @@
   <g id="layer-a-note" class="cad-anno" data-layer="A-NOTE">
     <line x1="-49.273" y1="-39.367" x2="-85.273" y2="-39.367" />
     <text x="-636.191" y="51.354" font-size="6.40" dominant-baseline="central" text-anchor="middle" data-label="SHEAR PANELS, 3/8&quot; OSB MIN. W/ 6&quot; EDGE &amp; 12&quot; FIELD NAILING OR DIAG. WALL BRACING 1x4 @ 45° TO 60° LET IN BRACING FROM TOP PLATE TO BOTTOM PLATE. (TYP.)}" class="cad-text-node cad-contractor-note">SHEAR PANELS, 3/8" OSB MIN. W/ 6" EDGE &amp; 12" FIELD NAILING OR DIAG. WALL BRACING 1x4 @ 45° TO 60° LET IN BRACING FROM TOP PLATE TO BOTTOM PLATE. (TYP.)}</text>
-    <text x="23.228" y="-27.792" font-size="6.26" dominant-baseline="central" text-anchor="middle" data-label="GAS" class="cad-text-node">GAS</text>
+    <text x="23.228" y="-27.792" font-size="6.26" dominant-baseline="central" text-anchor="middle" data-label="GAS" class="cad-text-node cad-contractor-note">GAS</text>
     <line x1="-93.773" y1="-57.367" x2="-156.773" y2="-57.367" />
-    <text x="-422.797" y="-153.934" font-size="5.21" dominant-baseline="central" text-anchor="middle" data-label="GAS FAU IN ATTIC" class="cad-text-node">GAS FAU IN ATTIC</text>
+    <text x="-422.797" y="-153.934" font-size="5.21" dominant-baseline="central" text-anchor="middle" data-label="GAS FAU IN ATTIC" class="cad-text-node cad-contractor-note">GAS FAU IN ATTIC</text>
     <line x1="-650.796" y1="-199.732" x2="-617.220" y2="-199.732" />
     <polyline points="-682.510,-199.732 -666.653,-183.875 -650.796,-199.732" fill="none" />
     <line x1="-666.158" y1="-184.370" x2="-667.148" y2="-184.370" />
@@ -757,11 +757,11 @@
     <line x1="-676.381" y1="-139.516" x2="-676.374" y2="-139.516" />
     <line x1="-675.683" y1="-138.817" x2="-675.656" y2="-138.817" />
     <line x1="-674.984" y1="-138.119" x2="-674.787" y2="-138.119" />
-    <text x="-672.570" y="-139.357" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node">A6</text>
-    <text x="-674.550" y="-148.561" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="D-D" class="cad-text-node">D-D</text>
-    <text x="65.849" y="-139.357" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node">A6</text>
-    <text x="63.869" y="-148.561" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="D-D" class="cad-text-node">D-D</text>
-    <text x="-670.640" y="-191.892" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node">A6</text>
+    <text x="-672.570" y="-139.357" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node cad-contractor-note">A6</text>
+    <text x="-674.550" y="-148.561" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="D-D" class="cad-text-node cad-contractor-note">D-D</text>
+    <text x="65.849" y="-139.357" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node cad-contractor-note">A6</text>
+    <text x="63.869" y="-148.561" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="D-D" class="cad-text-node cad-contractor-note">D-D</text>
+    <text x="-670.640" y="-191.892" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node cad-contractor-note">A6</text>
     <text x="-669.212" y="-201.637" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="C" class="cad-text-node">C</text>
   </g>
   <g id="layer-0" class="cad-default" data-layer="0">
@@ -819,7 +819,7 @@
     <line x1="163.643" y1="-219.395" x2="168.823" y2="-219.395" />
     <line x1="177.446" y1="-206.127" x2="182.090" y2="-206.127" />
     <line x1="150.376" y1="-206.127" x2="155.020" y2="-206.127" />
-    <text x="161.894" y="-198.287" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node">A6</text>
+    <text x="161.894" y="-198.287" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node cad-contractor-note">A6</text>
     <text x="163.870" y="-208.032" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="E" class="cad-text-node">E</text>
   </g>
   <g id="layer-xref-bishop-overland-08-0-a-wall" class="cad-wall" data-layer="xref-Bishop-Overland-08$0$A-WALL">
@@ -1535,7 +1535,7 @@
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">05. CANTILEVERED DECK</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">11'1" × 11'8" · 129 SQ FT</text>
     </g>
-    <g id="badge-entry" class="cad-room-badge-group" data-room-id="entry" data-room-name="Main Entry &amp; Porch" data-dim="8&#x27;8&quot; × 10&#x27;5&quot;" data-area="90 SQ FT" transform="translate(-270.8, -62.7)">
+    <g id="badge-entry" class="cad-room-badge-group" data-room-id="entry" data-room-name="Main Entry &amp; Porch" data-dim="8&#x27;8&quot; × 10&#x27;5&quot;" data-area="90 SQ FT" transform="translate(-260.0, -35.0)">
       <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">06. MAIN ENTRY &amp; PORCH</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">8'8" × 10'5" · 90 SQ FT</text>
@@ -1550,12 +1550,12 @@
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">08. ENSUITE BATH &amp; W.I.C.</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">12'4" × 14'0" · 172 SQ FT</text>
     </g>
-    <g id="badge-bed2" class="cad-room-badge-group" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13&#x27;8&quot; × 10&#x27;10&quot;" data-area="148 SQ FT" transform="translate(-560.8, -104.4)">
+    <g id="badge-bed2" class="cad-room-badge-group" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13&#x27;8&quot; × 10&#x27;10&quot;" data-area="148 SQ FT" transform="translate(-560.8, -60.0)">
       <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">09. GUEST BEDROOM 2</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'8" × 10'10" · 148 SQ FT</text>
     </g>
-    <g id="badge-bed3" class="cad-room-badge-group" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12&#x27;4&quot; × 10&#x27;10&quot;" data-area="133 SQ FT" transform="translate(-400.8, -104.4)">
+    <g id="badge-bed3" class="cad-room-badge-group" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12&#x27;4&quot; × 10&#x27;10&quot;" data-area="133 SQ FT" transform="translate(-400.8, -60.0)">
       <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">10. GUEST BEDROOM 3</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">12'4" × 10'10" · 133 SQ FT</text>

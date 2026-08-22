@@ -204,7 +204,7 @@
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">05. CANTILEVERED DECK</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">11'1" × 11'8" · 129 SQ FT</text>
     </g>
-    <g id="badge-entry" class="cad-room-badge-group" data-room-id="entry" data-room-name="Main Entry &amp; Porch" data-dim="8&#x27;8&quot; × 10&#x27;5&quot;" data-area="90 SQ FT" transform="translate(-270.8, -62.7)">
+    <g id="badge-entry" class="cad-room-badge-group" data-room-id="entry" data-room-name="Main Entry &amp; Porch" data-dim="8&#x27;8&quot; × 10&#x27;5&quot;" data-area="90 SQ FT" transform="translate(-260.0, -35.0)">
       <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">06. MAIN ENTRY &amp; PORCH</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">8'8" × 10'5" · 90 SQ FT</text>
@@ -219,12 +219,12 @@
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">08. ENSUITE BATH &amp; W.I.C.</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">12'4" × 14'0" · 172 SQ FT</text>
     </g>
-    <g id="badge-bed2" class="cad-room-badge-group" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13&#x27;8&quot; × 10&#x27;10&quot;" data-area="148 SQ FT" transform="translate(-560.8, -104.4)">
+    <g id="badge-bed2" class="cad-room-badge-group" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13&#x27;8&quot; × 10&#x27;10&quot;" data-area="148 SQ FT" transform="translate(-560.8, -60.0)">
       <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">09. GUEST BEDROOM 2</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'8" × 10'10" · 148 SQ FT</text>
     </g>
-    <g id="badge-bed3" class="cad-room-badge-group" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12&#x27;4&quot; × 10&#x27;10&quot;" data-area="133 SQ FT" transform="translate(-400.8, -104.4)">
+    <g id="badge-bed3" class="cad-room-badge-group" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12&#x27;4&quot; × 10&#x27;10&quot;" data-area="133 SQ FT" transform="translate(-400.8, -60.0)">
       <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
       <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">10. GUEST BEDROOM 3</text>
       <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">12'4" × 10'10" · 133 SQ FT</text>
