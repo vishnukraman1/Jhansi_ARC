@@ -104,17 +104,80 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
   const [measureP2, setMeasureP2] = useState<{ x: number; y: number } | null>(null);
   const [isMeasureLocked, setIsMeasureLocked] = useState<boolean>(false);
 
+  // Persistent Selected Room Spec Card
+  const [selectedRoomCard, setSelectedRoomCard] = useState<{
+    id: string;
+    num: string;
+    name: string;
+    dimensions: string;
+    area: string;
+    category: string;
+    features: string[];
+  } | null>(null);
+
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 15, 300));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 15, 40));
   const handleResetZoom = () => {
     setZoomLevel(100);
     setPan({ x: 0, y: 0 });
     setActiveRoomChip('all');
+    setSelectedRoomCard(null);
     setHoveredHUD(null);
     setMeasureP1(null);
     setMeasureP2(null);
     setIsMeasureLocked(false);
-    document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => el.classList.remove('active'));
+    document.querySelectorAll('#dynamic-svg-root .cad-room-zone, #dynamic-svg-root .cad-room-badge-group').forEach((el) => el.classList.remove('active'));
+  };
+
+  const handleRoomSelect = (roomId: string) => {
+    if (roomId === 'all') {
+      handleResetZoom();
+      return;
+    }
+
+    const chip = QUICK_ROOM_CHIPS.find((c) => c.id === roomId);
+    if (chip) {
+      setActiveRoomChip(roomId);
+      setPan(chip.pan);
+      setZoomLevel(chip.zoom);
+    }
+
+    // Highlight room zone & badge in SVG
+    document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => {
+      if (el.id === `zone-${roomId}`) el.classList.add('active');
+      else el.classList.remove('active');
+    });
+
+    document.querySelectorAll('#dynamic-svg-root .cad-room-badge-group').forEach((el) => {
+      if (el.id === `badge-${roomId}`) el.classList.add('active');
+      else el.classList.remove('active');
+    });
+
+    const zoneMap: Record<string, { num: string; name: string; dim: string; area: string; cat: string; feat: string[] }> = {
+      'great-room': { num: '02', name: 'Great Room', dim: "17'0\" × 17'8\"", area: '300 SQ FT', cat: 'Primary Living & Social Core', feat: ['Open-concept layout', 'South-facing passive solar gain', 'Direct timber deck connection'] },
+      'master': { num: '07', name: 'Master Suite', dim: "13'8\" × 14'0\"", area: '191 SQ FT', cat: 'Primary Bedroom Suite', feat: ['Private ensuite access', 'Integrated walk-in wardrobe', 'Double-glazed daylight window'] },
+      'kitchen': { num: '04', name: 'Gourmet Kitchen', dim: "13'0\" × 14'2\"", area: '184 SQ FT', cat: 'Culinary & Prep Zone', feat: ['Custom island millwork', 'Walk-in pantry access', 'Quartz countertop prep'] },
+      'garage': { num: '01', name: 'Two-Car Garage', dim: "21'2\" × 20'10\"", area: '441 SQ FT', cat: 'Vehicle & Utility Storage', feat: ['Fire-rated 20-min door', 'Dual-vehicle clearance', 'Integrated mechanical closet'] },
+      'deck': { num: '05', name: 'Cantilevered Deck', dim: "11'1\" × 11'8\"", area: '129 SQ FT', cat: 'Outdoor Living Terrace', feat: ['Charred cedar planking', 'Panoramic valley vista', 'Covered overhang protection'] },
+      'bed2': { num: '09', name: 'Guest Bedroom 2', dim: "13'8\" × 10'10\"", area: '148 SQ FT', cat: 'Secondary Living Suite', feat: ['Full built-in wardrobe', 'North-west daylight aspect', 'Acoustically isolated partition'] },
+      'bed3': { num: '10', name: 'Guest Bedroom 3', dim: "12'4\" × 10'10\"", area: '133 SQ FT', cat: 'Secondary Living Suite', feat: ['Built-in closet', 'Optimal natural ventilation', 'Hardwood flooring'] },
+      'master-bath': { num: '08', name: 'Ensuite Bath & W.I.C.', dim: "12'4\" × 14'0\"", area: '172 SQ FT', cat: 'Primary Sanitary Suite', feat: ['Dual vanity fixtures', 'Walk-in shower enclosure', 'Full dressing room'] },
+      'dining': { num: '03', name: 'Dining Room', dim: "13'0\" × 10'11\"", area: '142 SQ FT', cat: 'Formal Dining Area', feat: ['Adjacent to kitchen island', 'Direct garden views', 'Custom pendant lighting'] },
+      'entry': { num: '06', name: 'Main Entry & Porch', dim: "8'8\" × 10'5\"", area: '90 SQ FT', cat: 'Circulation & Draft Airlock', feat: ['Covered timber porch', 'Draft airlock vestibule', 'Integrated coat storage'] }
+    };
+
+    const details = zoneMap[roomId];
+    if (details) {
+      setSelectedRoomCard({
+        id: roomId,
+        num: details.num,
+        name: details.name,
+        dimensions: details.dim,
+        area: details.area,
+        category: details.cat,
+        features: details.feat
+      });
+    }
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -134,6 +197,27 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
         setIsMeasureLocked(true);
       }
       return;
+    }
+
+    const target = e.target as HTMLElement;
+
+    // Check if clicked directly on an embedded room badge or zone polygon
+    const badge = target.closest('.cad-room-badge-group') as SVGElement | null;
+    if (badge) {
+      const roomId = badge.getAttribute('data-room-id');
+      if (roomId) {
+        handleRoomSelect(roomId);
+        return;
+      }
+    }
+
+    const roomZone = target.closest('.cad-room-zone') as SVGPolygonElement | null;
+    if (roomZone) {
+      const roomId = roomZone.getAttribute('data-room-id');
+      if (roomId) {
+        handleRoomSelect(roomId);
+        return;
+      }
     }
 
     setIsDragging(true);
@@ -446,15 +530,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
           return (
             <button
               key={chip.id}
-              onClick={() => {
-                setActiveRoomChip(chip.id);
-                setPan(chip.pan);
-                setZoomLevel(chip.zoom);
-                document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => {
-                  if (chip.id !== 'all' && el.id === `zone-${chip.id}`) el.classList.add('active');
-                  else el.classList.remove('active');
-                });
-              }}
+              onClick={() => handleRoomSelect(chip.id)}
               className={`px-2.5 py-1 rounded-sm text-[11px] whitespace-nowrap transition-all duration-200 cursor-pointer border ${
                 isSelected
                   ? (isDark ? 'bg-[#38bdf8]/15 border-[#38bdf8] text-[#38bdf8] font-semibold shadow-xs' : 'bg-[#0284c7]/10 border-[#0284c7] text-[#0284c7] font-semibold shadow-xs')
@@ -473,8 +549,8 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
           isMeasuring ? 'cursor-crosshair' : (isDragging ? 'cursor-grabbing' : 'cursor-grab')
         } ${
           isDark 
-            ? 'bg-[#121212] border-[#E0E0DE]/20' 
-            : 'bg-[#F7F7F5] border-[#121212]/20'
+            ? 'bg-[#0a0a0c] border-[#E0E0DE]/20' 
+            : 'bg-[#f8f9fa] border-[#121212]/20'
         }`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -516,7 +592,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
         `}</style>
 
         {/* Sleek Architectural HUD Micro-Badge */}
-        {hoveredHUD && !isDragging && !isMeasuring && (
+        {hoveredHUD && !isDragging && !isMeasuring && !selectedRoomCard && (
           <div 
             className={`absolute pointer-events-none z-30 transition-all duration-100 ease-out px-2.5 py-1 rounded-sm shadow-xl border backdrop-blur-md flex items-center gap-2 whitespace-nowrap ${
               isDark 
@@ -539,6 +615,71 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
               <span className={`text-[10px] font-mono ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
                 · {hoveredHUD.area}
               </span>
+            )}
+          </div>
+        )}
+
+        {/* Persistent Click-to-Inspect Architectural Spec Card */}
+        {selectedRoomCard && (
+          <div 
+            className={`absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[360px] p-3.5 rounded-sm border shadow-2xl backdrop-blur-xl z-30 transition-all duration-200 ${
+              isDark 
+                ? 'bg-[#111114]/95 border-[#38bdf8]/60 text-[#f8fafc] shadow-black/90' 
+                : 'bg-white/95 border-[#0284c7]/60 text-[#0f172a] shadow-slate-400'
+            }`}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-[#38bdf8]/20 text-[#38bdf8]">
+                    {selectedRoomCard.num}
+                  </span>
+                  <h5 className="font-mono font-bold text-xs tracking-wider uppercase">
+                    {selectedRoomCard.name}
+                  </h5>
+                </div>
+                <p className={`text-[10px] font-mono mt-0.5 ${isDark ? 'text-[#a1a1aa]' : 'text-[#64748b]'}`}>
+                  {selectedRoomCard.category}
+                </p>
+              </div>
+              <button 
+                onClick={() => {
+                  setSelectedRoomCard(null);
+                  handleResetZoom();
+                }}
+                className={`text-xs px-1.5 py-0.5 rounded-xs transition-colors cursor-pointer ${
+                  isDark ? 'hover:bg-[#27272a] text-[#a1a1aa] hover:text-white' : 'hover:bg-[#f1f5f9] text-[#64748b] hover:text-black'
+                }`}
+                title="Close & Reset Zoom"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={`grid grid-cols-2 gap-2 mt-2 pt-2 border-t text-[11px] font-mono ${isDark ? 'border-[#27272a]' : 'border-[#e2e8f0]'}`}>
+              <div>
+                <span className={`block text-[9px] uppercase tracking-wider ${isDark ? 'text-[#71717a]' : 'text-[#94a3b8]'}`}>Dimensions</span>
+                <span className="font-semibold text-[11px]">{selectedRoomCard.dimensions}</span>
+              </div>
+              <div>
+                <span className={`block text-[9px] uppercase tracking-wider ${isDark ? 'text-[#71717a]' : 'text-[#94a3b8]'}`}>Floor Area</span>
+                <span className="font-semibold text-[11px] text-[#38bdf8]">{selectedRoomCard.area}</span>
+              </div>
+            </div>
+
+            {selectedRoomCard.features && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {selectedRoomCard.features.map((feat, idx) => (
+                  <span 
+                    key={idx} 
+                    className={`text-[9px] font-mono px-1.5 py-0.5 rounded-xs border ${
+                      isDark ? 'bg-[#18181b] border-[#27272a] text-[#d4d4d8]' : 'bg-[#f8fafc] border-[#e2e8f0] text-[#334155]'
+                    }`}
+                  >
+                    ✓ {feat}
+                  </span>
+                ))}
+              </div>
             )}
           </div>
         )}

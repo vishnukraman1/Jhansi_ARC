@@ -36,6 +36,18 @@ _Avoid_: 3D viewer, 3D model, mesh render
 An interactive spatial boundary polygon within a floor plan vector drawing with associated dimensional bounds, square footage, and programmatic classification.
 _Avoid_: Room, box, hover area
 
+**Wall Poche**:
+The solid high-contrast infill technique applied to cut structural walls to communicate architectural mass and structural perimeter with immediate visual clarity.
+_Avoid_: Wall fill, thick border, black line
+
+**Embedded Room Badge**:
+The curated typographic plate integrated directly into a drawing's vector layers displaying room number, title, and square footage.
+_Avoid_: Text label, room tag, caption
+
+**1-Click Camera Auto-Focus**:
+The smooth programmatic canvas transformation that centers, scales, and illuminates a selected architectural room upon interaction.
+_Avoid_: Jump to room, auto zoom, center camera
+
 **Room Quick-Jump Ribbon**:
 The horizontal interaction strip enabling direct viewport navigation, smooth camera focus, and spotlight highlighting for individual architectural spaces.
 _Avoid_: Room tabs, menu bar, room list

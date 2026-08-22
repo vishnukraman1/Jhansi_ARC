@@ -2,21 +2,21 @@
   <defs>
     <style>
       :root, .cad-root {
-        --cad-bg: #121212;
+        --cad-bg: #0a0a0c;
         --cad-wall-stroke: #ffffff;
-        --cad-wall-fill: #181818;
+        --cad-wall-fill: #18181b;
         --cad-glaze: #38bdf8;
         --cad-door: #cbd5e1;
-        --cad-grid: #333333;
+        --cad-grid: #27272a;
         --cad-dim: #94a3b8;
         --cad-anno: #f8fafc;
-        --cad-floor: #475569;
-        --cad-default: #64748b;
+        --cad-floor: #3f3f46;
+        --cad-default: #71717a;
       }
       .cad-light {
-        --cad-bg: #F7F7F5;
+        --cad-bg: #f8f9fa;
         --cad-wall-stroke: #0f172a;
-        --cad-wall-fill: #E8E8E6;
+        --cad-wall-fill: #e2e8f0;
         --cad-glaze: #0284c7;
         --cad-door: #475569;
         --cad-grid: #cbd5e1;
@@ -25,13 +25,13 @@
         --cad-floor: #64748b;
         --cad-default: #475569;
       }
-      .cad-root { background-color: var(--cad-bg); font-family: monospace; }
+      .cad-root { background-color: var(--cad-bg); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
       .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease; }
-      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.4px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
       .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }
-      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.3px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
-      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.8px; fill: none !important; stroke-linecap: round; }
-      .cad-door { stroke: var(--cad-door); stroke-width: 1.1px; fill: none !important; stroke-linecap: round; opacity: 0.9; }
+      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.4px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 2.0px; fill: none !important; stroke-linecap: round; filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.4)); }
+      .cad-door { stroke: var(--cad-door); stroke-width: 1.1px; stroke-dasharray: 4,3; fill: none !important; stroke-linecap: round; opacity: 0.9; }
       .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }
       .cad-dim { stroke: var(--cad-dim); stroke-width: 0.65px; fill: none !important; transition: opacity 0.2s ease, stroke 0.2s ease; }
       .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, font-weight 0.15s ease; }
@@ -54,12 +54,63 @@
       }
       .cad-room-zone:hover, .cad-room-zone.active {
         stroke: var(--cad-glaze) !important;
-        fill: rgba(56, 189, 248, 0.08) !important;
-        filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));
+        fill: rgba(56, 189, 248, 0.12) !important;
+        filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
       }
       .cad-light .cad-room-zone:hover, .cad-light .cad-room-zone.active {
         stroke: var(--cad-glaze) !important;
-        fill: rgba(2, 132, 199, 0.09) !important;
+        fill: rgba(2, 132, 199, 0.12) !important;
+      }
+      
+      /* Embedded Architectural Room Badges */
+      .cad-room-badge-group {
+        cursor: pointer;
+        pointer-events: all;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+      }
+      .cad-room-badge-group:hover, .cad-room-badge-group.active {
+        transform: scale(1.08);
+      }
+      .cad-badge-plate {
+        fill: #141416;
+        stroke: #38bdf8;
+        stroke-width: 1.2px;
+        opacity: 0.95;
+        filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.85));
+        transition: stroke 0.2s ease, fill 0.2s ease, filter 0.2s ease;
+      }
+      .cad-room-badge-group:hover .cad-badge-plate, .cad-room-badge-group.active .cad-badge-plate {
+        stroke: #ffffff;
+        fill: #0284c7;
+        filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.7));
+      }
+      .cad-light .cad-badge-plate {
+        fill: #ffffff;
+        stroke: #0284c7;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+      }
+      .cad-badge-title {
+        fill: #ffffff;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+      .cad-light .cad-badge-title {
+        fill: #0f172a;
+      }
+      .cad-badge-sub {
+        fill: #38bdf8;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 6.5px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .cad-light .cad-badge-sub {
+        fill: #0284c7;
+      }
+      .cad-room-badge-group:hover .cad-badge-sub, .cad-room-badge-group.active .cad-badge-sub {
+        fill: #ffffff;
       }
       
       /* Spotlight Hover Preview for drafting buttons */
@@ -83,15 +134,67 @@
     <text x="80.000" y="-50.000" font-size="3.50" dominant-baseline="central" text-anchor="middle" data-label="LIVING AREA" class="cad-text-node">LIVING AREA</text>
   </g>
   <g id="layer-room-zones" class="cad-rooms">
-    <polygon id="zone-garage" class="cad-room-zone" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21'2" × 20'10"" data-area="441 sq ft" points="-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6" />
-    <polygon id="zone-great-room" class="cad-room-zone" data-room-id="great-room" data-room-name="Great Room" data-dim="17'0" × 17'8"" data-area="300 sq ft" points="-322.8,-341.4 -118.8,-341.4 -118.8,-129.4 -322.8,-129.4" />
-    <polygon id="zone-dining" class="cad-room-zone" data-room-id="dining" data-room-name="Dining Room" data-dim="13'0" × 10'11"" data-area="142 sq ft" points="-114.8,-341.4 41.2,-341.4 41.2,-210.0 -114.8,-210.0" />
-    <polygon id="zone-kitchen" class="cad-room-zone" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13'0" × 14'2"" data-area="184 sq ft" points="-114.8,-210.0 41.2,-210.0 41.2,-39.4 -114.8,-39.4" />
-    <polygon id="zone-deck" class="cad-room-zone" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11'1" × 11'8"" data-area="129 sq ft" points="47.2,-320.0 180.0,-320.0 180.0,-180.0 47.2,-180.0" />
-    <polygon id="zone-entry" class="cad-room-zone" data-room-id="entry" data-room-name="Main Entry & Porch" data-dim="8'8" × 10'5"" data-area="90 sq ft" points="-322.8,-125.4 -218.8,-125.4 -218.8,0.0 -322.8,0.0" />
-    <polygon id="zone-master" class="cad-room-zone" data-room-id="master" data-room-name="Master Suite" data-dim="13'8" × 14'0"" data-area="191 sq ft" points="-642.8,-341.4 -478.8,-341.4 -478.8,-173.4 -642.8,-173.4" />
-    <polygon id="zone-master-bath" class="cad-room-zone" data-room-id="master-bath" data-room-name="Ensuite Bath & W.I.C." data-dim="12'4" × 14'0"" data-area="172 sq ft" points="-474.8,-341.4 -326.8,-341.4 -326.8,-173.4 -474.8,-173.4" />
-    <polygon id="zone-bed2" class="cad-room-zone" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13'8" × 10'10"" data-area="148 sq ft" points="-642.8,-169.4 -478.8,-169.4 -478.8,-39.4 -642.8,-39.4" />
-    <polygon id="zone-bed3" class="cad-room-zone" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12'4" × 10'10"" data-area="133 sq ft" points="-474.8,-169.4 -326.8,-169.4 -326.8,-39.4 -474.8,-39.4" />
+    <polygon id="zone-garage" class="cad-room-zone" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21'2" × 20'10"" data-area="441 SQ FT" points="-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6" />
+    <polygon id="zone-great-room" class="cad-room-zone" data-room-id="great-room" data-room-name="Great Room" data-dim="17'0" × 17'8"" data-area="300 SQ FT" points="-322.8,-341.4 -118.8,-341.4 -118.8,-129.4 -322.8,-129.4" />
+    <polygon id="zone-dining" class="cad-room-zone" data-room-id="dining" data-room-name="Dining Room" data-dim="13'0" × 10'11"" data-area="142 SQ FT" points="-114.8,-341.4 41.2,-341.4 41.2,-210.0 -114.8,-210.0" />
+    <polygon id="zone-kitchen" class="cad-room-zone" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13'0" × 14'2"" data-area="184 SQ FT" points="-114.8,-210.0 41.2,-210.0 41.2,-39.4 -114.8,-39.4" />
+    <polygon id="zone-deck" class="cad-room-zone" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11'1" × 11'8"" data-area="129 SQ FT" points="47.2,-320.0 180.0,-320.0 180.0,-180.0 47.2,-180.0" />
+    <polygon id="zone-entry" class="cad-room-zone" data-room-id="entry" data-room-name="Main Entry & Porch" data-dim="8'8" × 10'5"" data-area="90 SQ FT" points="-322.8,-125.4 -218.8,-125.4 -218.8,0.0 -322.8,0.0" />
+    <polygon id="zone-master" class="cad-room-zone" data-room-id="master" data-room-name="Master Suite" data-dim="13'8" × 14'0"" data-area="191 SQ FT" points="-642.8,-341.4 -478.8,-341.4 -478.8,-173.4 -642.8,-173.4" />
+    <polygon id="zone-master-bath" class="cad-room-zone" data-room-id="master-bath" data-room-name="Ensuite Bath & W.I.C." data-dim="12'4" × 14'0"" data-area="172 SQ FT" points="-474.8,-341.4 -326.8,-341.4 -326.8,-173.4 -474.8,-173.4" />
+    <polygon id="zone-bed2" class="cad-room-zone" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13'8" × 10'10"" data-area="148 SQ FT" points="-642.8,-169.4 -478.8,-169.4 -478.8,-39.4 -642.8,-39.4" />
+    <polygon id="zone-bed3" class="cad-room-zone" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12'4" × 10'10"" data-area="133 SQ FT" points="-474.8,-169.4 -326.8,-169.4 -326.8,-39.4 -474.8,-39.4" />
+  </g>
+  <g id="layer-room-badges" class="cad-room-badges">
+    <g id="badge-garage" class="cad-room-badge-group" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21'2" × 20'10"" data-area="441 SQ FT" transform="translate(-85.8, 85.6)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">01. TWO-CAR GARAGE</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">21'2" × 20'10" · 441 SQ FT</text>
+    </g>
+    <g id="badge-great-room" class="cad-room-badge-group" data-room-id="great-room" data-room-name="Great Room" data-dim="17'0" × 17'8"" data-area="300 SQ FT" transform="translate(-220.8, -235.4)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">02. GREAT ROOM</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">17'0" × 17'8" · 300 SQ FT</text>
+    </g>
+    <g id="badge-dining" class="cad-room-badge-group" data-room-id="dining" data-room-name="Dining Room" data-dim="13'0" × 10'11"" data-area="142 SQ FT" transform="translate(-36.8, -275.7)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">03. DINING ROOM</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'0" × 10'11" · 142 SQ FT</text>
+    </g>
+    <g id="badge-kitchen" class="cad-room-badge-group" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13'0" × 14'2"" data-area="184 SQ FT" transform="translate(-36.8, -124.7)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">04. GOURMET KITCHEN</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'0" × 14'2" · 184 SQ FT</text>
+    </g>
+    <g id="badge-deck" class="cad-room-badge-group" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11'1" × 11'8"" data-area="129 SQ FT" transform="translate(113.6, -250.0)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">05. CANTILEVERED DECK</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">11'1" × 11'8" · 129 SQ FT</text>
+    </g>
+    <g id="badge-entry" class="cad-room-badge-group" data-room-id="entry" data-room-name="Main Entry & Porch" data-dim="8'8" × 10'5"" data-area="90 SQ FT" transform="translate(-270.8, -62.7)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">06. MAIN ENTRY & PORCH</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">8'8" × 10'5" · 90 SQ FT</text>
+    </g>
+    <g id="badge-master" class="cad-room-badge-group" data-room-id="master" data-room-name="Master Suite" data-dim="13'8" × 14'0"" data-area="191 SQ FT" transform="translate(-560.8, -257.4)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">07. MASTER SUITE</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'8" × 14'0" · 191 SQ FT</text>
+    </g>
+    <g id="badge-master-bath" class="cad-room-badge-group" data-room-id="master-bath" data-room-name="Ensuite Bath & W.I.C." data-dim="12'4" × 14'0"" data-area="172 SQ FT" transform="translate(-400.8, -257.4)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">08. ENSUITE BATH & W.I.C.</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">12'4" × 14'0" · 172 SQ FT</text>
+    </g>
+    <g id="badge-bed2" class="cad-room-badge-group" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13'8" × 10'10"" data-area="148 SQ FT" transform="translate(-560.8, -104.4)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">09. GUEST BEDROOM 2</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'8" × 10'10" · 148 SQ FT</text>
+    </g>
+    <g id="badge-bed3" class="cad-room-badge-group" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12'4" × 10'10"" data-area="133 SQ FT" transform="translate(-400.8, -104.4)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">10. GUEST BEDROOM 3</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">12'4" × 10'10" · 133 SQ FT</text>
+    </g>
   </g>
 </svg>

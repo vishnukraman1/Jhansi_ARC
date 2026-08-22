@@ -168,73 +168,103 @@ def sanitize_cad_text(text: str) -> str:
 ROOM_ZONES = [
     {
         'id': 'garage',
+        'num': '01',
         'name': 'Two-Car Garage',
         'points': '-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6',
+        'cx': -85.8,
+        'cy': 85.6,
         'dim': "21'2\" × 20'10\"",
-        'area': '441 sq ft'
+        'area': '441 SQ FT'
     },
     {
         'id': 'great-room',
+        'num': '02',
         'name': 'Great Room',
         'points': '-322.8,-341.4 -118.8,-341.4 -118.8,-129.4 -322.8,-129.4',
+        'cx': -220.8,
+        'cy': -235.4,
         'dim': "17'0\" × 17'8\"",
-        'area': '300 sq ft'
+        'area': '300 SQ FT'
     },
     {
         'id': 'dining',
+        'num': '03',
         'name': 'Dining Room',
         'points': '-114.8,-341.4 41.2,-341.4 41.2,-210.0 -114.8,-210.0',
+        'cx': -36.8,
+        'cy': -275.7,
         'dim': "13'0\" × 10'11\"",
-        'area': '142 sq ft'
+        'area': '142 SQ FT'
     },
     {
         'id': 'kitchen',
+        'num': '04',
         'name': 'Gourmet Kitchen',
         'points': '-114.8,-210.0 41.2,-210.0 41.2,-39.4 -114.8,-39.4',
+        'cx': -36.8,
+        'cy': -124.7,
         'dim': "13'0\" × 14'2\"",
-        'area': '184 sq ft'
+        'area': '184 SQ FT'
     },
     {
         'id': 'deck',
+        'num': '05',
         'name': 'Cantilevered Deck',
         'points': '47.2,-320.0 180.0,-320.0 180.0,-180.0 47.2,-180.0',
+        'cx': 113.6,
+        'cy': -250.0,
         'dim': "11'1\" × 11'8\"",
-        'area': '129 sq ft'
+        'area': '129 SQ FT'
     },
     {
         'id': 'entry',
+        'num': '06',
         'name': 'Main Entry & Porch',
         'points': '-322.8,-125.4 -218.8,-125.4 -218.8,0.0 -322.8,0.0',
+        'cx': -270.8,
+        'cy': -62.7,
         'dim': "8'8\" × 10'5\"",
-        'area': '90 sq ft'
+        'area': '90 SQ FT'
     },
     {
         'id': 'master',
+        'num': '07',
         'name': 'Master Suite',
         'points': '-642.8,-341.4 -478.8,-341.4 -478.8,-173.4 -642.8,-173.4',
+        'cx': -560.8,
+        'cy': -257.4,
         'dim': "13'8\" × 14'0\"",
-        'area': '191 sq ft'
+        'area': '191 SQ FT'
     },
     {
         'id': 'master-bath',
+        'num': '08',
         'name': 'Ensuite Bath & W.I.C.',
         'points': '-474.8,-341.4 -326.8,-341.4 -326.8,-173.4 -474.8,-173.4',
+        'cx': -400.8,
+        'cy': -257.4,
         'dim': "12'4\" × 14'0\"",
-        'area': '172 sq ft'
+        'area': '172 SQ FT'
     },
     {
         'id': 'bed2',
+        'num': '09',
         'name': 'Guest Bedroom 2',
         'points': '-642.8,-169.4 -478.8,-169.4 -478.8,-39.4 -642.8,-39.4',
+        'cx': -560.8,
+        'cy': -104.4,
         'dim': "13'8\" × 10'10\"",
-        'area': '148 sq ft'
+        'area': '148 SQ FT'
     },
     {
         'id': 'bed3',
+        'num': '10',
         'name': 'Guest Bedroom 3',
         'points': '-474.8,-169.4 -326.8,-169.4 -326.8,-39.4 -474.8,-39.4',
+        'cx': -400.8,
+        'cy': -104.4,
         'dim': "12'4\" × 10'10\"",
-        'area': '133 sq ft'
+        'area': '133 SQ FT'
     }
 ]
 
@@ -245,21 +275,21 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "  <defs>",
         "    <style>",
         "      :root, .cad-root {",
-        "        --cad-bg: #121212;",
+        "        --cad-bg: #0a0a0c;",
         "        --cad-wall-stroke: #ffffff;",
-        "        --cad-wall-fill: #181818;",
+        "        --cad-wall-fill: #18181b;",
         "        --cad-glaze: #38bdf8;",
         "        --cad-door: #cbd5e1;",
-        "        --cad-grid: #333333;",
+        "        --cad-grid: #27272a;",
         "        --cad-dim: #94a3b8;",
         "        --cad-anno: #f8fafc;",
-        "        --cad-floor: #475569;",
-        "        --cad-default: #64748b;",
+        "        --cad-floor: #3f3f46;",
+        "        --cad-default: #71717a;",
         "      }",
         "      .cad-light {",
-        "        --cad-bg: #F7F7F5;",
+        "        --cad-bg: #f8f9fa;",
         "        --cad-wall-stroke: #0f172a;",
-        "        --cad-wall-fill: #E8E8E6;",
+        "        --cad-wall-fill: #e2e8f0;",
         "        --cad-glaze: #0284c7;",
         "        --cad-door: #475569;",
         "        --cad-grid: #cbd5e1;",
@@ -268,13 +298,13 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        --cad-floor: #64748b;",
         "        --cad-default: #475569;",
         "      }",
-        "      .cad-root { background-color: var(--cad-bg); font-family: monospace; }",
+        "      .cad-root { background-color: var(--cad-bg); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }",
         "      .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease; }",
-        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.4px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }",
-        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.3px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
-        "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.8px; fill: none !important; stroke-linecap: round; }",
-        "      .cad-door { stroke: var(--cad-door); stroke-width: 1.1px; fill: none !important; stroke-linecap: round; opacity: 0.9; }",
+        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.4px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 2.0px; fill: none !important; stroke-linecap: round; filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.4)); }",
+        "      .cad-door { stroke: var(--cad-door); stroke-width: 1.1px; stroke-dasharray: 4,3; fill: none !important; stroke-linecap: round; opacity: 0.9; }",
         "      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }",
         "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.65px; fill: none !important; transition: opacity 0.2s ease, stroke 0.2s ease; }",
         "      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, font-weight 0.15s ease; }",
@@ -297,12 +327,63 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "      }",
         "      .cad-room-zone:hover, .cad-room-zone.active {",
         "        stroke: var(--cad-glaze) !important;",
-        "        fill: rgba(56, 189, 248, 0.08) !important;",
-        "        filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));",
+        "        fill: rgba(56, 189, 248, 0.12) !important;",
+        "        filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));",
         "      }",
         "      .cad-light .cad-room-zone:hover, .cad-light .cad-room-zone.active {",
         "        stroke: var(--cad-glaze) !important;",
-        "        fill: rgba(2, 132, 199, 0.09) !important;",
+        "        fill: rgba(2, 132, 199, 0.12) !important;",
+        "      }",
+        "      ",
+        "      /* Embedded Architectural Room Badges */",
+        "      .cad-room-badge-group {",
+        "        cursor: pointer;",
+        "        pointer-events: all;",
+        "        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;",
+        "      }",
+        "      .cad-room-badge-group:hover, .cad-room-badge-group.active {",
+        "        transform: scale(1.08);",
+        "      }",
+        "      .cad-badge-plate {",
+        "        fill: #141416;",
+        "        stroke: #38bdf8;",
+        "        stroke-width: 1.2px;",
+        "        opacity: 0.95;",
+        "        filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.85));",
+        "        transition: stroke 0.2s ease, fill 0.2s ease, filter 0.2s ease;",
+        "      }",
+        "      .cad-room-badge-group:hover .cad-badge-plate, .cad-room-badge-group.active .cad-badge-plate {",
+        "        stroke: #ffffff;",
+        "        fill: #0284c7;",
+        "        filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.7));",
+        "      }",
+        "      .cad-light .cad-badge-plate {",
+        "        fill: #ffffff;",
+        "        stroke: #0284c7;",
+        "        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));",
+        "      }",
+        "      .cad-badge-title {",
+        "        fill: #ffffff;",
+        "        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;",
+        "        font-size: 8px;",
+        "        font-weight: 700;",
+        "        letter-spacing: 0.05em;",
+        "      }",
+        "      .cad-light .cad-badge-title {",
+        "        fill: #0f172a;",
+        "      }",
+        "      .cad-badge-sub {",
+        "        fill: #38bdf8;",
+        "        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;",
+        "        font-size: 6.5px;",
+        "        font-weight: 600;",
+        "        letter-spacing: 0.02em;",
+        "      }",
+        "      .cad-light .cad-badge-sub {",
+        "        fill: #0284c7;",
+        "      }",
+        "      .cad-room-badge-group:hover .cad-badge-sub, .cad-room-badge-group.active .cad-badge-sub {",
+        "        fill: #ffffff;",
         "      }",
         "      ",
         "      /* Spotlight Hover Preview for drafting buttons */",
@@ -482,6 +563,21 @@ def convert_dxf_to_svg(dxf_path: str, svg_output_path: str, profile_path: Option
     svg_lines.append('  <g id="layer-room-zones" class="cad-rooms">')
     for zone in ROOM_ZONES:
         svg_lines.append(f'    <polygon id="zone-{zone["id"]}" class="cad-room-zone" data-room-id="{zone["id"]}" data-room-name="{zone["name"]}" data-dim="{zone.get("dim", "")}" data-area="{zone.get("area", "")}" points="{zone["points"]}" />')
+    svg_lines.append('  </g>')
+
+    # Inject embedded high-contrast architectural room badges
+    svg_lines.append('  <g id="layer-room-badges" class="cad-room-badges">')
+    for zone in ROOM_ZONES:
+        cx = zone.get('cx', 0.0)
+        cy = zone.get('cy', 0.0)
+        num = zone.get('num', '00')
+        title = zone.get('name', '').upper()
+        dim_area = f"{zone.get('dim', '')} · {zone.get('area', '')}"
+        svg_lines.append(f'    <g id="badge-{zone["id"]}" class="cad-room-badge-group" data-room-id="{zone["id"]}" data-room-name="{zone["name"]}" data-dim="{zone.get("dim", "")}" data-area="{zone.get("area", "")}" transform="translate({cx:.1f}, {cy:.1f})">')
+        svg_lines.append(f'      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />')
+        svg_lines.append(f'      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">{num}. {title}</text>')
+        svg_lines.append(f'      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">{dim_area}</text>')
+        svg_lines.append('    </g>')
     svg_lines.append('  </g>')
 
     svg_lines.append('</svg>\n')
