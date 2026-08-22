@@ -84,14 +84,14 @@
   </g>
   <g id="layer-room-zones" class="cad-rooms">
     <polygon id="zone-garage" class="cad-room-zone" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21'2" × 20'10"" data-area="441 sq ft" points="-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6" />
-    <polygon id="zone-great-room" class="cad-room-zone" data-room-id="great-room" data-room-name="Great Room" data-dim="17'8" × 17'2"" data-area="289 sq ft" points="-332.8,-341.4 -120.0,-341.4 -120.0,-135.0 -332.8,-135.0" />
-    <polygon id="zone-dining" class="cad-room-zone" data-room-id="dining" data-room-name="Dining Room" data-dim="13'5" × 11'9"" data-area="158 sq ft" points="-120.0,-341.4 41.2,-341.4 41.2,-200.0 -120.0,-200.0" />
-    <polygon id="zone-kitchen" class="cad-room-zone" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13'5" × 13'4"" data-area="179 sq ft" points="-120.0,-200.0 41.2,-200.0 41.2,-39.4 -120.0,-39.4" />
-    <polygon id="zone-deck" class="cad-room-zone" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11'5" × 12'6"" data-area="143 sq ft" points="47.2,-310.0 185.0,-310.0 185.0,-160.0 47.2,-160.0" />
-    <polygon id="zone-entry" class="cad-room-zone" data-room-id="entry" data-room-name="Main Entry & Porch" data-dim="10'0" × 11'3"" data-area="112 sq ft" points="-332.8,-135.0 -212.8,-135.0 -212.8,0.0 -332.8,0.0" />
-    <polygon id="zone-master" class="cad-room-zone" data-room-id="master" data-room-name="Master Suite" data-dim="17'6" × 13'5"" data-area="235 sq ft" points="-690.0,-341.4 -480.0,-341.4 -480.0,-180.0 -690.0,-180.0" />
-    <polygon id="zone-master-bath" class="cad-room-zone" data-room-id="master-bath" data-room-name="Ensuite Bath & W.I.C." data-dim="12'3" × 11'9"" data-area="144 sq ft" points="-480.0,-341.4 -332.8,-341.4 -332.8,-200.0 -480.0,-200.0" />
-    <polygon id="zone-bed2" class="cad-room-zone" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="17'6" × 11'8"" data-area="204 sq ft" points="-690.0,-180.0 -480.0,-180.0 -480.0,-39.4 -690.0,-39.4" />
-    <polygon id="zone-bed3" class="cad-room-zone" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12'3" × 11'8"" data-area="143 sq ft" points="-480.0,-180.0 -332.8,-180.0 -332.8,-39.4 -480.0,-39.4" />
+    <polygon id="zone-great-room" class="cad-room-zone" data-room-id="great-room" data-room-name="Great Room" data-dim="17'0" × 17'8"" data-area="300 sq ft" points="-322.8,-341.4 -118.8,-341.4 -118.8,-129.4 -322.8,-129.4" />
+    <polygon id="zone-dining" class="cad-room-zone" data-room-id="dining" data-room-name="Dining Room" data-dim="13'0" × 10'11"" data-area="142 sq ft" points="-114.8,-341.4 41.2,-341.4 41.2,-210.0 -114.8,-210.0" />
+    <polygon id="zone-kitchen" class="cad-room-zone" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13'0" × 14'2"" data-area="184 sq ft" points="-114.8,-210.0 41.2,-210.0 41.2,-39.4 -114.8,-39.4" />
+    <polygon id="zone-deck" class="cad-room-zone" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11'1" × 11'8"" data-area="129 sq ft" points="47.2,-320.0 180.0,-320.0 180.0,-180.0 47.2,-180.0" />
+    <polygon id="zone-entry" class="cad-room-zone" data-room-id="entry" data-room-name="Main Entry & Porch" data-dim="8'8" × 10'5"" data-area="90 sq ft" points="-322.8,-125.4 -218.8,-125.4 -218.8,0.0 -322.8,0.0" />
+    <polygon id="zone-master" class="cad-room-zone" data-room-id="master" data-room-name="Master Suite" data-dim="13'8" × 14'0"" data-area="191 sq ft" points="-642.8,-341.4 -478.8,-341.4 -478.8,-173.4 -642.8,-173.4" />
+    <polygon id="zone-master-bath" class="cad-room-zone" data-room-id="master-bath" data-room-name="Ensuite Bath & W.I.C." data-dim="12'4" × 14'0"" data-area="172 sq ft" points="-474.8,-341.4 -326.8,-341.4 -326.8,-173.4 -474.8,-173.4" />
+    <polygon id="zone-bed2" class="cad-room-zone" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13'8" × 10'10"" data-area="148 sq ft" points="-642.8,-169.4 -478.8,-169.4 -478.8,-39.4 -642.8,-39.4" />
+    <polygon id="zone-bed3" class="cad-room-zone" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12'4" × 10'10"" data-area="133 sq ft" points="-474.8,-169.4 -326.8,-169.4 -326.8,-39.4 -474.8,-39.4" />
   </g>
 </svg>

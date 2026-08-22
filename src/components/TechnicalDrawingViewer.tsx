@@ -16,20 +16,21 @@ interface RoomMetadata {
 }
 
 const ROOM_DATABASE: Record<string, RoomMetadata> = {
-  'GREAT ROOM': { name: 'Great Room', dimensions: "17'0\" × 17'0\"", area: '289 sq ft', category: 'Primary Living & Dining Zone', notes: 'Open-concept living space with south-facing passive solar gain.' },
-  'MASTER': { name: 'Master Bedroom', dimensions: "12'0\" × 14'0\"", area: '168 sq ft', category: 'Primary Suite', notes: 'Private master suite with direct ensuite bath access.' },
-  'KITCHEN': { name: 'Gourmet Kitchen', dimensions: "14'4\" × 8'10\"", area: '127 sq ft', category: 'Culinary Area', notes: 'Integrated kitchen island with custom millwork & pantry access.' },
-  '2 CAR GARAGE': { name: 'Two-Car Garage', dimensions: "21'2\" × 20'10\"", area: '441 sq ft', category: 'Vehicle & Utility', notes: 'Dual-vehicle garage with fire-rated 20-min door & bollard protection.' },
-  'BEDROOM 2': { name: 'Guest Bedroom 2', dimensions: "12'6\" × 11'0\"", area: '138 sq ft', category: 'Secondary Suite', notes: 'Double-glazed daylight window with built-in closet.' },
-  'DECK': { name: 'Cantilevered Deck', dimensions: "16'0\" × 8'0\"", area: '128 sq ft', category: 'Outdoor Living', notes: 'Charred timber exterior deck with panoramic views.' },
-  'ENTRY': { name: 'Main Entry Foyer', dimensions: "7'6\" × 7'0\"", area: '53 sq ft', category: 'Circulation', notes: 'Covered porch transition with draft airlock.' },
-  'UTIL.': { name: 'Utility & Laundry', dimensions: "7'0\" × 6'7\"", area: '46 sq ft', category: 'Mechanical / Service', notes: 'Dedicated utility room with hydronic service loop.' },
-  'Pantry': { name: 'Walk-In Pantry', dimensions: "5'2\" × 6'0\"", area: '31 sq ft', category: 'Storage', notes: 'Shelved dry pantry adjacent to kitchen.' },
-  'W.I.C.': { name: 'Walk-In Closet', dimensions: "8'1\" × 2'6\"", area: '20 sq ft', category: 'Wardrobe', notes: 'Full-length built-in wardrobe storage.' },
-  'BATH': { name: 'Ensuite Bathroom', dimensions: "5'0\" × 8'1\"", area: '40 sq ft', category: 'Sanitary', notes: 'Primary bathroom suite with ceramic fixtures.' },
-  'TOIL.': { name: 'Powder Room / WC', dimensions: "5'0\" × 5'7\"", area: '28 sq ft', category: 'Sanitary', notes: 'Secondary guest water closet.' },
-  'COVERED': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition', notes: 'Sheltered porch with timber column framing.' },
-  'PORCH': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition', notes: 'Sheltered porch with timber column framing.' }
+  'GREAT ROOM': { name: 'Great Room', dimensions: "17'0\" × 17'8\"", area: '300 sq ft', category: 'Living & Dining' },
+  'MASTER': { name: 'Master Suite', dimensions: "13'8\" × 14'0\"", area: '191 sq ft', category: 'Primary Suite' },
+  'KITCHEN': { name: 'Gourmet Kitchen', dimensions: "13'0\" × 14'2\"", area: '184 sq ft', category: 'Culinary Area' },
+  '2 CAR GARAGE': { name: 'Two-Car Garage', dimensions: "21'2\" × 20'10\"", area: '441 sq ft', category: 'Vehicle & Utility' },
+  'BEDROOM 2': { name: 'Guest Bedroom 2', dimensions: "13'8\" × 10'10\"", area: '148 sq ft', category: 'Secondary Suite' },
+  'BEDROOM 3': { name: 'Guest Bedroom 3', dimensions: "12'4\" × 10'10\"", area: '133 sq ft', category: 'Secondary Suite' },
+  'DECK': { name: 'Cantilevered Deck', dimensions: "11'1\" × 11'8\"", area: '129 sq ft', category: 'Outdoor Living' },
+  'ENTRY': { name: 'Main Entry & Porch', dimensions: "8'8\" × 10'5\"", area: '90 sq ft', category: 'Circulation' },
+  'UTIL.': { name: 'Utility & Laundry', dimensions: "7'0\" × 6'7\"", area: '46 sq ft', category: 'Service' },
+  'Pantry': { name: 'Pantry', dimensions: "5'2\" × 6'0\"", area: '31 sq ft', category: 'Storage' },
+  'W.I.C.': { name: 'Walk-In Closet', dimensions: "8'1\" × 2'6\"", area: '20 sq ft', category: 'Wardrobe' },
+  'BATH': { name: 'Ensuite Bath & W.I.C.', dimensions: "12'4\" × 14'0\"", area: '172 sq ft', category: 'Sanitary & Wardrobe' },
+  'TOIL.': { name: 'Powder Room', dimensions: "5'0\" × 5'7\"", area: '28 sq ft', category: 'Sanitary' },
+  'COVERED': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition' },
+  'PORCH': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition' }
 };
 
 interface TechnicalDrawingViewerProps {
@@ -392,37 +393,30 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
           ` : ''}
         `}</style>
 
-        {/* Floating Spatial Inspection HUD */}
+        {/* Sleek Architectural HUD Micro-Badge */}
         {hoveredHUD && !isDragging && (
           <div 
-            className={`absolute pointer-events-none z-30 transition-opacity duration-150 ease-out px-3 py-2 rounded-sm shadow-2xl border backdrop-blur-md ${
+            className={`absolute pointer-events-none z-30 transition-all duration-100 ease-out px-2.5 py-1 rounded-sm shadow-xl border backdrop-blur-md flex items-center gap-2 whitespace-nowrap ${
               isDark 
-                ? 'bg-[#181818]/95 text-[#F7F7F5] border-[#3b82f6]/50 shadow-black/80' 
-                : 'bg-white/95 text-[#121212] border-[#2563eb]/50 shadow-slate-300'
+                ? 'bg-[#121212]/95 text-[#F7F7F5] border-[#3b82f6]/60 shadow-black/90' 
+                : 'bg-white/95 text-[#121212] border-[#2563eb]/60 shadow-slate-400'
             }`}
             style={{ 
-              left: Math.min(Math.max(hoveredHUD.x + 14, 10), 480), 
-              top: Math.max(hoveredHUD.y - 50, 12) 
+              left: Math.min(Math.max(hoveredHUD.x + 12, 10), 440), 
+              top: Math.max(hoveredHUD.y - 32, 10) 
             }}
           >
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6] animate-pulse"></span>
-              <span className="text-xs font-mono font-bold tracking-wider uppercase">{hoveredHUD.title}</span>
-              {hoveredHUD.dimensions && (
-                <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#3b82f6]/15 text-[#3b82f6] rounded-sm font-semibold">
-                  {hoveredHUD.dimensions}
-                </span>
-              )}
-            </div>
-            {hoveredHUD.area && (
-              <div className={`text-[11px] font-mono mt-0.5 ${isDark ? 'text-[#a3a3a3]' : 'text-[#555555]'}`}>
-                Area: <span className={isDark ? 'text-white' : 'text-black'}>{hoveredHUD.area}</span> · {hoveredHUD.category}
-              </div>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6] animate-pulse shrink-0"></span>
+            <span className="text-[11px] font-mono font-bold tracking-wider uppercase">{hoveredHUD.title}</span>
+            {hoveredHUD.dimensions && (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#3b82f6]/15 text-[#3b82f6] rounded-xs font-semibold">
+                {hoveredHUD.dimensions}
+              </span>
             )}
-            {hoveredHUD.notes && (
-              <div className={`text-[10px] font-mono mt-0.5 max-w-[280px] leading-tight ${isDark ? 'text-[#888888]' : 'text-[#777777]'}`}>
-                {hoveredHUD.notes}
-              </div>
+            {hoveredHUD.area && (
+              <span className={`text-[10px] font-mono ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
+                · {hoveredHUD.area}
+              </span>
             )}
           </div>
         )}
