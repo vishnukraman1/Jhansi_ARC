@@ -11,6 +11,7 @@ import os
 import sys
 import json
 import math
+import html
 import fnmatch
 import argparse
 from typing import Dict, List, Tuple, Optional, Any
@@ -367,20 +368,26 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        transform: scale(1.08);",
         "      }",
         "      .cad-badge-plate {",
-        "        fill: transparent;",
-        "        stroke: transparent;",
-        "        transition: fill 0.2s ease, stroke 0.2s ease;",
+        "        fill: rgba(14, 14, 18, 0.75);",
+        "        stroke: rgba(255, 255, 255, 0.15);",
+        "        stroke-width: 0.8px;",
+        "        transition: fill 0.2s ease, stroke 0.2s ease, filter 0.2s ease;",
         "      }",
         "      .cad-room-badge-group:hover .cad-badge-plate, .cad-room-badge-group.active .cad-badge-plate {",
-        "        fill: rgba(14, 14, 17, 0.90);",
+        "        fill: rgba(14, 14, 18, 0.95);",
         "        stroke: #38bdf8;",
-        "        stroke-width: 1.0px;",
-        "        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));",
+        "        stroke-width: 1.2px;",
+        "        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6));",
+        "      }",
+        "      .cad-light .cad-badge-plate {",
+        "        fill: rgba(255, 255, 255, 0.88);",
+        "        stroke: rgba(0, 0, 0, 0.15);",
+        "        stroke-width: 0.8px;",
         "      }",
         "      .cad-light .cad-room-badge-group:hover .cad-badge-plate, .cad-light .cad-room-badge-group.active .cad-badge-plate {",
-        "        fill: rgba(255, 255, 255, 0.94);",
+        "        fill: #ffffff;",
         "        stroke: #0284c7;",
-        "        filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.3));",
+        "        filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.4));",
         "      }",
         "      .cad-badge-title {",
         "        fill: #f8fafc;",
@@ -486,11 +493,30 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
             if not clean_text:
                 return None
             
-            # Filter dense contractor micro-notes
-            is_contractor_note = any(kw in clean_text.upper() for kw in [
+            clean_upper = clean_text.upper().strip()
+
+            # 1. Filter out duplicate raw CAD room titles that collide with curated embedded room badges
+            raw_room_labels = {
+                '2 CAR GARAGE', 'GARAGE', 'CAR GARAGE', 'KITCHEN', 'ENTRY', 'UTIL.', 'PANTRY',
+                'GREAT ROOM', 'HALL', 'W.I.C.', 'DECK', 'DINING ROOM', 'DINING',
+                'MASTER', 'BEDROOM', 'BEDROOM 2', 'BEDROOM 3', 'COVERED PORCH',
+                'PORCH', 'COVERED', 'BATH', 'TOIL.', 'MSTR. BATH', 'CLOSET', 'CLO.', 'WH',
+                'FLOOR PLAN'
+            }
+            if clean_upper in raw_room_labels:
+                return None
+
+            # 2. Filter out raw interior room dimension strings like "13'8 x 14'", "21'2 x 20'10", "17' x 17'8"
+            if re.match(r"^\d+['\"]?(\s*[\d/]+)?\s*[xX×]\s*\d+['\"]?(\s*[\d/]+)?['\"]?$", clean_upper):
+                return None
+
+            # 3. Filter dense contractor micro-notes
+            is_contractor_note = any(kw in clean_upper for kw in [
                 'GYP', 'STUDS', 'INSUL', 'FIRE RATED', 'TRUSS', 'SHEATHING', 'JOISTS',
                 'HEADER', 'FASTENER', 'PLYWOOD', 'VAPOR', 'FLASHING', 'DRYWALL',
-                '2X4', '2X6', 'R-38', 'R-19', 'R-13', 'R-30', 'CRAWL', 'VENT', 'SLOPE', 'BTM.'
+                '2X4', '2X6', 'R-38', 'R-19', 'R-13', 'R-30', 'CRAWL', 'VENT', 'SLOPE', 'BTM.',
+                'SHEAR PANELS', 'BRACED WALL', 'PROVIDE 20 MIN', 'ATTIC ACCESS', 'HEATILATOR',
+                'BOLLARD'
             ])
             
             # Extract CAD character height in drawing units
@@ -507,9 +533,10 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
             if rotation and abs(rotation) > 0.1:
                 transform_attr = f' transform="rotate({-rotation:.1f} {x:.3f} {y:.3f})"'
 
-            escaped = clean_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            escaped_text = clean_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            escaped_attr = escaped_text.replace('"', '&quot;').replace("'", '&apos;')
             extra_class = " cad-contractor-note" if is_contractor_note else ""
-            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{capped_height:.2f}" dominant-baseline="central" text-anchor="middle" data-label="{escaped}" class="cad-text-node{extra_class}"{transform_attr}>{escaped}</text>'
+            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{capped_height:.2f}" dominant-baseline="central" text-anchor="middle" data-label="{escaped_attr}" class="cad-text-node{extra_class}"{transform_attr}>{escaped_text}</text>'
 
     return None
 
@@ -613,7 +640,10 @@ def convert_dxf_to_svg(dxf_path: str, svg_output_path: str, profile_path: Option
     # Inject interactive room zones for spatial boundary highlight and HUD discovery
     svg_lines.append('  <g id="layer-room-zones" class="cad-rooms">')
     for zone in ROOM_ZONES:
-        svg_lines.append(f'    <polygon id="zone-{zone["id"]}" class="cad-room-zone" data-room-id="{zone["id"]}" data-room-name="{zone["name"]}" data-dim="{zone.get("dim", "")}" data-area="{zone.get("area", "")}" points="{zone["points"]}" />')
+        dim_escaped = html.escape(zone.get("dim", ""), quote=True)
+        name_escaped = html.escape(zone.get("name", ""), quote=True)
+        area_escaped = html.escape(zone.get("area", ""), quote=True)
+        svg_lines.append(f'    <polygon id="zone-{zone["id"]}" class="cad-room-zone" data-room-id="{zone["id"]}" data-room-name="{name_escaped}" data-dim="{dim_escaped}" data-area="{area_escaped}" points="{zone["points"]}" />')
     svg_lines.append('  </g>')
 
     # Inject embedded high-contrast architectural room badges
@@ -622,9 +652,12 @@ def convert_dxf_to_svg(dxf_path: str, svg_output_path: str, profile_path: Option
         cx = zone.get('cx', 0.0)
         cy = zone.get('cy', 0.0)
         num = zone.get('num', '00')
-        title = zone.get('name', '').upper()
-        dim_area = f"{zone.get('dim', '')} · {zone.get('area', '')}"
-        svg_lines.append(f'    <g id="badge-{zone["id"]}" class="cad-room-badge-group" data-room-id="{zone["id"]}" data-room-name="{zone["name"]}" data-dim="{zone.get("dim", "")}" data-area="{zone.get("area", "")}" transform="translate({cx:.1f}, {cy:.1f})">')
+        title = html.escape(zone.get('name', '').upper(), quote=False)
+        dim_area = html.escape(f"{zone.get('dim', '')} · {zone.get('area', '')}", quote=False)
+        dim_escaped = html.escape(zone.get("dim", ""), quote=True)
+        name_escaped = html.escape(zone.get("name", ""), quote=True)
+        area_escaped = html.escape(zone.get("area", ""), quote=True)
+        svg_lines.append(f'    <g id="badge-{zone["id"]}" class="cad-room-badge-group" data-room-id="{zone["id"]}" data-room-name="{name_escaped}" data-dim="{dim_escaped}" data-area="{area_escaped}" transform="translate({cx:.1f}, {cy:.1f})">')
         svg_lines.append(f'      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />')
         svg_lines.append(f'      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">{num}. {title}</text>')
         svg_lines.append(f'      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">{dim_area}</text>')
