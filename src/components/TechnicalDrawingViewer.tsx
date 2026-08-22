@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
-import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Loader2, AlertCircle } from 'lucide-react';
 import { TechnicalDrawing } from '../types';
 
 interface TechnicalDrawingViewerProps {
@@ -18,31 +18,54 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
-  const [downloading, setDownloading] = useState(false);
+  const [svgContent, setSvgContent] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 10, 150));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 10, 80));
   const handleResetZoom = () => setZoomLevel(100);
 
-  // Elegant non-blocking download action
-  const handleDownload = () => {
-    setDownloading(true);
-    setTimeout(() => {
-      setDownloading(false);
-    }, 2500);
-  };
+  useEffect(() => {
+    if (!drawing.svgUrl) {
+      setSvgContent(null);
+      setIsLoading(false);
+      setLoadError(null);
+      return;
+    }
+
+    let isMounted = true;
+    setIsLoading(true);
+    setLoadError(null);
+
+    fetch(drawing.svgUrl)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to load vector drawing (${res.status} ${res.statusText})`);
+        }
+        return res.text();
+      })
+      .then((data) => {
+        if (isMounted) {
+          setSvgContent(data);
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          console.error('Error loading dynamic SVG drawing:', err);
+          setLoadError(err.message || 'Failed to load drawing asset');
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [drawing.svgUrl]);
 
   return (
     <div className="bg-[#121212] text-[#F7F7F5] rounded-sm p-6 border border-[#E0E0DE]/20 shadow-2xl overflow-hidden flex flex-col h-[580px] relative" id="cad-viewer">
-      
-      {/* Absolute success download indicator toast */}
-      {downloading && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-[#F7F7F5] text-[#121212] px-4 py-2 font-mono text-[10px] tracking-widest uppercase border border-[#E0E0DE] shadow-lg flex items-center gap-2 rounded-sm" id="download-toast">
-          <Download size={12} className="animate-bounce" />
-          <span>EXPORTED {drawing.name}.DWG</span>
-        </div>
-      )}
-
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E0E0DE]/20 pb-4 mb-4 gap-3">
         <div>
@@ -50,7 +73,9 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
             <span className="text-[10px] font-mono tracking-wider uppercase text-[#888888] bg-[#F7F7F5]/10 px-2 py-0.5 rounded-sm">
               {drawing.type}
             </span>
-            <span className="text-xs font-mono text-[#888888]">Scale 1:100 | Vector DWG</span>
+            <span className="text-xs font-mono text-[#888888]">
+              {drawing.svgUrl ? 'Vector SVG | Dynamic Asset' : 'Scale 1:100 | Vector DWG'}
+            </span>
           </div>
           <h4 className="text-md font-sans font-medium mt-1 text-[#F7F7F5]">{drawing.name}</h4>
         </div>
@@ -83,20 +108,40 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
             100%
           </button>
           <div className="h-6 w-[1px] bg-[#E0E0DE]/20 mx-1"></div>
-          <button
-            onClick={handleDownload}
+          <a
+            href={drawing.svgUrl || '#'}
+            download={drawing.svgUrl ? `${drawing.name.toLowerCase().replace(/\s+/g, '-')}.svg` : `${drawing.name}.dwg`}
             className="flex items-center gap-1.5 bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] px-3 py-1.5 rounded-sm text-xs font-mono transition cursor-pointer"
-            title="Export DWG/PDF"
+            title="Export DWG/SVG"
             id="export-drawing-btn"
           >
             <Download size={13} />
-            <span className="hidden md:inline">DWG</span>
-          </button>
+            <span className="hidden md:inline">{drawing.svgUrl ? 'SVG' : 'DWG'}</span>
+          </a>
         </div>
       </div>
 
       {/* Main Drafting Canvas Container */}
       <div className="flex-1 bg-[#121212] rounded-sm border border-[#E0E0DE]/20 relative overflow-hidden flex items-center justify-center p-4">
+        {/* Dynamic style sheet to drive CAD layer visibility */}
+        <style>{`
+          #dynamic-svg-root .cad-grid,
+          #dynamic-svg-root .cad-grid-layer,
+          #dynamic-svg-root [data-layer="GRID"] {
+            display: ${showGrid ? 'inline' : 'none'} !important;
+          }
+          #dynamic-svg-root .cad-dim,
+          #dynamic-svg-root .cad-dim-layer,
+          #dynamic-svg-root [data-layer="DIM"] {
+            display: ${showDimensions ? 'inline' : 'none'} !important;
+          }
+          #dynamic-svg-root .cad-anno,
+          #dynamic-svg-root .cad-anno-layer,
+          #dynamic-svg-root [data-layer="ANNO"] {
+            display: ${showAnnotations ? 'inline' : 'none'} !important;
+          }
+        `}</style>
+
         {/* Fine Architectural Grid Pattern Overlay */}
         <div 
           className="absolute inset-0 opacity-15 pointer-events-none transition-opacity duration-300" 
@@ -114,10 +159,35 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
           className="w-full h-full max-w-lg max-h-96 transition-all duration-300 ease-out flex items-center justify-center"
           style={{ transform: `scale(${zoomLevel / 100})` }}
         >
-          {drawing.svgType === 'site-plan' && (
-            <svg viewBox="0 0 400 300" className="w-full h-full text-neutral-400 font-mono select-none" id="svg-site-plan">
-              {/* Site contour topo lines */}
-              <path d="M-50,60 C100,50 200,90 450,80" fill="none" stroke="#2a2a2a" strokeWidth="1" strokeDasharray="3,3" />
+          {drawing.svgUrl ? (
+            <div className="w-full h-full flex items-center justify-center relative">
+              {isLoading && (
+                <div className="flex flex-col items-center gap-3 text-[#888888]">
+                  <Loader2 className="animate-spin text-[#3b82f6]" size={24} />
+                  <span className="text-xs font-mono tracking-wider uppercase">Loading Architectural Vector Asset...</span>
+                </div>
+              )}
+              {loadError && (
+                <div className="flex flex-col items-center gap-3 text-[#ef4444] p-4 text-center">
+                  <AlertCircle size={24} />
+                  <span className="text-xs font-mono uppercase tracking-wider">{loadError}</span>
+                  <span className="text-[10px] text-[#888888] font-mono">{drawing.svgUrl}</span>
+                </div>
+              )}
+              {!isLoading && !loadError && svgContent && (
+                <div
+                  id="dynamic-svg-root"
+                  className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full"
+                  dangerouslySetInnerHTML={{ __html: svgContent }}
+                />
+              )}
+            </div>
+          ) : (
+            <>
+              {drawing.svgType === 'site-plan' && (
+                <svg viewBox="0 0 400 300" className="w-full h-full text-neutral-400 font-mono select-none" id="svg-site-plan">
+                  {/* Site contour topo lines */}
+                  <path d="M-50,60 C100,50 200,90 450,80" fill="none" stroke="#2a2a2a" strokeWidth="1" strokeDasharray="3,3" />
               <path d="M-50,110 C120,90 220,140 450,120" fill="none" stroke="#2a2a2a" strokeWidth="1" strokeDasharray="3,3" />
               <path d="M-50,160 C140,130 240,190 450,170" fill="none" stroke="#2a2a2a" strokeWidth="1" strokeDasharray="3,3" />
               <path d="M-50,210 C160,180 260,240 450,220" fill="none" stroke="#333" strokeWidth="1" />
@@ -510,7 +580,9 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
               </g>
             </svg>
           )}
-        </div>
+        </>
+      )}
+    </div>
       </div>
 
       {/* Layer Control Dashboard Panel */}

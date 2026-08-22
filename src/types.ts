@@ -12,6 +12,7 @@ export interface TechnicalDrawing {
   description: string;
   // We'll generate actual stylized SVG representations for structural drawings, or elegant blueprints
   svgType: 'site-plan' | 'floor-plan' | 'section' | 'axonometric';
+  svgUrl?: string;
 }
 
 export interface ProjectNarrative {

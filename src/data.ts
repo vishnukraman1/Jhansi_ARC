@@ -31,7 +31,8 @@ export const projects: Project[] = [
         name: 'Optimized House Floor Plan',
         type: 'Floor Plan',
         description: 'General floor plan for the optimized house.',
-        svgType: 'floor-plan'
+        svgType: 'floor-plan',
+        svgUrl: '/drawings/test-floor-plan.svg'
       }
     ],
     specs: {

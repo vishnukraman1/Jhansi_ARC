@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RotateCcw, Play, Pause, Compass, Layers, Eye, Sliders, Sun, Palette } from 'lucide-react';
 
 interface ThreeModelViewerProps {
@@ -486,10 +487,47 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
             explodeScale: 0.5,
           });
           setModelStatus(null);
+
+          // ADD INTERACTIVE WALL POINTS
+          wrapper.updateMatrixWorld(true);
+          const floorY = -(size.y / 2) * scale;
+          const personHeight = floorY + 1.524; // 1.524m above the floor
+          // Fire ray from center of bounding box to ensure we start inside the room
+          const origin = new THREE.Vector3(0, 0, 0);
+          const directions = [
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(-1, 0, 0),
+            new THREE.Vector3(0, 0, 1),
+            new THREE.Vector3(0, 0, -1),
+          ];
+          const ray = new THREE.Raycaster();
+          directions.forEach((dir) => {
+            ray.set(origin, dir);
+            const intersects = ray.intersectObject(wrapper, true);
+            if (intersects.length > 0) {
+              // Get the first hit point
+              const hit = intersects[0];
+              const markerGeom = new THREE.SphereGeometry(0.2, 16, 16);
+              const markerMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.8 });
+              const marker = new THREE.Mesh(markerGeom, markerMat);
+              
+              const normal = dir.clone().multiplyScalar(-1);
+              // Place the marker slightly off the wall, and set its height to personHeight
+              marker.position.copy(hit.point).add(normal.clone().multiplyScalar(0.1));
+              marker.position.y = personHeight;
+              
+              marker.userData = {
+                isHotspot: true,
+                cameraPosition: new THREE.Vector3().copy(hit.point).add(normal.clone().multiplyScalar(0.5)).setY(personHeight),
+                targetPosition: new THREE.Vector3(0, personHeight, 0)
+              };
+              scene.add(marker);
+            }
+          });
         } else {
           setModelError(`Failed to load. Bounding box maxDim is ${maxDim}.`);
         }
-      }, undefined, (error) => {
+      }, undefined, (error: any) => {
         console.error('Error loading GLB:', error);
         setModelError(String(error.message || 'Unknown Error (Check Console)'));
         setModelStatus(null);
@@ -572,44 +610,18 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
     }
 
     // --- INTERACTIVE DRAG CAMERA CONTROLLER ---
-    let isDragging = false;
-    let previousMousePosition = { x: 0, y: 0 };
-    // Spherical coordinates for custom orbital camera controls
-    let currentView = 'perspective';
-    let theta = Math.PI / 4; // Horizontal rotation angle
-    let phi = Math.PI / 3;   // Vertical angle
-    let radius = 13.0;        // Camera distance
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 0.1;
+    controls.maxDistance = 22.0;
+    controls.maxPolarAngle = Math.PI / 2 - 0.01;
 
-    const handlePointerDown = (e: PointerEvent) => {
-      isDragging = true;
-      previousMousePosition = { x: e.clientX, y: e.clientY };
+    const setCameraPos = (r: number, p: number, t: number) => {
+      camera.position.set(r * Math.sin(p) * Math.sin(t), r * Math.cos(p), r * Math.sin(p) * Math.cos(t));
+      controls.update();
     };
-
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!isDragging) return;
-
-      const deltaX = e.clientX - previousMousePosition.x;
-      const deltaY = e.clientY - previousMousePosition.y;
-
-      theta -= deltaX * 0.005;
-      phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, phi - deltaY * 0.005));
-
-      previousMousePosition = { x: e.clientX, y: e.clientY };
-    };
-
-    const handlePointerUp = () => {
-      isDragging = false;
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      radius = Math.max(0.1, Math.min(22.0, radius + e.deltaY * 0.01));
-    };
-
-    container.addEventListener('pointerdown', handlePointerDown);
-    container.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    setCameraPos(13.0, Math.PI / 3, Math.PI / 4);
 
     // --- RENDER LOOP ---
     let animationFrameId = 0;
@@ -706,16 +718,10 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
       ambientLight.intensity = ambientIntensity;
       scene.background = skyColor;
 
-      // Simple auto-rotation if enabled & user is not dragging
-      if (autoRotateRef.current && !isDragging) {
-        theta += 0.002;
-      }
-
-      // Convert spherical angles back to Cartesian coordinates for camera placement
-      camera.position.x = radius * Math.sin(phi) * Math.sin(theta);
-      camera.position.y = radius * Math.cos(phi);
-      camera.position.z = radius * Math.sin(phi) * Math.cos(theta);
-      camera.lookAt(0, 0, 0);
+      // Simple auto-rotation if enabled
+      controls.autoRotate = autoRotateRef.current;
+      controls.autoRotateSpeed = 2.0;
+      controls.update();
 
       renderer.render(scene, camera);
     };
@@ -732,22 +738,40 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
     });
     resizeObserver.observe(container);
 
+    // --- CLICK HOTSPOTS ---
+    const clickRaycaster = new THREE.Raycaster();
+    const clickMouse = new THREE.Vector2();
+    let isClick = false;
+
+    const onPointerDownClick = () => { isClick = true; };
+    const onPointerMoveClick = () => { isClick = false; };
+    const onPointerUpClick = (e: PointerEvent) => {
+      if (!isClick) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      clickMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      clickMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      
+      clickRaycaster.setFromCamera(clickMouse, camera);
+      const intersects = clickRaycaster.intersectObjects(scene.children, false);
+      const hotspot = intersects.find(hit => hit.object.userData?.isHotspot);
+      if (hotspot) {
+        const data = hotspot.object.userData;
+        camera.position.copy(data.cameraPosition);
+        controls.target.copy(data.targetPosition);
+        controls.update();
+        autoRotateRef.current = false;
+      }
+    };
+    
+    renderer.domElement.addEventListener('pointerdown', onPointerDownClick);
+    renderer.domElement.addEventListener('pointermove', onPointerMoveClick);
+    renderer.domElement.addEventListener('pointerup', onPointerUpClick);
+
     // Camera view controls API refs (for component state listeners)
     const setPresetView = (view: 'perspective' | 'plan' | 'elevation') => {
-      currentView = view;
-      if (view === 'perspective') {
-        theta = Math.PI / 4;
-        phi = Math.PI / 3;
-        radius = 13.0;
-      } else if (view === 'plan') {
-        theta = 0;
-        phi = 0.05; // tiny offset so lookAt works perfectly
-        radius = 14.0;
-      } else if (view === 'elevation') {
-        theta = 0;
-        phi = Math.PI / 2 - 0.01;
-        radius = 13.0;
-      }
+      if (view === 'perspective') setCameraPos(13.0, Math.PI / 3, Math.PI / 4);
+      else if (view === 'plan') setCameraPos(14.0, 0.05, 0);
+      else if (view === 'elevation') setCameraPos(13.0, Math.PI / 2 - 0.01, 0);
     };
     (canvas as any).setPresetView = setPresetView;
 
@@ -755,10 +779,10 @@ export default function ThreeModelViewer({ projectId, projectName }: ThreeModelV
     return () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
-      container.removeEventListener('pointerdown', handlePointerDown);
-      container.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      container.removeEventListener('wheel', handleWheel);
+      controls.dispose();
+      renderer.domElement.removeEventListener('pointerdown', onPointerDownClick);
+      renderer.domElement.removeEventListener('pointermove', onPointerMoveClick);
+      renderer.domElement.removeEventListener('pointerup', onPointerUpClick);
 
       // Recursive disposal to completely free up graphics memory
       scene.traverse((obj) => {

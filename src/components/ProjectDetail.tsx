@@ -10,6 +10,7 @@ import { Project } from '../types';
 import { projects } from '../data';
 import TechnicalDrawingViewer from './TechnicalDrawingViewer';
 import ThreeModelViewer from './ThreeModelViewer';
+import CustomCADViewer from './CustomCADViewer';
 
 interface ProjectDetailProps {
   projectId: string;
@@ -385,6 +386,16 @@ export default function ProjectDetail({ projectId, onBack, onSelectProject }: Pr
                       {draw.type}
                     </button>
                   ))}
+                  <button
+                    onClick={() => setActiveDrawingId('custom-dxf')}
+                    className={`px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded-sm transition-all cursor-pointer ${
+                      activeDrawingId === 'custom-dxf'
+                        ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/30'
+                        : 'text-[#3b82f6]/70 hover:text-[#3b82f6]'
+                    }`}
+                  >
+                    + UPLOAD DXF
+                  </button>
                 </div>
               )}
             </div>
@@ -396,17 +407,31 @@ export default function ProjectDetail({ projectId, onBack, onSelectProject }: Pr
               {/* Description details of selected drawing or 3D study */}
               <div className="lg:col-span-4 flex flex-col justify-between bg-[#121212]/40 p-8 border border-[#E0E0DE]/20">
                 {workbenchMode === '2d' ? (
-                  <div>
-                    <span className="text-[10px] font-mono tracking-widest text-[#888888] uppercase">
-                      DRAFT SPECIFICATION
-                    </span>
-                    <h4 className="text-lg font-sans font-medium text-[#F7F7F5] mt-2 mb-4">
-                      {activeDrawing.name}
-                    </h4>
-                    <p className="text-xs text-[#888888] leading-relaxed font-sans mb-6">
-                      {activeDrawing.description}
-                    </p>
-                  </div>
+                  activeDrawingId === 'custom-dxf' ? (
+                    <div>
+                      <span className="text-[10px] font-mono tracking-widest text-[#3b82f6] uppercase">
+                        DYNAMIC PARSER
+                      </span>
+                      <h4 className="text-lg font-sans font-medium text-[#F7F7F5] mt-2 mb-4">
+                        Custom DXF Renderer
+                      </h4>
+                      <p className="text-xs text-[#888888] leading-relaxed font-sans mb-6">
+                        You are currently in the custom CAD workspace. Upload any standard DXF file to view it dynamically as an SVG within this environment.
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <span className="text-[10px] font-mono tracking-widest text-[#888888] uppercase">
+                        DRAFT SPECIFICATION
+                      </span>
+                      <h4 className="text-lg font-sans font-medium text-[#F7F7F5] mt-2 mb-4">
+                        {activeDrawing.name}
+                      </h4>
+                      <p className="text-xs text-[#888888] leading-relaxed font-sans mb-6">
+                        {activeDrawing.description}
+                      </p>
+                    </div>
+                  )
                 ) : (
                   <div>
                     <span className="text-[10px] font-mono tracking-widest text-[#888888] uppercase">
@@ -470,7 +495,11 @@ export default function ProjectDetail({ projectId, onBack, onSelectProject }: Pr
               {/* Interactive Vector or 3D Renderer */}
               <div className="lg:col-span-8 flex flex-col">
                 {workbenchMode === '2d' ? (
-                  <TechnicalDrawingViewer drawing={activeDrawing} projectTitle={currentProject.title} />
+                  activeDrawingId === 'custom-dxf' ? (
+                    <CustomCADViewer onBack={() => setActiveDrawingId(currentProject.technicalDrawings[0].id)} />
+                  ) : (
+                    <TechnicalDrawingViewer drawing={activeDrawing} projectTitle={currentProject.title} />
+                  )
                 ) : (
                   <ThreeModelViewer projectId={currentProject.id} projectName={currentProject.title} />
                 )}
