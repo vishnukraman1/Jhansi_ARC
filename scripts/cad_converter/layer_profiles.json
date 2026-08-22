@@ -5,7 +5,7 @@
   "profiles": {
     "walls": {
       "className": "cad-wall",
-      "patterns": ["*WALL*", "*A-WALL*", "*S-WALL*", "*WALL-EXTR*", "*WALL-INTR*"],
+      "patterns": ["*WALL*", "*A-WALL*", "*S-WALL*", "*STEM-WALL*", "*FOOTER*", "*FOOTPRINT*"],
       "stroke": "#ffffff",
       "fill": "#181818",
       "strokeWidth": 2.5,
@@ -23,7 +23,7 @@
     },
     "doors": {
       "className": "cad-door",
-      "patterns": ["*DOOR*", "*A-DOOR*", "*OPEN*", "*ENTR*"],
+      "patterns": ["*DOOR*", "*A-DOOR*", "*OPEN*", "*OPENING*", "*GARAGE-DOOR*", "*ENTR*"],
       "stroke": "#a3a3a3",
       "fill": "none",
       "strokeWidth": 1.0,
@@ -32,8 +32,8 @@
     },
     "grid": {
       "className": "cad-grid",
-      "patterns": ["*GRID*", "*S-GRID*", "*AXIS*", "*COL*"],
-      "stroke": "#333333",
+      "patterns": ["*GRID*", "*S-GRID*", "*AXIS*", "*COL*", "*JOIST*", "*TRUSS*", "*BEAM*", "*HEADER*", "*SLAB*", "*OVERHANG*", "*OVERBUILD*"],
+      "stroke": "#404040",
       "fill": "none",
       "strokeWidth": 0.5,
       "strokeDasharray": "4,4",
@@ -49,7 +49,7 @@
     },
     "annotations": {
       "className": "cad-anno",
-      "patterns": ["*ANNO*", "*TEXT*", "*LABEL*", "*NOTE*", "*ROOM*"],
+      "patterns": ["*ANNO*", "*TEXT*", "*NOTE*", "*LABEL*", "*ROOM*", "*ANNTEXT*"],
       "fill": "#a3a3a3",
       "stroke": "none",
       "fontFamily": "monospace",
@@ -57,10 +57,10 @@
     },
     "fixtures": {
       "className": "cad-floor",
-      "patterns": ["*FLOR*", "*FURN*", "*EQUIP*", "*CASE*", "*PLUMB*", "*SAN*"],
-      "stroke": "#404040",
+      "patterns": ["*FLOR*", "*FURN*", "*EQUIP*", "*CASE*", "*PLUMB*", "*SAN*", "*FIXTURE*"],
+      "stroke": "#525252",
       "fill": "none",
-      "strokeWidth": 0.5,
+      "strokeWidth": 0.75,
       "strokeLinejoin": "round",
       "strokeLinecap": "round"
     },

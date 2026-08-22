@@ -198,14 +198,34 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
     return None
 
 
+def collect_all_entities(entity_iterable: Any, parent_layer: Optional[str] = None) -> List[Any]:
+    """Recursively collect entities, exploding block references (INSERT) and DIMENSION entities."""
+    collected = []
+    for entity in entity_iterable:
+        dxftype = entity.dxftype()
+        layer = entity.dxf.layer if hasattr(entity.dxf, 'layer') else (parent_layer or '0')
+        if dxftype in ('INSERT', 'DIMENSION'):
+            try:
+                for sub_entity in entity.virtual_entities():
+                    collected.extend(collect_all_entities([sub_entity], parent_layer=layer))
+            except Exception:
+                pass
+        elif dxftype in ('LINE', 'LWPOLYLINE', 'POLYLINE', 'CIRCLE', 'ARC', 'TEXT', 'MTEXT'):
+            if not hasattr(entity.dxf, 'layer') or entity.dxf.layer in ('0', ''):
+                if parent_layer:
+                    entity.dxf.layer = parent_layer
+            collected.append(entity)
+    return collected
+
+
 def convert_dxf_to_svg(dxf_path: str, svg_output_path: str, profile_path: Optional[str] = None) -> str:
     """Convert an architectural DXF file to a semantic styled SVG."""
     doc = ezdxf.readfile(dxf_path)
     msp = doc.modelspace()
     profile_config = load_layer_profile(profile_path)
 
-    # Collect visible entities
-    entities = [e for e in msp if e.dxftype() in ('LINE', 'LWPOLYLINE', 'POLYLINE', 'CIRCLE', 'ARC', 'TEXT', 'MTEXT')]
+    # Collect and recursively decompose all visible entities
+    entities = collect_all_entities(msp)
 
     min_x, min_y, max_x, max_y = compute_bounding_box(entities)
 

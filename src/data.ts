@@ -27,8 +27,16 @@ export const projects: Project[] = [
     },
     technicalDrawings: [
       {
+        id: 'oh-draw-cad',
+        name: 'Bishop Overland Architectural Plan (DXF Vector)',
+        type: 'Floor Plan',
+        description: 'AutoCAD DXF vectorization featuring complete structural walls, dimension strings, door swings, and casework.',
+        svgType: 'floor-plan',
+        svgUrl: '/drawings/floorplan.svg'
+      },
+      {
         id: 'oh-draw-1',
-        name: 'Optimized House Floor Plan',
+        name: 'Optimized House Schematic Plan',
         type: 'Floor Plan',
         description: 'General floor plan for the optimized house.',
         svgType: 'floor-plan',
