@@ -66,3 +66,11 @@ _Avoid_: Tooltip Box, Hover Popup, Info Modal
 The transient visual focus mechanism that illuminates a designated CAD layer while dimming peripheral drawing vectors during button hover inspection.
 _Avoid_: Layer Highlighter, Quick Peek
 
+**Room Spatial Boundary**:
+The explicit geometric perimeter polygon defining the interior functional cavity of an architectural space for hit-testing and luminous border accents.
+_Avoid_: Room Box, Hit Area, Room Selection
+
+**Ambient Spatial Poche**:
+The translucent floor wash applied to a room zone during spatial discovery to communicate area enclosure without occluding interior CAD lines.
+_Avoid_: Floor Tint, Room Fill, Highlight Background
+

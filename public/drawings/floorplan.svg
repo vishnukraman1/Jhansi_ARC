@@ -26,7 +26,7 @@
         --cad-default: #4b5563;
       }
       .cad-root { background-color: var(--cad-bg); font-family: monospace; }
-      .cad-layer { transition: opacity 0.25s ease; }
+      .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease; }
       .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
       .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }
       .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
@@ -44,12 +44,30 @@
       .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
       .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }
       
+      /* Interactive Room Spatial Zone Highlighting */
+      .cad-room-zone {
+        cursor: pointer;
+        stroke: transparent;
+        stroke-width: 2.5px;
+        fill: transparent;
+        transition: stroke 0.2s ease, fill 0.2s ease, filter 0.2s ease;
+      }
+      .cad-room-zone:hover, .cad-room-zone.active {
+        stroke: var(--cad-glaze) !important;
+        fill: rgba(59, 130, 246, 0.08) !important;
+        filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.45));
+      }
+      .cad-light .cad-room-zone:hover, .cad-light .cad-room-zone.active {
+        stroke: var(--cad-glaze) !important;
+        fill: rgba(37, 99, 235, 0.09) !important;
+      }
+      
       /* Spotlight Hover Preview for drafting buttons */
       .spotlight-active .cad-layer:not(.cad-spotlight) { opacity: 0.12 !important; }
       .spotlight-active .cad-spotlight { opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6)); }
     </style>
   </defs>
-  <g id="layer-a-note" class="cad-anno cad-layer" data-layer="A-NOTE">
+  <g id="layer-a-note" class="cad-anno" data-layer="A-NOTE">
     <text x="-627.096" y="495.140" font-size="12.00" dominant-baseline="central" text-anchor="middle" data-label="FLOOR PLAN" class="cad-text-node">FLOOR PLAN</text>
     <text x="-121.969" y="102.584" font-size="6.95" dominant-baseline="central" text-anchor="middle" data-label="2 CAR GARAGE" class="cad-text-node">2 CAR GARAGE</text>
     <text x="-53.031" y="-121.125" font-size="6.95" dominant-baseline="central" text-anchor="middle" data-label="KITCHEN" class="cad-text-node">KITCHEN</text>
@@ -90,7 +108,7 @@
     <text x="-49.755" y="-111.679" font-size="5.50" dominant-baseline="central" text-anchor="middle" data-label="10'11 x 12'" class="cad-text-node">10'11 x 12'</text>
     <text x="-278.803" y="5.175" font-size="5.50" dominant-baseline="central" text-anchor="middle" data-label="7'2 x 4'4" class="cad-text-node">7'2 x 4'4</text>
     <text x="81.512" y="-224.175" font-size="5.50" dominant-baseline="central" text-anchor="middle" data-label="14'4 x 8'1" class="cad-text-node">14'4 x 8'1</text>
-    <text x="-636.191" y="51.354" font-size="6.40" dominant-baseline="central" text-anchor="middle" data-label="SHEAR PANELS, 3/8" OSB MIN. W/ 6" EDGE &amp; 12" FIELD NAILING OR DIAG. WALL BRACING 1x4 @ 45° TO 60° LET IN BRACING FROM TOP PLATE TO BOTTOM PLATE. (TYP.)" class="cad-text-node">SHEAR PANELS, 3/8" OSB MIN. W/ 6" EDGE &amp; 12" FIELD NAILING OR DIAG. WALL BRACING 1x4 @ 45° TO 60° LET IN BRACING FROM TOP PLATE TO BOTTOM PLATE. (TYP.)</text>
+    <text x="-636.191" y="51.354" font-size="6.40" dominant-baseline="central" text-anchor="middle" data-label="SHEAR PANELS, 3/8" OSB MIN. W/ 6" EDGE &amp; 12" FIELD NAILING OR DIAG. WALL BRACING 1x4 @ 45° TO 60° LET IN BRACING FROM TOP PLATE TO BOTTOM PLATE. (TYP.)}" class="cad-text-node">SHEAR PANELS, 3/8" OSB MIN. W/ 6" EDGE &amp; 12" FIELD NAILING OR DIAG. WALL BRACING 1x4 @ 45° TO 60° LET IN BRACING FROM TOP PLATE TO BOTTOM PLATE. (TYP.)}</text>
     <text x="23.228" y="-27.792" font-size="6.26" dominant-baseline="central" text-anchor="middle" data-label="GAS" class="cad-text-node">GAS</text>
     <line x1="-93.773" y1="-57.367" x2="-156.773" y2="-57.367" />
     <text x="-369.126" y="-141.590" font-size="5.50" dominant-baseline="central" text-anchor="middle" data-label="16'3 x 3'4" class="cad-text-node">16'3 x 3'4</text>
@@ -234,7 +252,7 @@
     <text x="-670.640" y="-191.892" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node">A6</text>
     <text x="-669.212" y="-201.637" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="C" class="cad-text-node">C</text>
   </g>
-  <g id="layer-a-text" class="cad-anno cad-layer" data-layer="A-TEXT">
+  <g id="layer-a-text" class="cad-anno" data-layer="A-TEXT">
     <text x="-117.681" y="224.123" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="16070 O.H. DOOR" class="cad-text-node">16070 O.H. DOOR</text>
     <text x="-420.045" y="45.123" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="5050 XO" class="cad-text-node">5050 XO</text>
     <text x="55.979" y="-101.724" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="3036 XO" class="cad-text-node" transform="rotate(-90.0 55.979 -101.724)">3036 XO</text>
@@ -267,7 +285,7 @@
     <text x="-93.939" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2050 SH" class="cad-text-node">2050 SH</text>
     <text x="9.710" y="-351.119" font-size="5.00" dominant-baseline="central" text-anchor="middle" data-label="2050 SH" class="cad-text-node">2050 SH</text>
   </g>
-  <g id="layer-a-dims-1" class="cad-dim cad-layer" data-layer="A-DIMS-1">
+  <g id="layer-a-dims-1" class="cad-dim" data-layer="A-DIMS-1">
     <line x1="47.227" y1="218.633" x2="47.227" y2="252.824" />
     <line x1="10.227" y1="218.633" x2="10.227" y2="252.824" />
     <line x1="47.227" y1="249.824" x2="39.700" y2="249.824" />
@@ -577,7 +595,7 @@
     <polygon points="15.242,212.930 14.459,212.930" fill="none" />
     <polygon points="-213.051,212.930 -212.269,212.930" fill="none" />
     <polygon points="-186.787,212.930 -186.005,212.930" fill="none" />
-    <text x="-97.151" y="-1.313" font-size="4.00" dominant-baseline="central" text-anchor="middle" data-label="MIN. 22"x 30" ATTIC ACCESS" class="cad-text-node">MIN. 22"x 30" ATTIC ACCESS</text>
+    <text x="-97.151" y="-1.313" font-size="4.00" dominant-baseline="central" text-anchor="middle" data-label="{MIN. 22"x 30" ATTIC ACCESS}" class="cad-text-node">{MIN. 22"x 30" ATTIC ACCESS}</text>
     <text x="-433.457" y="-242.100" font-size="4.00" dominant-baseline="central" text-anchor="middle" data-label="MIN. 22x30 ATTIC ACCESS" class="cad-text-node">MIN. 22x30 ATTIC ACCESS</text>
     <polygon points="-421.491,-214.372 -421.491,-245.099 -445.491,-245.099 -445.491,-214.372" fill="none" />
     <line x1="-437.773" y1="36.633" x2="-482.773" y2="36.633" />
@@ -764,11 +782,11 @@
     <polyline points="-263.273,-261.847 -258.273,-266.847" fill="none" />
     <text x="-291.773" y="-264.347" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="5'-2"" class="cad-text-node">5'-2"</text>
   </g>
-  <g id="layer-0" class="cad-default cad-layer" data-layer="0">
+  <g id="layer-0" class="cad-default" data-layer="0">
     <text x="-187.480" y="-30.177" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="PROVIDE 20 MIN. DOOR W/ SELF CLOSING HINGES" class="cad-text-node">PROVIDE 20 MIN. DOOR W/ SELF CLOSING HINGES</text>
     <text x="-51.787" y="-4.256" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="BOLLARD, FOR W.H. PROTECTION" class="cad-text-node">BOLLARD, FOR W.H. PROTECTION</text>
   </g>
-  <g id="layer-anntext" class="cad-anno cad-layer" data-layer="ANNTEXT">
+  <g id="layer-anntext" class="cad-anno" data-layer="ANNTEXT">
     <text x="-114.236" y="80.949" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="FOR ROOFS. R-309.2" class="cad-text-node">FOR ROOFS. R-309.2</text>
     <text x="-118.985" y="38.603" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="NOTE:" class="cad-text-node">NOTE:</text>
     <text x="-114.236" y="51.156" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="5/8" TYPE "X" GYP. BD. ON CEILING" class="cad-text-node">5/8" TYPE "X" GYP. BD. ON CEILING</text>
@@ -822,7 +840,7 @@
     <text x="161.894" y="-198.287" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="A6" class="cad-text-node">A6</text>
     <text x="163.870" y="-208.032" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="E" class="cad-text-node">E</text>
   </g>
-  <g id="layer-xref-bishop-overland-08-0-a-wall" class="cad-wall cad-layer" data-layer="xref-Bishop-Overland-08$0$A-WALL">
+  <g id="layer-xref-bishop-overland-08-0-a-wall" class="cad-wall" data-layer="xref-Bishop-Overland-08$0$A-WALL">
     <line x1="-294.773" y1="-39.367" x2="-304.773" y2="-39.367" />
     <line x1="-306.773" y1="-45.367" x2="-294.773" y2="-45.367" />
     <line x1="-332.773" y1="-347.367" x2="-220.773" y2="-347.367" />
@@ -1001,7 +1019,7 @@
     <line x1="-266.430" y1="-341.367" x2="-322.773" y2="-341.367" />
     <line x1="-322.773" y1="-279.367" x2="-322.773" y2="-169.367" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-a-case-1" class="cad-floor cad-layer" data-layer="xref-Bishop-Overland-08$0$A-CASE-1">
+  <g id="layer-xref-bishop-overland-08-0-a-case-1" class="cad-floor" data-layer="xref-Bishop-Overland-08$0$A-CASE-1">
     <path d="M -37.709 -126.522 A 2.009 2.009 0 0 0 -39.718 -124.514" fill="none" />
     <line x1="39.718" y1="-124.514" x2="39.718" y2="-96.525" />
     <path d="M -39.718 -96.525 A 2.009 2.009 0 0 0 -37.709 -94.516" fill="none" />
@@ -1202,7 +1220,7 @@
     <line x1="41.227" y1="-89.367" x2="29.227" y2="-89.367" />
     <line x1="-322.773" y1="-125.367" x2="-322.773" y2="-93.367" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-a-opening" class="cad-door cad-layer" data-layer="xref-Bishop-Overland-08$0$A-OPENING">
+  <g id="layer-xref-bishop-overland-08-0-a-opening" class="cad-door" data-layer="xref-Bishop-Overland-08$0$A-OPENING">
     <path d="M -123.773 -121.867 A 30.000 30.000 0 0 0 -93.773 -91.867" fill="none" />
     <line x1="44.227" y1="-128.367" x2="44.227" y2="-92.367" />
     <line x1="47.227" y1="-128.367" x2="47.227" y2="-92.367" />
@@ -1363,10 +1381,10 @@
     <line x1="-560.773" y1="-344.867" x2="-560.773" y2="-345.867" />
     <line x1="-542.773" y1="-342.867" x2="-542.773" y2="-343.867" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-a-garage-door" class="cad-door cad-layer" data-layer="xref-Bishop-Overland-08$0$A-GARAGE-DOOR">
+  <g id="layer-xref-bishop-overland-08-0-a-garage-door" class="cad-door" data-layer="xref-Bishop-Overland-08$0$A-GARAGE-DOOR">
     <polygon points="10.227,210.633 -181.773,210.633 -181.773,134.553 10.227,134.553" fill="none" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-s-stem-wall" class="cad-wall cad-layer" data-layer="xref-Bishop-Overland-08$0$S-STEM-WALL">
+  <g id="layer-xref-bishop-overland-08-0-s-stem-wall" class="cad-wall" data-layer="xref-Bishop-Overland-08$0$S-STEM-WALL">
     <polyline points="47.227,12.633 47.227,-347.367 -194.773,-347.367" fill="none" />
     <polyline points="10.227,216.633 10.227,208.633 39.227,208.633 39.227,-39.367" fill="none" />
     <polyline points="-530.773,-347.367 -648.773,-347.367 -648.773,12.633 -482.773,12.633 -482.773,36.633 -332.773,36.633 -332.773,12.633 -304.773,12.633 -304.773,-39.367 -218.773,-39.367 -218.773,216.633 47.227,216.633 47.227,12.633" fill="none" />
@@ -1394,7 +1412,7 @@
     <line x1="147.227" y1="-136.867" x2="147.227" y2="-148.867" />
     <line x1="135.227" y1="-136.867" x2="135.227" y2="-148.867" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-s-footer" class="cad-wall cad-layer" data-layer="xref-Bishop-Overland-08$0$S-FOOTER">
+  <g id="layer-xref-bishop-overland-08-0-s-footer" class="cad-wall" data-layer="xref-Bishop-Overland-08$0$S-FOOTER">
     <polyline points="-300.773,-35.367 -222.773,-35.367 -222.773,220.633 51.227,220.633 51.227,-181.367" fill="none" />
     <polyline points="-206.773,-35.367 -206.773,204.633 35.227,204.633 35.227,-35.367" fill="none" />
     <line x1="-206.773" y1="-35.367" x2="35.227" y2="-35.367" />
@@ -1483,7 +1501,7 @@
     <polyline points="138.232,-151.867 140.644,-151.867" fill="none" />
     <line x1="135.227" y1="-151.867" x2="137.119" y2="-151.867" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-a-header" class="cad-grid cad-layer" data-layer="xref-Bishop-Overland-08$0$A-HEADER">
+  <g id="layer-xref-bishop-overland-08-0-a-header" class="cad-grid" data-layer="xref-Bishop-Overland-08$0$A-HEADER">
     <polygon points="-49.273,-39.367 -85.273,-39.367 -85.273,-45.367 -49.273,-45.367" fill="none" />
     <polygon points="-531.773,12.633 -591.773,12.633 -591.773,6.633 -531.773,6.633" fill="none" />
     <polygon points="-377.773,36.633 -437.773,36.633 -437.773,30.633 -377.773,30.633" fill="none" />
@@ -1512,7 +1530,7 @@
     <polygon points="-334.773,0.633 -338.773,0.633 -338.773,-83.367 -334.773,-83.367" fill="none" />
     <polygon points="-306.773,-97.367 -310.773,-97.367 -310.773,-121.367 -306.773,-121.367" fill="none" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-r-beam" class="cad-grid cad-layer" data-layer="xref-Bishop-Overland-08$0$R-BEAM">
+  <g id="layer-xref-bishop-overland-08-0-r-beam" class="cad-grid" data-layer="xref-Bishop-Overland-08$0$R-BEAM">
     <polygon points="-217.773,215.633 -217.773,211.633 46.223,211.633 46.223,215.633 -217.773,215.633" fill="none" />
     <polyline points="-216.773,212.633 45.223,212.633" fill="none" />
     <polyline points="-216.773,213.633 45.223,213.633" fill="none" />
@@ -1522,23 +1540,35 @@
     <polyline points="141.227,-312.867 141.227,-137.867" fill="none" />
     <polyline points="140.227,-312.867 140.227,-137.867" fill="none" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-a-footprint" class="cad-wall cad-layer" data-layer="xref-Bishop-Overland-08$0$A-FOOTPRINT">
+  <g id="layer-xref-bishop-overland-08-0-a-footprint" class="cad-wall" data-layer="xref-Bishop-Overland-08$0$A-FOOTPRINT">
     <polygon points="47.227,-39.367 47.227,-347.367 -194.773,-347.367 -194.773,-347.367 -246.773,-347.367 -246.773,-347.367 -648.773,-347.367 -648.773,12.633 -482.773,12.633 -482.773,36.633 -332.773,36.633 -332.773,12.633 -304.773,12.633 -304.773,-39.367 -218.773,-39.367 -149.014,-39.367" fill="none" />
     <line x1="-218.773" y1="-39.367" x2="47.227" y2="-39.367" />
     <polygon points="-218.773,-39.367 -304.773,-39.367 -304.773,12.633 -218.773,12.633" fill="none" />
     <polygon points="47.227,-39.367 -218.773,-39.367 -218.773,216.633 47.227,216.633" fill="none" />
     <polygon points="147.227,-311.367 47.227,-311.367 47.227,-139.367 147.227,-139.367" fill="none" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-s-slab" class="cad-grid cad-layer" data-layer="xref-Bishop-Overland-08$0$S-SLAB">
+  <g id="layer-xref-bishop-overland-08-0-s-slab" class="cad-grid" data-layer="xref-Bishop-Overland-08$0$S-SLAB">
     <line x1="-304.773" y1="12.633" x2="-218.773" y2="12.633" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-temp" class="cad-default cad-layer" data-layer="xref-Bishop-Overland-08$0$TEMP">
+  <g id="layer-xref-bishop-overland-08-0-temp" class="cad-default" data-layer="xref-Bishop-Overland-08$0$TEMP">
     <line x1="47.227" y1="-347.367" x2="26.284" y2="-326.424" />
     <line x1="-311.909" y1="-330.606" x2="-299.256" y2="-317.954" />
     <line x1="-291.620" y1="-335.975" x2="-317.278" y2="-310.318" />
   </g>
-  <g id="layer-xref-bishop-overland-08-0-a-fixture" class="cad-floor cad-layer" data-layer="xref-Bishop-Overland-08$0$A-FIXTURE">
+  <g id="layer-xref-bishop-overland-08-0-a-fixture" class="cad-floor" data-layer="xref-Bishop-Overland-08$0$A-FIXTURE">
     <circle cx="-304.449" cy="-323.147" r="5.500" />
     <polygon points="-276.165,-325.975 -301.046,-339.984 -321.287,-319.744 -307.278,-294.862" fill="none" />
+  </g>
+  <g id="layer-room-zones" class="cad-rooms">
+    <polygon id="zone-garage" class="cad-room-zone" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21'2" × 20'10"" data-area="441 sq ft" points="-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6" />
+    <polygon id="zone-great-room" class="cad-room-zone" data-room-id="great-room" data-room-name="Great Room" data-dim="17'8" × 17'2"" data-area="289 sq ft" points="-332.8,-341.4 -120.0,-341.4 -120.0,-135.0 -332.8,-135.0" />
+    <polygon id="zone-dining" class="cad-room-zone" data-room-id="dining" data-room-name="Dining Room" data-dim="13'5" × 11'9"" data-area="158 sq ft" points="-120.0,-341.4 41.2,-341.4 41.2,-200.0 -120.0,-200.0" />
+    <polygon id="zone-kitchen" class="cad-room-zone" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13'5" × 13'4"" data-area="179 sq ft" points="-120.0,-200.0 41.2,-200.0 41.2,-39.4 -120.0,-39.4" />
+    <polygon id="zone-deck" class="cad-room-zone" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11'5" × 12'6"" data-area="143 sq ft" points="47.2,-310.0 185.0,-310.0 185.0,-160.0 47.2,-160.0" />
+    <polygon id="zone-entry" class="cad-room-zone" data-room-id="entry" data-room-name="Main Entry & Porch" data-dim="10'0" × 11'3"" data-area="112 sq ft" points="-332.8,-135.0 -212.8,-135.0 -212.8,0.0 -332.8,0.0" />
+    <polygon id="zone-master" class="cad-room-zone" data-room-id="master" data-room-name="Master Suite" data-dim="17'6" × 13'5"" data-area="235 sq ft" points="-690.0,-341.4 -480.0,-341.4 -480.0,-180.0 -690.0,-180.0" />
+    <polygon id="zone-master-bath" class="cad-room-zone" data-room-id="master-bath" data-room-name="Ensuite Bath & W.I.C." data-dim="12'3" × 11'9"" data-area="144 sq ft" points="-480.0,-341.4 -332.8,-341.4 -332.8,-200.0 -480.0,-200.0" />
+    <polygon id="zone-bed2" class="cad-room-zone" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="17'6" × 11'8"" data-area="204 sq ft" points="-690.0,-180.0 -480.0,-180.0 -480.0,-39.4 -690.0,-39.4" />
+    <polygon id="zone-bed3" class="cad-room-zone" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12'3" × 11'8"" data-area="143 sq ft" points="-480.0,-180.0 -332.8,-180.0 -332.8,-39.4 -480.0,-39.4" />
   </g>
 </svg>

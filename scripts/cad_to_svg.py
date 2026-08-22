@@ -161,11 +161,82 @@ def sanitize_cad_text(text: str) -> str:
     text = re.sub(r'%%[uUoO]', '', text)
     text = re.sub(r'\\[LlOo]', '', text)
     text = re.sub(r'\\P', ' ', text)
-    text = text.replace('{', '').replace('}', '').replace('\\~', ' ')
-    
     # 4. Clean up whitespace
     text = re.sub(r'\s+', ' ', text).strip()
     return text
+
+ROOM_ZONES = [
+    {
+        'id': 'garage',
+        'name': 'Two-Car Garage',
+        'points': '-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6',
+        'dim': "21'2\" × 20'10\"",
+        'area': '441 sq ft'
+    },
+    {
+        'id': 'great-room',
+        'name': 'Great Room',
+        'points': '-332.8,-341.4 -120.0,-341.4 -120.0,-135.0 -332.8,-135.0',
+        'dim': "17'8\" × 17'2\"",
+        'area': '289 sq ft'
+    },
+    {
+        'id': 'dining',
+        'name': 'Dining Room',
+        'points': '-120.0,-341.4 41.2,-341.4 41.2,-200.0 -120.0,-200.0',
+        'dim': "13'5\" × 11'9\"",
+        'area': '158 sq ft'
+    },
+    {
+        'id': 'kitchen',
+        'name': 'Gourmet Kitchen',
+        'points': '-120.0,-200.0 41.2,-200.0 41.2,-39.4 -120.0,-39.4',
+        'dim': "13'5\" × 13'4\"",
+        'area': '179 sq ft'
+    },
+    {
+        'id': 'deck',
+        'name': 'Cantilevered Deck',
+        'points': '47.2,-310.0 185.0,-310.0 185.0,-160.0 47.2,-160.0',
+        'dim': "11'5\" × 12'6\"",
+        'area': '143 sq ft'
+    },
+    {
+        'id': 'entry',
+        'name': 'Main Entry & Porch',
+        'points': '-332.8,-135.0 -212.8,-135.0 -212.8,0.0 -332.8,0.0',
+        'dim': "10'0\" × 11'3\"",
+        'area': '112 sq ft'
+    },
+    {
+        'id': 'master',
+        'name': 'Master Suite',
+        'points': '-690.0,-341.4 -480.0,-341.4 -480.0,-180.0 -690.0,-180.0',
+        'dim': "17'6\" × 13'5\"",
+        'area': '235 sq ft'
+    },
+    {
+        'id': 'master-bath',
+        'name': 'Ensuite Bath & W.I.C.',
+        'points': '-480.0,-341.4 -332.8,-341.4 -332.8,-200.0 -480.0,-200.0',
+        'dim': "12'3\" × 11'9\"",
+        'area': '144 sq ft'
+    },
+    {
+        'id': 'bed2',
+        'name': 'Guest Bedroom 2',
+        'points': '-690.0,-180.0 -480.0,-180.0 -480.0,-39.4 -690.0,-39.4',
+        'dim': "17'6\" × 11'8\"",
+        'area': '204 sq ft'
+    },
+    {
+        'id': 'bed3',
+        'name': 'Guest Bedroom 3',
+        'points': '-480.0,-180.0 -332.8,-180.0 -332.8,-39.4 -480.0,-39.4',
+        'dim': "12'3\" × 11'8\"",
+        'area': '143 sq ft'
+    }
+]
 
 
 def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
@@ -215,6 +286,24 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "      .cad-anno text:hover { fill: var(--cad-glaze) !important; font-weight: bold; }",
         "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }",
+        "      ",
+        "      /* Interactive Room Spatial Zone Highlighting */",
+        "      .cad-room-zone {",
+        "        cursor: pointer;",
+        "        stroke: transparent;",
+        "        stroke-width: 2.5px;",
+        "        fill: transparent;",
+        "        transition: stroke 0.2s ease, fill 0.2s ease, filter 0.2s ease;",
+        "      }",
+        "      .cad-room-zone:hover, .cad-room-zone.active {",
+        "        stroke: var(--cad-glaze) !important;",
+        "        fill: rgba(59, 130, 246, 0.08) !important;",
+        "        filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.45));",
+        "      }",
+        "      .cad-light .cad-room-zone:hover, .cad-light .cad-room-zone.active {",
+        "        stroke: var(--cad-glaze) !important;",
+        "        fill: rgba(37, 99, 235, 0.09) !important;",
+        "      }",
         "      ",
         "      /* Spotlight Hover Preview for drafting buttons */",
         "      .spotlight-active .cad-layer:not(.cad-spotlight) { opacity: 0.12 !important; }",
@@ -374,6 +463,12 @@ def convert_dxf_to_svg(dxf_path: str, svg_output_path: str, profile_path: Option
         for elem in elem_list:
             svg_lines.append(f'    {elem}')
         svg_lines.append('  </g>')
+
+    # Inject interactive room zones for spatial boundary highlight and HUD discovery
+    svg_lines.append('  <g id="layer-room-zones" class="cad-rooms">')
+    for zone in ROOM_ZONES:
+        svg_lines.append(f'    <polygon id="zone-{zone["id"]}" class="cad-room-zone" data-room-id="{zone["id"]}" data-room-name="{zone["name"]}" data-dim="{zone.get("dim", "")}" data-area="{zone.get("area", "")}" points="{zone["points"]}" />')
+    svg_lines.append('  </g>')
 
     svg_lines.append('</svg>\n')
     svg_content = "\n".join(svg_lines)

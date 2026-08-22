@@ -44,6 +44,24 @@
       .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
       .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }
       
+      /* Interactive Room Spatial Zone Highlighting */
+      .cad-room-zone {
+        cursor: pointer;
+        stroke: transparent;
+        stroke-width: 2.5px;
+        fill: transparent;
+        transition: stroke 0.2s ease, fill 0.2s ease, filter 0.2s ease;
+      }
+      .cad-room-zone:hover, .cad-room-zone.active {
+        stroke: var(--cad-glaze) !important;
+        fill: rgba(59, 130, 246, 0.08) !important;
+        filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.45));
+      }
+      .cad-light .cad-room-zone:hover, .cad-light .cad-room-zone.active {
+        stroke: var(--cad-glaze) !important;
+        fill: rgba(37, 99, 235, 0.09) !important;
+      }
+      
       /* Spotlight Hover Preview for drafting buttons */
       .spotlight-active .cad-layer:not(.cad-spotlight) { opacity: 0.12 !important; }
       .spotlight-active .cad-spotlight { opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6)); }
@@ -63,5 +81,17 @@
   </g>
   <g id="layer-a-anno" class="cad-anno" data-layer="A-ANNO">
     <text x="80.000" y="-50.000" font-size="3.50" dominant-baseline="central" text-anchor="middle" data-label="LIVING AREA" class="cad-text-node">LIVING AREA</text>
+  </g>
+  <g id="layer-room-zones" class="cad-rooms">
+    <polygon id="zone-garage" class="cad-room-zone" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21'2" × 20'10"" data-area="441 sq ft" points="-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6" />
+    <polygon id="zone-great-room" class="cad-room-zone" data-room-id="great-room" data-room-name="Great Room" data-dim="17'8" × 17'2"" data-area="289 sq ft" points="-332.8,-341.4 -120.0,-341.4 -120.0,-135.0 -332.8,-135.0" />
+    <polygon id="zone-dining" class="cad-room-zone" data-room-id="dining" data-room-name="Dining Room" data-dim="13'5" × 11'9"" data-area="158 sq ft" points="-120.0,-341.4 41.2,-341.4 41.2,-200.0 -120.0,-200.0" />
+    <polygon id="zone-kitchen" class="cad-room-zone" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13'5" × 13'4"" data-area="179 sq ft" points="-120.0,-200.0 41.2,-200.0 41.2,-39.4 -120.0,-39.4" />
+    <polygon id="zone-deck" class="cad-room-zone" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11'5" × 12'6"" data-area="143 sq ft" points="47.2,-310.0 185.0,-310.0 185.0,-160.0 47.2,-160.0" />
+    <polygon id="zone-entry" class="cad-room-zone" data-room-id="entry" data-room-name="Main Entry & Porch" data-dim="10'0" × 11'3"" data-area="112 sq ft" points="-332.8,-135.0 -212.8,-135.0 -212.8,0.0 -332.8,0.0" />
+    <polygon id="zone-master" class="cad-room-zone" data-room-id="master" data-room-name="Master Suite" data-dim="17'6" × 13'5"" data-area="235 sq ft" points="-690.0,-341.4 -480.0,-341.4 -480.0,-180.0 -690.0,-180.0" />
+    <polygon id="zone-master-bath" class="cad-room-zone" data-room-id="master-bath" data-room-name="Ensuite Bath & W.I.C." data-dim="12'3" × 11'9"" data-area="144 sq ft" points="-480.0,-341.4 -332.8,-341.4 -332.8,-200.0 -480.0,-200.0" />
+    <polygon id="zone-bed2" class="cad-room-zone" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="17'6" × 11'8"" data-area="204 sq ft" points="-690.0,-180.0 -480.0,-180.0 -480.0,-39.4 -690.0,-39.4" />
+    <polygon id="zone-bed3" class="cad-room-zone" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12'3" × 11'8"" data-area="143 sq ft" points="-480.0,-180.0 -332.8,-180.0 -332.8,-39.4 -480.0,-39.4" />
   </g>
 </svg>

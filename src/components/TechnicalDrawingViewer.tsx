@@ -92,18 +92,66 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
       return;
     }
 
-    // Interactive Spatial HUD Discovery
     const target = e.target as HTMLElement;
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    // 1. Check if hovering directly on an architectural room zone polygon
+    const roomZone = target.closest('.cad-room-zone') as SVGPolygonElement | null;
+    if (roomZone) {
+      const roomName = roomZone.getAttribute('data-room-name') || '';
+      const dim = roomZone.getAttribute('data-dim') || '';
+      const area = roomZone.getAttribute('data-area') || '';
+
+      // Activate zone class
+      document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => {
+        if (el === roomZone) el.classList.add('active');
+        else el.classList.remove('active');
+      });
+
+      const dbData = Object.values(ROOM_DATABASE).find((r) => r.name.toLowerCase() === roomName.toLowerCase());
+
+      setHoveredHUD({
+        title: roomName || 'Architectural Space',
+        dimensions: dim || dbData?.dimensions,
+        area: area || dbData?.area,
+        category: dbData?.category || 'Designated Living Area',
+        notes: dbData?.notes || 'Custom architectural volume with perimeter wall definition.',
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+      return;
+    }
+
+    // 2. Check if hovering on room text or dimension text
     const textNode = target.closest('text');
     if (textNode) {
       const label = textNode.getAttribute('data-label') || textNode.textContent || '';
       const clean = label.trim().toUpperCase();
 
       const matchedKey = Object.keys(ROOM_DATABASE).find((k) => clean.includes(k.toUpperCase()));
-      const rect = e.currentTarget.getBoundingClientRect();
 
       if (matchedKey) {
         const data = ROOM_DATABASE[matchedKey];
+        
+        // Synchronize polygon highlight for this room
+        const matchedZoneId = Object.entries({
+          'GARAGE': 'garage',
+          'GREAT ROOM': 'great-room',
+          'DINING': 'dining',
+          'KITCHEN': 'kitchen',
+          'DECK': 'deck',
+          'ENTRY': 'entry',
+          'MASTER': 'master',
+          'BATH': 'master-bath',
+          'BEDROOM 2': 'bed2',
+          'BEDROOM 3': 'bed3'
+        }).find(([k]) => clean.includes(k))?.[1];
+
+        document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => {
+          if (matchedZoneId && el.id === `zone-${matchedZoneId}`) el.classList.add('active');
+          else el.classList.remove('active');
+        });
+
         setHoveredHUD({
           title: data.name,
           dimensions: data.dimensions,
@@ -117,6 +165,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
       }
 
       if (/\d+['"]/.test(clean)) {
+        document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => el.classList.remove('active'));
         setHoveredHUD({
           title: `Dimension: ${label.trim()}`,
           category: 'Architectural Measurement String',
@@ -128,6 +177,8 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
       }
     }
 
+    // Clear active zone highlights when over empty canvas
+    document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => el.classList.remove('active'));
     if (hoveredHUD) {
       setHoveredHUD(null);
     }
