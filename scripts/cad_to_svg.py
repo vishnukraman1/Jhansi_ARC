@@ -299,23 +299,36 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        --cad-default: #475569;",
         "      }",
         "      .cad-root { background-color: var(--cad-bg); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }",
-        "      .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease; }",
-        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.4px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease, stroke-width 0.2s ease; }",
+        "      ",
+        "      /* 4-Tier AIA / ISO Architectural Line-Weight Standard */",
+        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.8px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }",
-        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.4px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
-        "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 2.0px; fill: none !important; stroke-linecap: round; filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.4)); }",
-        "      .cad-door { stroke: var(--cad-door); stroke-width: 1.1px; stroke-dasharray: 4,3; fill: none !important; stroke-linecap: round; opacity: 0.9; }",
-        "      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }",
-        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.65px; fill: none !important; transition: opacity 0.2s ease, stroke 0.2s ease; }",
+        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.6px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.8px; fill: none !important; stroke-linecap: round; filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.4)); }",
+        "      .cad-door { stroke: var(--cad-door); stroke-width: 0.85px; stroke-dasharray: 4,3; fill: none !important; stroke-linecap: round; opacity: 0.85; }",
+        "      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; opacity: 0.4; }",
+        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.5px; fill: none !important; opacity: 0.35; transition: opacity 0.25s ease, stroke 0.2s ease; }",
         "      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, font-weight 0.15s ease; }",
+        "      .cad-dim:hover, .cad-dim.active { opacity: 1 !important; }",
         "      .cad-dim text:hover { fill: #ffffff !important; font-weight: bold; }",
-        "      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.65px; fill: none !important; opacity: 0.8; }",
-        "      .cad-dim:hover line, .cad-dim:hover polyline, .cad-dim:hover path { opacity: 1 !important; stroke-width: 0.95px; }",
+        "      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.5px; fill: none !important; opacity: 0.7; }",
+        "      .cad-dim:hover line, .cad-dim:hover polyline, .cad-dim:hover path { opacity: 1 !important; stroke-width: 0.85px; }",
+        "      ",
         "      .cad-anno { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; }",
         "      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; transition: fill 0.15s ease, transform 0.15s ease; }",
         "      .cad-anno text:hover { fill: var(--cad-glaze) !important; font-weight: bold; }",
-        "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.85px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
-        "      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }",
+        "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; opacity: 0.6; }",
+        "      .cad-default { stroke: var(--cad-default); stroke-width: 0.65px; fill: none !important; opacity: 0.6; }",
+        "      ",
+        "      /* Semantic Level-of-Detail (LOD) Dynamic Rules */",
+        "      .lod-macro .cad-dim { opacity: 0 !important; pointer-events: none; }",
+        "      .lod-macro .cad-grid { opacity: 0 !important; pointer-events: none; }",
+        "      .lod-macro .cad-floor { opacity: 0.25 !important; }",
+        "      .lod-detail .cad-dim { opacity: 0.45 !important; }",
+        "      .lod-detail .cad-door { opacity: 0.85 !important; }",
+        "      .lod-inspect .cad-dim { opacity: 0.95 !important; }",
+        "      .lod-inspect .cad-contractor-note { display: inline !important; opacity: 0.85; }",
         "      ",
         "      /* Interactive Room Spatial Zone Highlighting */",
         "      .cad-room-zone {",
@@ -502,22 +515,38 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
 
 
 def collect_all_entities(entity_iterable: Any, parent_layer: Optional[str] = None) -> List[Any]:
-    """Recursively collect entities, exploding block references (INSERT) and DIMENSION entities."""
+    """Recursively collect entities, deduplicating collinear duplicate lines and exploding blocks."""
     collected = []
-    for entity in entity_iterable:
-        dxftype = entity.dxftype()
-        layer = entity.dxf.layer if hasattr(entity.dxf, 'layer') else (parent_layer or '0')
-        if dxftype in ('INSERT', 'DIMENSION'):
-            try:
-                for sub_entity in entity.virtual_entities():
-                    collected.extend(collect_all_entities([sub_entity], parent_layer=layer))
-            except Exception:
-                pass
-        elif dxftype in ('LINE', 'LWPOLYLINE', 'POLYLINE', 'CIRCLE', 'ARC', 'TEXT', 'MTEXT'):
-            if not hasattr(entity.dxf, 'layer') or entity.dxf.layer in ('0', ''):
-                if parent_layer:
-                    entity.dxf.layer = parent_layer
-            collected.append(entity)
+    seen_lines = set()
+
+    def process_entities(entities: Any, layer_ctx: Optional[str]):
+        for entity in entities:
+            dxftype = entity.dxftype()
+            layer = entity.dxf.layer if hasattr(entity.dxf, 'layer') else (layer_ctx or '0')
+            if dxftype in ('INSERT', 'DIMENSION'):
+                try:
+                    for sub_entity in entity.virtual_entities():
+                        process_entities([sub_entity], layer)
+                except Exception:
+                    pass
+            elif dxftype == 'LINE':
+                p1 = (round(entity.dxf.start.x, 2), round(entity.dxf.start.y, 2))
+                p2 = (round(entity.dxf.end.x, 2), round(entity.dxf.end.y, 2))
+                line_key = (layer, min(p1, p2), max(p1, p2))
+                if line_key in seen_lines:
+                    continue
+                seen_lines.add(line_key)
+                if not hasattr(entity.dxf, 'layer') or entity.dxf.layer in ('0', ''):
+                    if layer_ctx:
+                        entity.dxf.layer = layer_ctx
+                collected.append(entity)
+            elif dxftype in ('LWPOLYLINE', 'POLYLINE', 'CIRCLE', 'ARC', 'TEXT', 'MTEXT'):
+                if not hasattr(entity.dxf, 'layer') or entity.dxf.layer in ('0', ''):
+                    if layer_ctx:
+                        entity.dxf.layer = layer_ctx
+                collected.append(entity)
+
+    process_entities(entity_iterable, parent_layer)
     return collected
 
 

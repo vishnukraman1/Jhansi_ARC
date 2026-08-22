@@ -390,208 +390,61 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
   }, [drawing.svgUrl]);
 
   const isDark = themeMode === 'dark';
+  const lodClass = zoomLevel < 120 ? 'lod-macro' : (zoomLevel <= 200 ? 'lod-detail' : 'lod-inspect');
 
   return (
     <div 
-      className={`rounded-sm p-6 border shadow-2xl overflow-hidden flex flex-col h-[640px] relative transition-colors duration-300 ${
+      className={`rounded-sm border shadow-2xl overflow-hidden flex flex-col h-[700px] relative transition-colors duration-300 ${
         isDark 
-          ? 'bg-[#121212] text-[#F7F7F5] border-[#E0E0DE]/20' 
-          : 'bg-[#F7F7F5] text-[#121212] border-[#121212]/20'
+          ? 'bg-[#0a0a0c] text-[#F7F7F5] border-[#E0E0DE]/15' 
+          : 'bg-[#f8f9fa] text-[#121212] border-[#121212]/15'
       }`} 
       id="cad-viewer"
     >
-      {/* Header Panel */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 mb-3 gap-3 ${
-        isDark ? 'border-[#E0E0DE]/20' : 'border-[#121212]/20'
+      {/* Top Floating Glass Navigation Header */}
+      <div className={`absolute top-3 left-3 right-3 z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 rounded-sm backdrop-blur-md transition-colors pointer-events-none ${
+        isDark ? 'bg-[#121216]/60 border border-[#E0E0DE]/10' : 'bg-white/60 border border-[#121212]/10'
       }`}>
-        <div>
-          <div className="flex items-center gap-2">
-            <span className={`text-[10px] font-mono tracking-wider uppercase px-2 py-0.5 rounded-sm ${
-              isDark ? 'text-[#888888] bg-[#F7F7F5]/10' : 'text-[#555555] bg-[#121212]/10'
-            }`}>
-              {drawing.type}
-            </span>
-            <span className={`text-xs font-mono ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
-              {drawing.svgUrl ? 'Vector SVG | Dynamic Asset' : 'Scale 1:100 | Vector DWG'}
+        <div className="flex items-center gap-2.5 pointer-events-auto pl-1">
+          <span className="w-2 h-2 rounded-full bg-[#38bdf8] animate-pulse shrink-0"></span>
+          <div className="flex items-baseline gap-2">
+            <h4 className={`text-xs font-mono font-bold uppercase tracking-wider ${isDark ? 'text-[#F7F7F5]' : 'text-[#121212]'}`}>
+              {drawing.name}
+            </h4>
+            <span className={`text-[10px] font-mono ${isDark ? 'text-[#71717a]' : 'text-[#a1a1aa]'}`}>
+              {drawing.svgUrl ? '· VECTOR SVG' : '· DWG'}
             </span>
           </div>
-          <h4 className={`text-md font-sans font-medium mt-1 ${isDark ? 'text-[#F7F7F5]' : 'text-[#121212]'}`}>
-            {drawing.name}
-          </h4>
         </div>
 
-        {/* Toolbar controls */}
-        <div className="flex items-center gap-2 self-start sm:self-center flex-wrap">
-          {/* Master View Preset Toggle */}
-          <div className={`flex items-center rounded-sm border p-0.5 ${
-            isDark ? 'bg-[#1E1E1E] border-[#E0E0DE]/20' : 'bg-white border-[#121212]/20'
-          }`}>
-            <button
-              onClick={() => {
-                setViewPreset('presentation');
-                setShowDimensions(false);
-                setShowGrid(false);
-                setShowAnnotations(true);
-              }}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-[11px] font-mono transition-all duration-150 cursor-pointer ${
-                viewPreset === 'presentation'
-                  ? (isDark ? 'bg-[#38bdf8] text-[#0f172a] font-bold shadow-xs' : 'bg-[#0284c7] text-white font-bold shadow-xs')
-                  : (isDark ? 'text-[#888888] hover:text-[#F7F7F5]' : 'text-[#666666] hover:text-[#121212]')
-              }`}
-              title="Serene Presentation View (Clean Walls, Windows, and Room Titles)"
-              id="view-presentation-btn"
-            >
-              <span>🏛️ Presentation</span>
-            </button>
-            <button
-              onClick={() => {
-                setViewPreset('technical');
-                setShowDimensions(true);
-                setShowGrid(true);
-                setShowAnnotations(true);
-              }}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-[11px] font-mono transition-all duration-150 cursor-pointer ${
-                viewPreset === 'technical'
-                  ? (isDark ? 'bg-[#38bdf8] text-[#0f172a] font-bold shadow-xs' : 'bg-[#0284c7] text-white font-bold shadow-xs')
-                  : (isDark ? 'text-[#888888] hover:text-[#F7F7F5]' : 'text-[#666666] hover:text-[#121212]')
-              }`}
-              title="Complete Technical Blueprint (Full Dimensions, Grid, and Engineering Annotations)"
-              id="view-technical-btn"
-            >
-              <span>📐 Blueprint</span>
-            </button>
-          </div>
-
-          {/* Precision Caliper Tool Toggle */}
-          <button
-            onClick={() => {
-              setIsMeasuring(!isMeasuring);
-              setMeasureP1(null);
-              setMeasureP2(null);
-              setIsMeasureLocked(false);
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
-              isMeasuring
-                ? 'bg-[#38bdf8] text-[#0f172a] font-bold shadow-xs'
-                : (isDark ? 'bg-[#1E1E1E] hover:bg-[#282828] text-[#F7F7F5] border border-[#E0E0DE]/20 shadow-xs' : 'bg-white hover:bg-[#F2F2F0] text-[#121212] border border-[#121212]/20 shadow-xs')
-            }`}
-            title="Toggle Precision CAD Caliper (Click 2 points on drawing to measure real-world distance)"
-            id="measure-toggle-btn"
-          >
-            <Ruler size={13} />
-            <span className="text-[11px] font-medium hidden sm:inline">{isMeasuring ? 'Measuring...' : 'Measure'}</span>
-          </button>
-
-          {/* Dual Presentation Theme Toggle */}
-          <button
-            onClick={() => setThemeMode(isDark ? 'light' : 'dark')}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
-              isDark 
-                ? 'bg-[#1E1E1E] hover:bg-[#282828] text-[#F7F7F5] border border-[#E0E0DE]/20 shadow-xs' 
-                : 'bg-white hover:bg-[#F2F2F0] text-[#121212] border border-[#121212]/20 shadow-xs'
-            }`}
-            title="Switch Canvas Presentation Mode"
-            id="theme-toggle-btn"
-          >
-            {isDark ? <Sun size={13} className="text-amber-400" /> : <Moon size={13} className="text-indigo-600" />}
-            <span className="text-[11px] font-medium">{isDark ? 'Drafting' : 'Print Sheet'}</span>
-          </button>
-
-          {/* Unified Zoom Control Segment */}
-          <div className={`flex items-center rounded-sm border p-0.5 ${
-            isDark ? 'bg-[#1E1E1E] border-[#E0E0DE]/20' : 'bg-white border-[#121212]/20'
-          }`}>
-            <button
-              onClick={handleZoomOut}
-              className={`p-1.5 rounded-xs transition-colors cursor-pointer ${
-                isDark 
-                  ? 'hover:bg-[#2E2E2E] text-[#888888] hover:text-[#F7F7F5]' 
-                  : 'hover:bg-[#F2F2F0] text-[#555555] hover:text-[#121212]'
-              }`}
-              title="Zoom Out"
-              id="zoom-out-btn"
-            >
-              <ZoomOut size={13} />
-            </button>
-            <span className={`text-[11px] font-mono w-12 text-center font-medium ${isDark ? 'text-[#CCCCCC]' : 'text-[#333333]'}`}>
-              {zoomLevel}%
-            </span>
-            <button
-              onClick={handleZoomIn}
-              className={`p-1.5 rounded-xs transition-colors cursor-pointer ${
-                isDark 
-                  ? 'hover:bg-[#2E2E2E] text-[#888888] hover:text-[#F7F7F5]' 
-                  : 'hover:bg-[#F2F2F0] text-[#555555] hover:text-[#121212]'
-              }`}
-              title="Zoom In"
-              id="zoom-in-btn"
-            >
-              <ZoomIn size={13} />
-            </button>
-            <div className={`h-4 w-[1px] mx-1 ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`} />
-            <button
-              onClick={handleResetZoom}
-              className={`text-[10px] font-mono px-2 py-1 rounded-xs transition-colors cursor-pointer ${
-                isDark 
-                  ? 'hover:bg-[#2E2E2E] text-[#888888] hover:text-[#F7F7F5]' 
-                  : 'hover:bg-[#F2F2F0] text-[#555555] hover:text-[#121212]'
-              }`}
-              title="Reset Pan & Zoom (Fit To Canvas)"
-              id="zoom-reset-btn"
-            >
-              Fit
-            </button>
-          </div>
-
-          {/* Export Action */}
-          <a
-            href={drawing.svgUrl || '#'}
-            download={drawing.svgUrl ? `${drawing.name.toLowerCase().replace(/\s+/g, '-')}.svg` : `${drawing.name}.dwg`}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
-              isDark 
-                ? 'bg-[#1E1E1E] hover:bg-[#282828] text-[#F7F7F5] border border-[#E0E0DE]/20 shadow-xs' 
-                : 'bg-white hover:bg-[#F2F2F0] text-[#121212] border border-[#121212]/20 shadow-xs'
-            }`}
-            title="Export DWG/SVG Vector File"
-            id="export-drawing-btn"
-          >
-            <Download size={13} />
-            <span className="text-[11px] hidden sm:inline font-medium">{drawing.svgUrl ? 'SVG' : 'DWG'}</span>
-          </a>
+        {/* Spatial Focus Quick Chips */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto select-none pr-1">
+          <span className={`text-[9px] font-mono uppercase tracking-widest mr-1 shrink-0 ${isDark ? 'text-[#71717a]' : 'text-[#94a3b8]'}`}>
+            ROOMS:
+          </span>
+          {QUICK_ROOM_CHIPS.map((chip) => {
+            const isSelected = activeRoomChip === chip.id;
+            return (
+              <button
+                key={chip.id}
+                onClick={() => handleRoomSelect(chip.id)}
+                className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono whitespace-nowrap transition-all duration-150 cursor-pointer border ${
+                  isSelected
+                    ? (isDark ? 'bg-[#38bdf8]/20 border-[#38bdf8] text-[#38bdf8] font-bold shadow-xs' : 'bg-[#0284c7]/15 border-[#0284c7] text-[#0284c7] font-bold shadow-xs')
+                    : (isDark ? 'bg-[#18181b]/70 hover:bg-[#27272a] text-[#a1a1aa] border-transparent hover:text-white' : 'bg-white/70 hover:bg-[#e2e8f0] text-[#64748b] border-transparent hover:text-black')
+                }`}
+              >
+                {chip.name}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Quick-Jump Spatial Navigation Ribbon */}
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 mb-2 text-xs font-mono select-none">
-        <span className={`text-[10px] uppercase tracking-wider mr-1 shrink-0 ${isDark ? 'text-[#777777]' : 'text-[#888888]'}`}>
-          SPATIAL FOCUS:
-        </span>
-        {QUICK_ROOM_CHIPS.map((chip) => {
-          const isSelected = activeRoomChip === chip.id;
-          return (
-            <button
-              key={chip.id}
-              onClick={() => handleRoomSelect(chip.id)}
-              className={`px-2.5 py-1 rounded-sm text-[11px] whitespace-nowrap transition-all duration-200 cursor-pointer border ${
-                isSelected
-                  ? (isDark ? 'bg-[#38bdf8]/15 border-[#38bdf8] text-[#38bdf8] font-semibold shadow-xs' : 'bg-[#0284c7]/10 border-[#0284c7] text-[#0284c7] font-semibold shadow-xs')
-                  : (isDark ? 'bg-[#1E1E1E]/80 hover:bg-[#282828] text-[#AAAAAA] border-[#E0E0DE]/10 hover:text-white' : 'bg-white/80 hover:bg-[#F2F2F0] text-[#555555] border-[#121212]/10 hover:text-black')
-              }`}
-            >
-              {chip.name}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Main Drafting Canvas Container */}
+      {/* Main Drafting Canvas Container (Edge-to-Edge) */}
       <div 
-        className={`flex-1 rounded-sm border relative overflow-hidden flex items-center justify-center p-4 transition-colors duration-300 select-none ${
+        className={`flex-1 w-full h-full relative overflow-hidden flex items-center justify-center transition-colors duration-300 select-none ${
           isMeasuring ? 'cursor-crosshair' : (isDragging ? 'cursor-grabbing' : 'cursor-grab')
-        } ${
-          isDark 
-            ? 'bg-[#0a0a0c] border-[#E0E0DE]/20' 
-            : 'bg-[#f8f9fa] border-[#121212]/20'
         }`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -603,6 +456,153 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
         onWheel={handleWheel}
         onDoubleClick={handleResetZoom}
       >
+        {/* Dynamic style sheet to drive CAD layer visibility, theme tokens, and spotlight preview */}
+        <style>{`
+          #dynamic-svg-root .cad-grid,
+          #dynamic-svg-root .cad-grid-layer,
+          #dynamic-svg-root [data-layer="GRID"] {
+            display: ${showGrid ? 'inline' : 'none'} !important;
+          }
+          #dynamic-svg-root .cad-dim,
+          #dynamic-svg-root .cad-dim-layer,
+          #dynamic-svg-root [data-layer="DIM"] {
+            display: ${showDimensions ? 'inline' : 'none'} !important;
+          }
+          #dynamic-svg-root .cad-anno,
+          #dynamic-svg-root .cad-anno-layer,
+          #dynamic-svg-root [data-layer="ANNO"] {
+            display: ${showAnnotations ? 'inline' : 'none'} !important;
+          }
+          ${spotlightLayer ? `
+            #dynamic-svg-root g[class*="cad-"]:not(.cad-${spotlightLayer}) {
+              opacity: 0.12 !important;
+              transition: opacity 0.2s ease !important;
+            }
+            #dynamic-svg-root .cad-${spotlightLayer} {
+              opacity: 1 !important;
+              filter: drop-shadow(0 0 5px ${isDark ? 'rgba(56, 189, 248, 0.7)' : 'rgba(2, 132, 199, 0.7)'}) !important;
+            }
+          ` : ''}
+        `}</style>
+
+        {/* Floating Frosted Glass HUD (Bottom-Center Dock) */}
+        <div 
+          className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-30 transition-all duration-200 flex items-center gap-2 p-1.5 rounded-full border shadow-2xl backdrop-blur-xl ${
+            isDragging ? 'opacity-30 scale-95 pointer-events-none' : 'opacity-100 scale-100'
+          } ${
+            isDark 
+              ? 'bg-[#141418]/90 border-[#E0E0DE]/20 text-[#F7F7F5] shadow-black/90' 
+              : 'bg-white/90 border-[#121212]/20 text-[#121212] shadow-slate-400'
+          }`}
+        >
+          {/* View Mode Segment */}
+          <div className={`flex items-center rounded-full border p-0.5 ${
+            isDark ? 'bg-[#1E1E24] border-[#E0E0DE]/10' : 'bg-[#F2F2F6] border-[#121212]/10'
+          }`}>
+            <button
+              onClick={() => {
+                setViewPreset('presentation');
+                setShowDimensions(false);
+                setShowGrid(false);
+                setShowAnnotations(true);
+              }}
+              className={`px-3 py-1 rounded-full text-[11px] font-mono transition-all duration-150 cursor-pointer ${
+                viewPreset === 'presentation'
+                  ? (isDark ? 'bg-[#38bdf8] text-[#0a0a0c] font-bold shadow-xs' : 'bg-[#0284c7] text-white font-bold shadow-xs')
+                  : (isDark ? 'text-[#888888] hover:text-[#F7F7F5]' : 'text-[#666666] hover:text-[#121212]')
+              }`}
+              title="Serene Presentation View"
+            >
+              🏛️ Presentation
+            </button>
+            <button
+              onClick={() => {
+                setViewPreset('technical');
+                setShowDimensions(true);
+                setShowGrid(true);
+                setShowAnnotations(true);
+              }}
+              className={`px-3 py-1 rounded-full text-[11px] font-mono transition-all duration-150 cursor-pointer ${
+                viewPreset === 'technical'
+                  ? (isDark ? 'bg-[#38bdf8] text-[#0a0a0c] font-bold shadow-xs' : 'bg-[#0284c7] text-white font-bold shadow-xs')
+                  : (isDark ? 'text-[#888888] hover:text-[#F7F7F5]' : 'text-[#666666] hover:text-[#121212]')
+              }`}
+              title="Technical Blueprint with Dimensions"
+            >
+              📐 Blueprint
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className={`h-4 w-[1px] ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`} />
+
+          {/* Precision Caliper Tool */}
+          <button
+            onClick={() => {
+              setIsMeasuring(!isMeasuring);
+              setMeasureP1(null);
+              setMeasureP2(null);
+              setIsMeasureLocked(false);
+            }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono transition-all duration-150 cursor-pointer ${
+              isMeasuring
+                ? 'bg-[#38bdf8] text-[#0a0a0c] font-bold shadow-xs'
+                : (isDark ? 'hover:bg-[#282830] text-[#A0A0AA]' : 'hover:bg-[#EAEAEF] text-[#555566]')
+            }`}
+            title="Measure Real-World Distance"
+          >
+            <Ruler size={12} />
+            <span className="hidden sm:inline">{isMeasuring ? 'Measuring' : 'Measure'}</span>
+          </button>
+
+          {/* Theme Mode Toggle */}
+          <button
+            onClick={() => setThemeMode(isDark ? 'light' : 'dark')}
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              isDark ? 'hover:bg-[#282830] text-amber-400' : 'hover:bg-[#EAEAEF] text-indigo-600'
+            }`}
+            title="Toggle Drafting/Print Sheet Theme"
+          >
+            {isDark ? <Sun size={13} /> : <Moon size={13} />}
+          </button>
+
+          {/* Divider */}
+          <div className={`h-4 w-[1px] ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`} />
+
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleZoomOut}
+              className={`p-1 rounded-full transition-colors cursor-pointer ${
+                isDark ? 'hover:bg-[#282830] text-[#888888] hover:text-[#F7F7F5]' : 'hover:bg-[#EAEAEF] text-[#555555] hover:text-[#121212]'
+              }`}
+              title="Zoom Out"
+            >
+              <ZoomOut size={12} />
+            </button>
+            <span className={`text-[10px] font-mono w-9 text-center font-medium ${isDark ? 'text-[#CCCCCC]' : 'text-[#333333]'}`}>
+              {zoomLevel}%
+            </span>
+            <button
+              onClick={handleZoomIn}
+              className={`p-1 rounded-full transition-colors cursor-pointer ${
+                isDark ? 'hover:bg-[#282830] text-[#888888] hover:text-[#F7F7F5]' : 'hover:bg-[#EAEAEF] text-[#555555] hover:text-[#121212]'
+              }`}
+              title="Zoom In"
+            >
+              <ZoomIn size={12} />
+            </button>
+            <button
+              onClick={handleResetZoom}
+              className={`text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-wider transition-colors cursor-pointer ${
+                isDark ? 'bg-[#1E1E22] hover:bg-[#282830] text-[#A0A0AA] hover:text-white' : 'bg-[#F2F2F5] hover:bg-[#EAEAEF] text-[#555566] hover:text-black'
+              }`}
+              title="Fit to Screen"
+            >
+              Fit
+            </button>
+          </div>
+        </div>
         {/* Dynamic style sheet to drive CAD layer visibility, theme tokens, and spotlight preview */}
         <style>{`
           #dynamic-svg-root .cad-grid,
@@ -839,7 +839,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
                   id="dynamic-svg-root"
                   className={`w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full ${
                     !isDark ? 'cad-light' : ''
-                  } ${viewPreset === 'technical' ? 'show-technical' : ''}`}
+                  } ${viewPreset === 'technical' ? 'show-technical' : ''} ${lodClass}`}
                   dangerouslySetInnerHTML={{ __html: svgContent }}
                 />
               )}

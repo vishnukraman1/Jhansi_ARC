@@ -64,6 +64,22 @@ _Avoid_: Full view, all layers, complex mode
 The UI discipline of showing clear, minimal room typography by default and revealing full dimensional specs upon user engagement.
 _Avoid_: Tooltip popups, hover text, info expansion
 
+**Semantic Level-of-Detail (LOD)**:
+The progressive visual scaling mechanism that reveals deeper architectural fixtures and dimension strings proportionally as the canvas zoom increases.
+_Avoid_: Dynamic zoom, layer pop, detail fading
+
+**4-Tier Architectural Line-Weight Hierarchy**:
+The codified drafting standard establishing high-contrast line thicknesses from cut structural envelopes (Tier 1) down to faint dimension strings (Tier 4).
+_Avoid_: Line thickness, border width, stroke styles
+
+**Frameless Atelier Canvas**:
+The edge-to-edge drawing workspace eliminating rigid headers and borders to let the floor plan breathe across the full viewport.
+_Avoid_: Fullscreen box, viewer container, window
+
+**Floating Frosted Glass HUD**:
+The consolidated, floating control capsule at the bottom center of the canvas managing zoom, theme, caliper, and view modes with zero drawing obstruction.
+_Avoid_: Bottom bar, toolbar, control strip
+
 **Precision Caliper Tool**:
 The interactive measurement caliper enabling two-point distance calculation and on-canvas architectural dimension readout in feet and fractional inches.
 _Avoid_: Distance ruler, measure tool, line drawer
