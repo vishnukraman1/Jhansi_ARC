@@ -49,3 +49,12 @@ _Avoid_: DXF Converter, SVG Exporter, File Transformer
 **Drawing Layer Profile**:
 The rule-based mapping specification that classifies CAD layers (by AIA standards or regex patterns) into architectural semantic roles (walls, glazing, doors, fixtures, structural grid, annotations) and applies standardized line weights, dash arrays, and palette tokens.
 _Avoid_: Layer Style, CSS Preset, Color Scheme
+
+**Architectural Poche**:
+The solid or hatched infill treatment applied within load-bearing structural walls and foundation footprints to communicate physical mass, building enclosure, and spatial hierarchy.
+_Avoid_: Wall Fill, Infill Block, Blackout Area
+
+**Drafting Canvas Workspace**:
+The interactive 2D pan/zoom drafting viewport supporting direct coordinate translation, scale adjustment, layer isolation, and dual-mode theme switching (Dark Drafting and Light Print Sheet).
+_Avoid_: SVG Canvas, Drawing Box, Image Zoomer
+

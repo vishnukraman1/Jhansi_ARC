@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
-import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Loader2, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Loader2, AlertCircle, Sun, Moon, Move } from 'lucide-react';
 import { TechnicalDrawing } from '../types';
 
 interface TechnicalDrawingViewerProps {
@@ -21,10 +21,51 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
 
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 10, 150));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 10, 80));
-  const handleResetZoom = () => setZoomLevel(100);
+  // Interactive CAD Pan & Zoom state
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 15, 300));
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 15, 40));
+  const handleResetZoom = () => {
+    setZoomLevel(100);
+    setPan({ x: 0, y: 0 });
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (_) {}
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    setPan({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y,
+    });
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      setIsDragging(false);
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 15 : -15;
+    setZoomLevel((prev) => Math.max(40, Math.min(300, prev + delta)));
+  };
 
   useEffect(() => {
     if (!drawing.svgUrl) {
@@ -64,54 +105,104 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
     };
   }, [drawing.svgUrl]);
 
+  const isDark = themeMode === 'dark';
+
   return (
-    <div className="bg-[#121212] text-[#F7F7F5] rounded-sm p-6 border border-[#E0E0DE]/20 shadow-2xl overflow-hidden flex flex-col h-[580px] relative" id="cad-viewer">
+    <div 
+      className={`rounded-sm p-6 border shadow-2xl overflow-hidden flex flex-col h-[620px] relative transition-colors duration-300 ${
+        isDark 
+          ? 'bg-[#121212] text-[#F7F7F5] border-[#E0E0DE]/20' 
+          : 'bg-[#F7F7F5] text-[#121212] border-[#121212]/20'
+      }`} 
+      id="cad-viewer"
+    >
       {/* Header Panel */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E0E0DE]/20 pb-4 mb-4 gap-3">
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 mb-4 gap-3 ${
+        isDark ? 'border-[#E0E0DE]/20' : 'border-[#121212]/20'
+      }`}>
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono tracking-wider uppercase text-[#888888] bg-[#F7F7F5]/10 px-2 py-0.5 rounded-sm">
+            <span className={`text-[10px] font-mono tracking-wider uppercase px-2 py-0.5 rounded-sm ${
+              isDark ? 'text-[#888888] bg-[#F7F7F5]/10' : 'text-[#555555] bg-[#121212]/10'
+            }`}>
               {drawing.type}
             </span>
-            <span className="text-xs font-mono text-[#888888]">
+            <span className={`text-xs font-mono ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
               {drawing.svgUrl ? 'Vector SVG | Dynamic Asset' : 'Scale 1:100 | Vector DWG'}
             </span>
           </div>
-          <h4 className="text-md font-sans font-medium mt-1 text-[#F7F7F5]">{drawing.name}</h4>
+          <h4 className={`text-md font-sans font-medium mt-1 ${isDark ? 'text-[#F7F7F5]' : 'text-[#121212]'}`}>
+            {drawing.name}
+          </h4>
         </div>
 
         {/* Toolbar controls */}
-        <div className="flex items-center gap-2 self-start sm:self-center">
+        <div className="flex items-center gap-2 self-start sm:self-center flex-wrap">
+          {/* Dual Presentation Theme Toggle */}
+          <button
+            onClick={() => setThemeMode(isDark ? 'light' : 'dark')}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+              isDark 
+                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#F7F7F5]' 
+                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#121212]'
+            }`}
+            title="Switch Canvas Presentation Mode"
+            id="theme-toggle-btn"
+          >
+            {isDark ? <Sun size={13} className="text-amber-400" /> : <Moon size={13} className="text-indigo-600" />}
+            <span className="text-[11px]">{isDark ? 'Drafting' : 'Print Sheet'}</span>
+          </button>
+
+          <div className={`h-6 w-[1px] mx-0.5 ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`}></div>
+
           <button
             onClick={handleZoomOut}
-            className="p-1.5 bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] rounded-sm transition cursor-pointer"
+            className={`p-1.5 rounded-sm transition cursor-pointer ${
+              isDark 
+                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5]' 
+                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#555555] hover:text-[#121212]'
+            }`}
             title="Zoom Out"
             id="zoom-out-btn"
           >
-            <ZoomOut size={15} />
+            <ZoomOut size={14} />
           </button>
-          <span className="text-xs font-mono text-[#888888] w-10 text-center">{zoomLevel}%</span>
+          <span className={`text-xs font-mono w-11 text-center ${isDark ? 'text-[#888888]' : 'text-[#555555]'}`}>
+            {zoomLevel}%
+          </span>
           <button
             onClick={handleZoomIn}
-            className="p-1.5 bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] rounded-sm transition cursor-pointer"
+            className={`p-1.5 rounded-sm transition cursor-pointer ${
+              isDark 
+                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5]' 
+                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#555555] hover:text-[#121212]'
+            }`}
             title="Zoom In"
             id="zoom-in-btn"
           >
-            <ZoomIn size={15} />
+            <ZoomIn size={14} />
           </button>
           <button
             onClick={handleResetZoom}
-            className="text-[10px] font-mono bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] px-2 py-1.5 rounded-sm transition cursor-pointer"
-            title="Reset Zoom"
+            className={`text-[10px] font-mono px-2 py-1.5 rounded-sm transition cursor-pointer ${
+              isDark 
+                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5]' 
+                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#555555] hover:text-[#121212]'
+            }`}
+            title="Reset Pan & Zoom (Double-click Canvas)"
             id="zoom-reset-btn"
           >
             100%
           </button>
-          <div className="h-6 w-[1px] bg-[#E0E0DE]/20 mx-1"></div>
+          <div className={`h-6 w-[1px] mx-0.5 ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`}></div>
           <a
             href={drawing.svgUrl || '#'}
             download={drawing.svgUrl ? `${drawing.name.toLowerCase().replace(/\s+/g, '-')}.svg` : `${drawing.name}.dwg`}
-            className="flex items-center gap-1.5 bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] px-3 py-1.5 rounded-sm text-xs font-mono transition cursor-pointer"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition cursor-pointer ${
+              isDark 
+                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5]' 
+                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#555555] hover:text-[#121212]'
+            }`}
             title="Export DWG/SVG"
             id="export-drawing-btn"
           >
@@ -122,8 +213,22 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
       </div>
 
       {/* Main Drafting Canvas Container */}
-      <div className="flex-1 bg-[#121212] rounded-sm border border-[#E0E0DE]/20 relative overflow-hidden flex items-center justify-center p-4">
-        {/* Dynamic style sheet to drive CAD layer visibility */}
+      <div 
+        className={`flex-1 rounded-sm border relative overflow-hidden flex items-center justify-center p-4 transition-colors duration-300 select-none ${
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        } ${
+          isDark 
+            ? 'bg-[#121212] border-[#E0E0DE]/20' 
+            : 'bg-[#F7F7F5] border-[#121212]/20'
+        }`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onWheel={handleWheel}
+        onDoubleClick={handleResetZoom}
+      >
+        {/* Dynamic style sheet to drive CAD layer visibility and theme tokens */}
         <style>{`
           #dynamic-svg-root .cad-grid,
           #dynamic-svg-root .cad-grid-layer,
@@ -144,11 +249,12 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
         {/* Fine Architectural Grid Pattern Overlay */}
         <div 
-          className="absolute inset-0 opacity-15 pointer-events-none transition-opacity duration-300" 
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300" 
           style={{
-            backgroundImage: showGrid 
+            opacity: showGrid ? (isDark ? 0.15 : 0.08) : 0,
+            backgroundImage: isDark
               ? 'radial-gradient(circle, #404040 1px, transparent 1px), linear-gradient(to right, #262626 1px, transparent 1px), linear-gradient(to bottom, #262626 1px, transparent 1px)'
-              : 'none',
+              : 'radial-gradient(circle, #9ca3af 1px, transparent 1px), linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)',
             backgroundSize: '16px 16px, 80px 80px, 80px 80px',
             backgroundPosition: 'center center'
           }}
@@ -156,13 +262,13 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
         {/* Vector SVG Render Viewport */}
         <div 
-          className="w-full h-full max-w-lg max-h-96 transition-all duration-300 ease-out flex items-center justify-center"
-          style={{ transform: `scale(${zoomLevel / 100})` }}
+          className="w-full h-full max-w-2xl max-h-[480px] transition-transform duration-75 ease-out flex items-center justify-center pointer-events-none"
+          style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel / 100})` }}
         >
           {drawing.svgUrl ? (
-            <div className="w-full h-full flex items-center justify-center relative">
+            <div className="w-full h-full flex items-center justify-center relative pointer-events-auto">
               {isLoading && (
-                <div className="flex flex-col items-center gap-3 text-[#888888]">
+                <div className={`flex flex-col items-center gap-3 ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
                   <Loader2 className="animate-spin text-[#3b82f6]" size={24} />
                   <span className="text-xs font-mono tracking-wider uppercase">Loading Architectural Vector Asset...</span>
                 </div>
@@ -177,7 +283,9 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
               {!isLoading && !loadError && svgContent && (
                 <div
                   id="dynamic-svg-root"
-                  className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full"
+                  className={`w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full ${
+                    !isDark ? 'cad-light' : ''
+                  }`}
                   dangerouslySetInnerHTML={{ __html: svgContent }}
                 />
               )}
@@ -586,19 +694,26 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
       </div>
 
       {/* Layer Control Dashboard Panel */}
-      <div className="mt-4 border-t border-[#E0E0DE]/20 pt-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-1.5 text-[#888888]">
-          <Layers size={14} className="text-[#888888]" />
-          <span className="text-[10px] font-mono tracking-wider uppercase">DRAFTING LAYERS:</span>
+      <div className={`mt-4 border-t pt-4 flex flex-wrap items-center justify-between gap-4 ${
+        isDark ? 'border-[#E0E0DE]/20' : 'border-[#121212]/20'
+      }`}>
+        <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-1.5 ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
+            <Layers size={14} />
+            <span className="text-[10px] font-mono tracking-wider uppercase">DRAFTING LAYERS:</span>
+          </div>
+          <span className={`hidden md:flex items-center gap-1 text-[10px] font-mono ${isDark ? 'text-[#666666]' : 'text-[#888888]'}`}>
+            <Move size={10} /> Drag to pan · Scroll to zoom
+          </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setShowGrid(!showGrid)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
               showGrid 
-                ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' 
-                : 'bg-[#121212] text-[#888888] border border-transparent hover:text-[#F7F7F5]'
+                ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
+                : (isDark ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/20 hover:text-[#F7F7F5]' : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/20 hover:text-[#121212]')
             }`}
             id="toggle-grid-btn"
           >
@@ -610,8 +725,8 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
             onClick={() => setShowDimensions(!showDimensions)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
               showDimensions 
-                ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' 
-                : 'bg-[#121212] text-[#888888] border border-transparent hover:text-[#F7F7F5]'
+                ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
+                : (isDark ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/20 hover:text-[#F7F7F5]' : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/20 hover:text-[#121212]')
             }`}
             id="toggle-dimensions-btn"
           >
@@ -623,8 +738,8 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
             onClick={() => setShowAnnotations(!showAnnotations)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
               showAnnotations 
-                ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' 
-                : 'bg-[#121212] text-[#888888] border border-transparent hover:text-[#F7F7F5]'
+                ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
+                : (isDark ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/20 hover:text-[#F7F7F5]' : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/20 hover:text-[#121212]')
             }`}
             id="toggle-annotations-btn"
           >
