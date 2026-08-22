@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10.000 -127.000 220.000 154.000" width="100%" height="100%" class="cad-root w-full h-full font-mono select-none" id="cad-drawing-root">
+  <defs>
+    <style>
+      .cad-root { background-color: #121212; font-family: monospace; }
+      .cad-wall { stroke: #ffffff; stroke-width: 2.5px; fill: #181818; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-wall-inner { stroke: #ffffff; stroke-width: 1.5px; fill: #181818; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-glaze { stroke: #3b82f6; stroke-width: 1.5px; fill: none; stroke-linecap: round; }
+      .cad-door { stroke: #a3a3a3; stroke-width: 1.0px; fill: none; stroke-linecap: round; }
+      .cad-grid { stroke: #333333; stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none; }
+      .cad-dim { stroke: #737373; stroke-width: 0.75px; fill: #737373; font-size: 8px; }
+      .cad-anno { fill: #a3a3a3; stroke: none; font-size: 9px; font-family: monospace; }
+      .cad-floor { stroke: #404040; stroke-width: 0.5px; fill: none; }
+      .cad-default { stroke: #737373; stroke-width: 0.75px; fill: none; }
+    </style>
+  </defs>
+  <g id="layer-a-wall" class="cad-wall" data-layer="A-WALL">
+    <polyline points="0.000,-0.000 200.000,-0.000 200.000,-120.000 0.000,-120.000 0.000,-0.000" fill="none" />
+  </g>
+  <g id="layer-a-glaz" class="cad-glaze" data-layer="A-GLAZ">
+    <line x1="40.000" y1="-0.000" x2="160.000" y2="-0.000" />
+  </g>
+  <g id="layer-a-door" class="cad-door" data-layer="A-DOOR">
+    <path d="M 120.000 -0.000 A 20.000 20.000 0 0 0 100.000 -20.000" fill="none" />
+  </g>
+  <g id="layer-s-grid" class="cad-grid" data-layer="S-GRID">
+    <line x1="0.000" y1="-60.000" x2="200.000" y2="-60.000" />
+  </g>
+  <g id="layer-a-anno" class="cad-anno" data-layer="A-ANNO">
+    <text x="80.000" y="-50.000">LIVING AREA</text>
+  </g>
+</svg>

@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "name": "Studio Architectural CAD Layer Profile",
+  "description": "Standardized AIA CAD layer mapping and architectural design tokens for vector SVG conversion",
+  "profiles": {
+    "walls": {
+      "className": "cad-wall",
+      "patterns": ["*WALL*", "*A-WALL*", "*S-WALL*", "*WALL-EXTR*", "*WALL-INTR*"],
+      "stroke": "#ffffff",
+      "fill": "#181818",
+      "strokeWidth": 2.5,
+      "strokeLinejoin": "round",
+      "strokeLinecap": "round"
+    },
+    "glazing": {
+      "className": "cad-glaze",
+      "patterns": ["*GLAZ*", "*WIND*", "*CURT*", "*GLASS*", "*A-GLAZ*"],
+      "stroke": "#3b82f6",
+      "fill": "none",
+      "strokeWidth": 1.5,
+      "strokeLinejoin": "round",
+      "strokeLinecap": "round"
+    },
+    "doors": {
+      "className": "cad-door",
+      "patterns": ["*DOOR*", "*A-DOOR*", "*OPEN*", "*ENTR*"],
+      "stroke": "#a3a3a3",
+      "fill": "none",
+      "strokeWidth": 1.0,
+      "strokeLinejoin": "round",
+      "strokeLinecap": "round"
+    },
+    "grid": {
+      "className": "cad-grid",
+      "patterns": ["*GRID*", "*S-GRID*", "*AXIS*", "*COL*"],
+      "stroke": "#333333",
+      "fill": "none",
+      "strokeWidth": 0.5,
+      "strokeDasharray": "4,4",
+      "strokeLinecap": "butt"
+    },
+    "dimensions": {
+      "className": "cad-dim",
+      "patterns": ["*DIM*", "*A-DIM*", "*MEAS*"],
+      "stroke": "#737373",
+      "fill": "#737373",
+      "strokeWidth": 0.75,
+      "strokeLinecap": "round"
+    },
+    "annotations": {
+      "className": "cad-anno",
+      "patterns": ["*ANNO*", "*TEXT*", "*LABEL*", "*NOTE*", "*ROOM*"],
+      "fill": "#a3a3a3",
+      "stroke": "none",
+      "fontFamily": "monospace",
+      "fontSize": 9
+    },
+    "fixtures": {
+      "className": "cad-floor",
+      "patterns": ["*FLOR*", "*FURN*", "*EQUIP*", "*CASE*", "*PLUMB*", "*SAN*"],
+      "stroke": "#404040",
+      "fill": "none",
+      "strokeWidth": 0.5,
+      "strokeLinejoin": "round",
+      "strokeLinecap": "round"
+    },
+    "default": {
+      "className": "cad-default",
+      "patterns": ["*"],
+      "stroke": "#737373",
+      "fill": "none",
+      "strokeWidth": 0.75,
+      "strokeLinejoin": "round",
+      "strokeLinecap": "round"
+    }
+  }
+}
