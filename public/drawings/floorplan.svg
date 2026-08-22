@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-782.753 -460.129 1307.096 1000.758" width="100%" height="100%" class="cad-root w-full h-full font-mono select-none" id="cad-drawing-root">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-782.753 -449.213 1307.096 760.611" width="100%" height="100%" class="cad-root w-full h-full font-mono select-none" id="cad-drawing-root">
   <defs>
     <style>
       :root, .cad-root {
@@ -26,24 +26,23 @@
         --cad-default: #4b5563;
       }
       .cad-root { background-color: var(--cad-bg); font-family: monospace; }
-      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-      .cad-wall polygon { fill: var(--cad-wall-fill); }
-      .cad-wall line, .cad-wall polyline, .cad-wall path { fill: none; }
-      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none; stroke-linecap: round; }
-      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none; stroke-linecap: round; }
-      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none; }
-      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: var(--cad-dim); }
-      .cad-dim text { stroke: none; fill: var(--cad-dim); font-family: monospace; font-weight: 500; }
-      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none; opacity: 0.75; }
-      .cad-anno { fill: var(--cad-anno); stroke: none; font-family: monospace; }
-      .cad-anno text { fill: var(--cad-anno); stroke: none; }
-      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none; }
+      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }
+      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none !important; stroke-linecap: round; }
+      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none !important; stroke-linecap: round; }
+      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }
+      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; }
+      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; }
+      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; opacity: 0.75; }
+      .cad-anno { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; }
+      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 500; }
+      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }
     </style>
   </defs>
   <g id="layer-a-note" class="cad-anno" data-layer="A-NOTE">
-    <text x="-627.096" y="495.140" font-size="91.64" dominant-baseline="central" text-anchor="middle">FLOOR PLAN</text>
+    <text x="-627.096" y="495.140" font-size="12.00" dominant-baseline="central" text-anchor="middle">FLOOR PLAN</text>
     <text x="-121.969" y="102.584" font-size="6.95" dominant-baseline="central" text-anchor="middle">2 CAR GARAGE</text>
     <text x="-53.031" y="-121.125" font-size="6.95" dominant-baseline="central" text-anchor="middle">KITCHEN</text>
     <text x="-276.988" y="-98.320" font-size="6.95" dominant-baseline="central" text-anchor="middle">ENTRY</text>

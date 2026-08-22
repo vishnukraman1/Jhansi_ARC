@@ -62,7 +62,7 @@ def classify_layer(layer_name: str, profile_config: Dict[str, Any]) -> str:
 
 
 def compute_bounding_box(entities: List[Any]) -> Tuple[float, float, float, float]:
-    """Compute geometric bounding box (min_x, min_y, max_x, max_y) across entities."""
+    """Compute geometric bounding box (min_x, min_y, max_x, max_y) focusing on architectural geometry."""
     min_x = float('inf')
     min_y = float('inf')
     max_x = float('-inf')
@@ -76,8 +76,12 @@ def compute_bounding_box(entities: List[Any]) -> Tuple[float, float, float, floa
             max_x = max(max_x, x)
             max_y = max(max_y, y)
 
+    # First pass: calculate tight boundary from physical drawing geometry
+    geo_types = {'LINE', 'LWPOLYLINE', 'POLYLINE', 'CIRCLE', 'ARC', 'SOLID', '3DFACE'}
     for entity in entities:
         dxftype = entity.dxftype()
+        if dxftype not in geo_types:
+            continue
         try:
             if dxftype == 'LINE':
                 update_pt(entity.dxf.start.x, entity.dxf.start.y)
@@ -86,22 +90,31 @@ def compute_bounding_box(entities: List[Any]) -> Tuple[float, float, float, floa
                 for pt in entity.vertices():
                     update_pt(pt.dxf.location.x if hasattr(pt, 'dxf') else pt[0],
                               pt.dxf.location.y if hasattr(pt, 'dxf') else pt[1])
-            elif dxftype == 'CIRCLE':
+            elif dxftype in ('CIRCLE', 'ARC'):
                 cx, cy, r = entity.dxf.center.x, entity.dxf.center.y, entity.dxf.radius
                 update_pt(cx - r, cy - r)
                 update_pt(cx + r, cy + r)
-            elif dxftype == 'ARC':
-                cx, cy, r = entity.dxf.center.x, entity.dxf.center.y, entity.dxf.radius
-                update_pt(cx - r, cy - r)
-                update_pt(cx + r, cy + r)
-            elif dxftype in ('TEXT', 'MTEXT'):
-                if hasattr(entity.dxf, 'insert'):
-                    update_pt(entity.dxf.insert.x, entity.dxf.insert.y)
         except Exception:
             continue
 
     if min_x == float('inf'):
-        return (0.0, 0.0, 400.0, 300.0)
+        # Fallback if no geometry was found
+        min_x, min_y, max_x, max_y = 0.0, 0.0, 400.0, 300.0
+
+    # Second pass: include text entities that are close to the main geometry (ignore distant sheet title blocks)
+    span_x = max(max_x - min_x, 10.0)
+    span_y = max(max_y - min_y, 10.0)
+    margin_x = span_x * 0.15
+    margin_y = span_y * 0.15
+
+    for entity in entities:
+        if entity.dxftype() in ('TEXT', 'MTEXT') and hasattr(entity.dxf, 'insert'):
+            try:
+                tx, ty = entity.dxf.insert.x, entity.dxf.insert.y
+                if (min_x - margin_x <= tx <= max_x + margin_x) and (min_y - margin_y <= ty <= max_y + margin_y):
+                    update_pt(tx, ty)
+            except Exception:
+                continue
 
     # Ensure nonzero span
     if max_x - min_x < 1e-3:
@@ -185,20 +198,19 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        --cad-default: #4b5563;",
         "      }",
         "      .cad-root { background-color: var(--cad-bg); font-family: monospace; }",
-        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none; stroke-linejoin: round; stroke-linecap: round; }",
-        "      .cad-wall polygon { fill: var(--cad-wall-fill); }",
-        "      .cad-wall line, .cad-wall polyline, .cad-wall path { fill: none; }",
-        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none; stroke-linejoin: round; stroke-linecap: round; }",
-        "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none; stroke-linecap: round; }",
-        "      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none; stroke-linecap: round; }",
-        "      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none; }",
-        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: var(--cad-dim); }",
-        "      .cad-dim text { stroke: none; fill: var(--cad-dim); font-family: monospace; font-weight: 500; }",
-        "      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none; opacity: 0.75; }",
-        "      .cad-anno { fill: var(--cad-anno); stroke: none; font-family: monospace; }",
-        "      .cad-anno text { fill: var(--cad-anno); stroke: none; }",
-        "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none; stroke-linejoin: round; stroke-linecap: round; }",
-        "      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none; }",
+        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }",
+        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none !important; stroke-linecap: round; }",
+        "      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none !important; stroke-linecap: round; }",
+        "      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }",
+        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; }",
+        "      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; }",
+        "      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; opacity: 0.75; }",
+        "      .cad-anno { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; }",
+        "      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 500; }",
+        "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }",
         "    </style>",
         "  </defs>"
     ]
@@ -274,6 +286,9 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
             if not height or height <= 0:
                 height = getattr(entity.dxf, 'char_height', 6.0)
             
+            # Cap font size gracefully between 3.5 and 12.0 so sheet titles don't overpower
+            capped_height = min(max(float(height), 3.5), 12.0)
+            
             # Extract rotation angle
             rotation = getattr(entity.dxf, 'rotation', 0.0)
             transform_attr = ""
@@ -281,7 +296,7 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
                 transform_attr = f' transform="rotate({-rotation:.1f} {x:.3f} {y:.3f})"'
 
             escaped = clean_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{height:.2f}" dominant-baseline="central" text-anchor="middle"{transform_attr}>{escaped}</text>'
+            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{capped_height:.2f}" dominant-baseline="central" text-anchor="middle"{transform_attr}>{escaped}</text>'
 
     return None
 

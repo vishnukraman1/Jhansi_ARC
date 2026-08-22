@@ -26,20 +26,19 @@
         --cad-default: #4b5563;
       }
       .cad-root { background-color: var(--cad-bg); font-family: monospace; }
-      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-      .cad-wall polygon { fill: var(--cad-wall-fill); }
-      .cad-wall line, .cad-wall polyline, .cad-wall path { fill: none; }
-      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none; stroke-linecap: round; }
-      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none; stroke-linecap: round; }
-      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none; }
-      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: var(--cad-dim); }
-      .cad-dim text { stroke: none; fill: var(--cad-dim); font-family: monospace; font-weight: 500; }
-      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none; opacity: 0.75; }
-      .cad-anno { fill: var(--cad-anno); stroke: none; font-family: monospace; }
-      .cad-anno text { fill: var(--cad-anno); stroke: none; }
-      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none; }
+      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }
+      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none !important; stroke-linecap: round; }
+      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none !important; stroke-linecap: round; }
+      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }
+      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; }
+      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; }
+      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; opacity: 0.75; }
+      .cad-anno { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; }
+      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 500; }
+      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }
     </style>
   </defs>
   <g id="layer-a-wall" class="cad-wall" data-layer="A-WALL">
@@ -55,6 +54,6 @@
     <line x1="0.000" y1="-60.000" x2="200.000" y2="-60.000" />
   </g>
   <g id="layer-a-anno" class="cad-anno" data-layer="A-ANNO">
-    <text x="80.000" y="-50.000" font-size="2.50" dominant-baseline="central" text-anchor="middle">LIVING AREA</text>
+    <text x="80.000" y="-50.000" font-size="3.50" dominant-baseline="central" text-anchor="middle">LIVING AREA</text>
   </g>
 </svg>
