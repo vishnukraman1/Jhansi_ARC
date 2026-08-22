@@ -58,3 +58,11 @@ _Avoid_: Wall Fill, Infill Block, Blackout Area
 The interactive 2D pan/zoom drafting viewport supporting direct coordinate translation, scale adjustment, layer isolation, and dual-mode theme switching (Dark Drafting and Light Print Sheet).
 _Avoid_: SVG Canvas, Drawing Box, Image Zoomer
 
+**Spatial Inspection HUD**:
+The dynamic cursor-following metadata overlay that reveals architectural space parameters (dimensions, room classification, notes) when hovering over drawing entities.
+_Avoid_: Tooltip Box, Hover Popup, Info Modal
+
+**Layer Spotlight Preview**:
+The transient visual focus mechanism that illuminates a designated CAD layer while dimming peripheral drawing vectors during button hover inspection.
+_Avoid_: Layer Highlighter, Quick Peek
+

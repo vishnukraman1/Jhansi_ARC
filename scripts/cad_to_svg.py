@@ -198,19 +198,27 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        --cad-default: #4b5563;",
         "      }",
         "      .cad-root { background-color: var(--cad-bg); font-family: monospace; }",
+        "      .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease; }",
         "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }",
         "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none !important; stroke-linecap: round; }",
         "      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none !important; stroke-linecap: round; }",
         "      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }",
-        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; }",
-        "      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; }",
+        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; transition: opacity 0.2s ease, stroke 0.2s ease; }",
+        "      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, font-weight 0.15s ease; }",
+        "      .cad-dim text:hover { fill: #ffffff !important; font-weight: bold; }",
         "      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; opacity: 0.75; }",
+        "      .cad-dim:hover line, .cad-dim:hover polyline, .cad-dim:hover path { opacity: 1 !important; stroke-width: 0.85px; }",
         "      .cad-anno { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; }",
-        "      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 500; }",
+        "      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, transform 0.15s ease; }",
+        "      .cad-anno text:hover { fill: var(--cad-glaze) !important; font-weight: bold; }",
         "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }",
+        "      ",
+        "      /* Spotlight Hover Preview for drafting buttons */",
+        "      .spotlight-active .cad-layer:not(.cad-spotlight) { opacity: 0.12 !important; }",
+        "      .spotlight-active .cad-spotlight { opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6)); }",
         "    </style>",
         "  </defs>"
     ]
@@ -296,7 +304,7 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
                 transform_attr = f' transform="rotate({-rotation:.1f} {x:.3f} {y:.3f})"'
 
             escaped = clean_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{capped_height:.2f}" dominant-baseline="central" text-anchor="middle"{transform_attr}>{escaped}</text>'
+            return f'<text x="{x:.3f}" y="{y:.3f}" font-size="{capped_height:.2f}" dominant-baseline="central" text-anchor="middle" data-label="{escaped}" class="cad-text-node"{transform_attr}>{escaped}</text>'
 
     return None
 

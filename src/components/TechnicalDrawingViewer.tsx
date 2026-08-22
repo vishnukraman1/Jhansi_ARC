@@ -7,6 +7,31 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Loader2, AlertCircle, Sun, Moon, Move } from 'lucide-react';
 import { TechnicalDrawing } from '../types';
 
+interface RoomMetadata {
+  name: string;
+  dimensions?: string;
+  area?: string;
+  category?: string;
+  notes?: string;
+}
+
+const ROOM_DATABASE: Record<string, RoomMetadata> = {
+  'GREAT ROOM': { name: 'Great Room', dimensions: "17'0\" × 17'0\"", area: '289 sq ft', category: 'Primary Living & Dining Zone', notes: 'Open-concept living space with south-facing passive solar gain.' },
+  'MASTER': { name: 'Master Bedroom', dimensions: "12'0\" × 14'0\"", area: '168 sq ft', category: 'Primary Suite', notes: 'Private master suite with direct ensuite bath access.' },
+  'KITCHEN': { name: 'Gourmet Kitchen', dimensions: "14'4\" × 8'10\"", area: '127 sq ft', category: 'Culinary Area', notes: 'Integrated kitchen island with custom millwork & pantry access.' },
+  '2 CAR GARAGE': { name: 'Two-Car Garage', dimensions: "21'2\" × 20'10\"", area: '441 sq ft', category: 'Vehicle & Utility', notes: 'Dual-vehicle garage with fire-rated 20-min door & bollard protection.' },
+  'BEDROOM 2': { name: 'Guest Bedroom 2', dimensions: "12'6\" × 11'0\"", area: '138 sq ft', category: 'Secondary Suite', notes: 'Double-glazed daylight window with built-in closet.' },
+  'DECK': { name: 'Cantilevered Deck', dimensions: "16'0\" × 8'0\"", area: '128 sq ft', category: 'Outdoor Living', notes: 'Charred timber exterior deck with panoramic views.' },
+  'ENTRY': { name: 'Main Entry Foyer', dimensions: "7'6\" × 7'0\"", area: '53 sq ft', category: 'Circulation', notes: 'Covered porch transition with draft airlock.' },
+  'UTIL.': { name: 'Utility & Laundry', dimensions: "7'0\" × 6'7\"", area: '46 sq ft', category: 'Mechanical / Service', notes: 'Dedicated utility room with hydronic service loop.' },
+  'Pantry': { name: 'Walk-In Pantry', dimensions: "5'2\" × 6'0\"", area: '31 sq ft', category: 'Storage', notes: 'Shelved dry pantry adjacent to kitchen.' },
+  'W.I.C.': { name: 'Walk-In Closet', dimensions: "8'1\" × 2'6\"", area: '20 sq ft', category: 'Wardrobe', notes: 'Full-length built-in wardrobe storage.' },
+  'BATH': { name: 'Ensuite Bathroom', dimensions: "5'0\" × 8'1\"", area: '40 sq ft', category: 'Sanitary', notes: 'Primary bathroom suite with ceramic fixtures.' },
+  'TOIL.': { name: 'Powder Room / WC', dimensions: "5'0\" × 5'7\"", area: '28 sq ft', category: 'Sanitary', notes: 'Secondary guest water closet.' },
+  'COVERED': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition', notes: 'Sheltered porch with timber column framing.' },
+  'PORCH': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition', notes: 'Sheltered porch with timber column framing.' }
+};
+
 interface TechnicalDrawingViewerProps {
   drawing: TechnicalDrawing;
   projectTitle: string;
@@ -28,16 +53,30 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  // Spatial Inspection Hover HUD & Layer Spotlight
+  const [hoveredHUD, setHoveredHUD] = useState<{
+    title: string;
+    dimensions?: string;
+    area?: string;
+    category?: string;
+    notes?: string;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [spotlightLayer, setSpotlightLayer] = useState<'grid' | 'dim' | 'anno' | null>(null);
+
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 15, 300));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 15, 40));
   const handleResetZoom = () => {
     setZoomLevel(100);
     setPan({ x: 0, y: 0 });
+    setHoveredHUD(null);
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     setIsDragging(true);
+    setHoveredHUD(null);
     setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -45,11 +84,53 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    setPan({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
-    });
+    if (isDragging) {
+      setPan({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y,
+      });
+      return;
+    }
+
+    // Interactive Spatial HUD Discovery
+    const target = e.target as HTMLElement;
+    const textNode = target.closest('text');
+    if (textNode) {
+      const label = textNode.getAttribute('data-label') || textNode.textContent || '';
+      const clean = label.trim().toUpperCase();
+
+      const matchedKey = Object.keys(ROOM_DATABASE).find((k) => clean.includes(k.toUpperCase()));
+      const rect = e.currentTarget.getBoundingClientRect();
+
+      if (matchedKey) {
+        const data = ROOM_DATABASE[matchedKey];
+        setHoveredHUD({
+          title: data.name,
+          dimensions: data.dimensions,
+          area: data.area,
+          category: data.category,
+          notes: data.notes,
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+        return;
+      }
+
+      if (/\d+['"]/.test(clean)) {
+        setHoveredHUD({
+          title: `Dimension: ${label.trim()}`,
+          category: 'Architectural Measurement String',
+          notes: 'Standard centerline / wall opening dimension.',
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+        return;
+      }
+    }
+
+    if (hoveredHUD) {
+      setHoveredHUD(null);
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -225,10 +306,13 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onPointerLeave={() => {
+          if (hoveredHUD) setHoveredHUD(null);
+        }}
         onWheel={handleWheel}
         onDoubleClick={handleResetZoom}
       >
-        {/* Dynamic style sheet to drive CAD layer visibility and theme tokens */}
+        {/* Dynamic style sheet to drive CAD layer visibility, theme tokens, and spotlight preview */}
         <style>{`
           #dynamic-svg-root .cad-grid,
           #dynamic-svg-root .cad-grid-layer,
@@ -245,7 +329,52 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
           #dynamic-svg-root [data-layer="ANNO"] {
             display: ${showAnnotations ? 'inline' : 'none'} !important;
           }
+          ${spotlightLayer ? `
+            #dynamic-svg-root g[class*="cad-"]:not(.cad-${spotlightLayer}) {
+              opacity: 0.12 !important;
+              transition: opacity 0.2s ease !important;
+            }
+            #dynamic-svg-root .cad-${spotlightLayer} {
+              opacity: 1 !important;
+              filter: drop-shadow(0 0 5px ${isDark ? 'rgba(59, 130, 246, 0.7)' : 'rgba(37, 99, 235, 0.7)'}) !important;
+            }
+          ` : ''}
         `}</style>
+
+        {/* Floating Spatial Inspection HUD */}
+        {hoveredHUD && !isDragging && (
+          <div 
+            className={`absolute pointer-events-none z-30 transition-opacity duration-150 ease-out px-3 py-2 rounded-sm shadow-2xl border backdrop-blur-md ${
+              isDark 
+                ? 'bg-[#181818]/95 text-[#F7F7F5] border-[#3b82f6]/50 shadow-black/80' 
+                : 'bg-white/95 text-[#121212] border-[#2563eb]/50 shadow-slate-300'
+            }`}
+            style={{ 
+              left: Math.min(Math.max(hoveredHUD.x + 14, 10), 480), 
+              top: Math.max(hoveredHUD.y - 50, 12) 
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6] animate-pulse"></span>
+              <span className="text-xs font-mono font-bold tracking-wider uppercase">{hoveredHUD.title}</span>
+              {hoveredHUD.dimensions && (
+                <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#3b82f6]/15 text-[#3b82f6] rounded-sm font-semibold">
+                  {hoveredHUD.dimensions}
+                </span>
+              )}
+            </div>
+            {hoveredHUD.area && (
+              <div className={`text-[11px] font-mono mt-0.5 ${isDark ? 'text-[#a3a3a3]' : 'text-[#555555]'}`}>
+                Area: <span className={isDark ? 'text-white' : 'text-black'}>{hoveredHUD.area}</span> · {hoveredHUD.category}
+              </div>
+            )}
+            {hoveredHUD.notes && (
+              <div className={`text-[10px] font-mono mt-0.5 max-w-[280px] leading-tight ${isDark ? 'text-[#888888]' : 'text-[#777777]'}`}>
+                {hoveredHUD.notes}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Fine Architectural Grid Pattern Overlay */}
         <div 
@@ -710,6 +839,8 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setShowGrid(!showGrid)}
+            onMouseEnter={() => setSpotlightLayer('grid')}
+            onMouseLeave={() => setSpotlightLayer(null)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
               showGrid 
                 ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
@@ -723,6 +854,8 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
           <button
             onClick={() => setShowDimensions(!showDimensions)}
+            onMouseEnter={() => setSpotlightLayer('dim')}
+            onMouseLeave={() => setSpotlightLayer(null)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
               showDimensions 
                 ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
@@ -736,6 +869,8 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
           <button
             onClick={() => setShowAnnotations(!showAnnotations)}
+            onMouseEnter={() => setSpotlightLayer('anno')}
+            onMouseLeave={() => setSpotlightLayer(null)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
               showAnnotations 
                 ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
