@@ -1,47 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-782.753 -449.213 1307.096 760.611" width="100%" height="100%" class="cad-root w-full h-full font-mono select-none" id="cad-drawing-root">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-752.171 -435.384 1018.694 732.952" width="100%" height="100%" class="cad-root w-full h-full font-mono select-none" id="cad-drawing-root">
   <defs>
     <style>
       :root, .cad-root {
         --cad-bg: #121212;
         --cad-wall-stroke: #ffffff;
         --cad-wall-fill: #181818;
-        --cad-glaze: #3b82f6;
-        --cad-door: #a3a3a3;
+        --cad-glaze: #38bdf8;
+        --cad-door: #cbd5e1;
         --cad-grid: #333333;
-        --cad-dim: #64748b;
-        --cad-anno: #9ca3af;
-        --cad-floor: #404040;
-        --cad-default: #737373;
+        --cad-dim: #94a3b8;
+        --cad-anno: #f8fafc;
+        --cad-floor: #475569;
+        --cad-default: #64748b;
       }
       .cad-light {
         --cad-bg: #F7F7F5;
-        --cad-wall-stroke: #121212;
+        --cad-wall-stroke: #0f172a;
         --cad-wall-fill: #E8E8E6;
-        --cad-glaze: #2563eb;
-        --cad-door: #4b5563;
-        --cad-grid: #d1d5db;
+        --cad-glaze: #0284c7;
+        --cad-door: #475569;
+        --cad-grid: #cbd5e1;
         --cad-dim: #475569;
-        --cad-anno: #1f2937;
-        --cad-floor: #6b7280;
-        --cad-default: #4b5563;
+        --cad-anno: #0f172a;
+        --cad-floor: #64748b;
+        --cad-default: #475569;
       }
       .cad-root { background-color: var(--cad-bg); font-family: monospace; }
       .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease; }
-      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
       .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }
-      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
-      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none !important; stroke-linecap: round; }
-      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none !important; stroke-linecap: round; }
+      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.3px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.8px; fill: none !important; stroke-linecap: round; }
+      .cad-door { stroke: var(--cad-door); stroke-width: 1.1px; fill: none !important; stroke-linecap: round; opacity: 0.9; }
       .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }
-      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; transition: opacity 0.2s ease, stroke 0.2s ease; }
+      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.65px; fill: none !important; transition: opacity 0.2s ease, stroke 0.2s ease; }
       .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, font-weight 0.15s ease; }
       .cad-dim text:hover { fill: #ffffff !important; font-weight: bold; }
-      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; opacity: 0.75; }
-      .cad-dim:hover line, .cad-dim:hover polyline, .cad-dim:hover path { opacity: 1 !important; stroke-width: 0.85px; }
+      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.65px; fill: none !important; opacity: 0.8; }
+      .cad-dim:hover line, .cad-dim:hover polyline, .cad-dim:hover path { opacity: 1 !important; stroke-width: 0.95px; }
       .cad-anno { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; }
-      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, transform 0.15s ease; }
+      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; transition: fill 0.15s ease, transform 0.15s ease; }
       .cad-anno text:hover { fill: var(--cad-glaze) !important; font-weight: bold; }
-      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.85px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
       .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }
       
       /* Interactive Room Spatial Zone Highlighting */
@@ -54,17 +54,17 @@
       }
       .cad-room-zone:hover, .cad-room-zone.active {
         stroke: var(--cad-glaze) !important;
-        fill: rgba(59, 130, 246, 0.08) !important;
-        filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.45));
+        fill: rgba(56, 189, 248, 0.08) !important;
+        filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));
       }
       .cad-light .cad-room-zone:hover, .cad-light .cad-room-zone.active {
         stroke: var(--cad-glaze) !important;
-        fill: rgba(37, 99, 235, 0.09) !important;
+        fill: rgba(2, 132, 199, 0.09) !important;
       }
       
       /* Spotlight Hover Preview for drafting buttons */
       .spotlight-active .cad-layer:not(.cad-spotlight) { opacity: 0.12 !important; }
-      .spotlight-active .cad-spotlight { opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6)); }
+      .spotlight-active .cad-spotlight { opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6)); }
     </style>
   </defs>
   <g id="layer-a-note" class="cad-anno" data-layer="A-NOTE">
@@ -400,25 +400,16 @@
     <text x="-605.273" y="249.824" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="7'-3"" class="cad-text-node">7'-3"</text>
     <line x1="49.227" y1="216.633" x2="225.692" y2="216.633" />
     <line x1="43.227" y1="-39.367" x2="225.692" y2="-39.367" />
-    <line x1="222.692" y1="216.633" x2="222.692" y2="101.990" />
-    <line x1="222.692" y1="-39.367" x2="222.692" y2="75.276" />
     <polyline points="220.192,214.133 225.192,219.133" fill="none" />
     <polyline points="225.192,-36.867 220.192,-41.867" fill="none" />
-    <text x="222.692" y="88.633" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="21'-4"" class="cad-text-node">21'-4"</text>
     <line x1="43.227" y1="-39.367" x2="225.692" y2="-39.367" />
     <line x1="49.227" y1="-347.367" x2="225.692" y2="-347.367" />
-    <line x1="222.692" y1="-39.367" x2="222.692" y2="-180.010" />
-    <line x1="222.692" y1="-347.367" x2="222.692" y2="-206.724" />
     <polyline points="220.192,-41.867 225.192,-36.867" fill="none" />
     <polyline points="225.192,-344.867 220.192,-349.867" fill="none" />
-    <text x="222.692" y="-193.367" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="25'-8"" class="cad-text-node">25'-8"</text>
     <line x1="49.227" y1="216.633" x2="237.692" y2="216.633" />
     <line x1="49.227" y1="-347.367" x2="237.692" y2="-347.367" />
-    <line x1="234.692" y1="216.633" x2="234.692" y2="-51.941" />
-    <line x1="234.692" y1="-347.367" x2="234.692" y2="-78.793" />
     <polyline points="232.192,214.133 237.192,219.133" fill="none" />
     <polyline points="237.192,-344.867 232.192,-349.867" fill="none" />
-    <text x="234.692" y="-65.367" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="47'-0"" class="cad-text-node">47'-0"</text>
     <polygon points="-398.162,-158.837 -446.162,-158.837 -446.162,-134.837 -398.162,-134.837" fill="none" />
     <line x1="-650.773" y1="12.633" x2="-711.340" y2="12.633" />
     <line x1="-650.773" y1="-347.367" x2="-711.340" y2="-347.367" />
@@ -541,25 +532,16 @@
     <text x="-300.773" y="-411.640" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="58'-0"" class="cad-text-node">58'-0"</text>
     <line x1="43.227" y1="-39.367" x2="213.692" y2="-39.367" />
     <line x1="57.118" y1="-110.367" x2="213.692" y2="-110.367" />
-    <line x1="210.692" y1="-39.367" x2="210.692" y2="-61.562" />
-    <line x1="210.692" y1="-110.367" x2="210.692" y2="-88.173" />
     <polyline points="208.192,-41.867 213.192,-36.867" fill="none" />
     <polyline points="213.192,-107.867 208.192,-112.867" fill="none" />
-    <text x="210.692" y="-74.867" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="5'-11"" class="cad-text-node">5'-11"</text>
     <line x1="57.118" y1="-110.367" x2="213.692" y2="-110.367" />
     <line x1="57.932" y1="-261.367" x2="213.692" y2="-261.367" />
-    <line x1="210.692" y1="-110.367" x2="210.692" y2="-172.844" />
-    <line x1="210.692" y1="-261.367" x2="210.692" y2="-198.890" />
     <polyline points="208.192,-112.867 213.192,-107.867" fill="none" />
     <polyline points="213.192,-258.867 208.192,-263.867" fill="none" />
-    <text x="210.692" y="-185.867" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="12'-7"" class="cad-text-node">12'-7"</text>
     <line x1="57.932" y1="-261.367" x2="213.692" y2="-261.367" />
     <line x1="49.227" y1="-347.367" x2="213.692" y2="-347.367" />
-    <line x1="210.692" y1="-261.367" x2="210.692" y2="-293.417" />
-    <line x1="210.692" y1="-347.367" x2="210.692" y2="-315.317" />
     <polyline points="208.192,-263.867 213.192,-258.867" fill="none" />
     <polyline points="213.192,-344.867 208.192,-349.867" fill="none" />
-    <text x="210.692" y="-304.367" font-size="6.00" dominant-baseline="central" text-anchor="middle" data-label="7'-2"" class="cad-text-node">7'-2"</text>
     <polygon points="-65.436,-2.822 -98.365,-2.822 -98.365,21.178 -65.436,21.178" fill="none" />
     <polygon points="41.227,-39.367 17.227,-39.367 17.227,-15.367 41.227,-15.367" fill="none" />
     <circle cx="29.227" cy="-27.367" r="9.000" />
@@ -1124,16 +1106,6 @@
     <line x1="-402.773" y1="-211.367" x2="-462.773" y2="-211.367" />
     <line x1="-474.773" y1="-183.367" x2="-390.773" y2="-183.367" />
     <line x1="-402.773" y1="-270.367" x2="-402.773" y2="-211.367" />
-    <path d="M 380.937 -197.057 A 6.926 6.926 0 0 0 370.120 -197.057" fill="none" />
-    <path d="M 370.120 -182.235 A 6.926 6.926 0 0 0 380.937 -182.235" fill="none" />
-    <path d="M 370.120 -197.057 A 11.863 11.863 0 0 0 370.120 -182.235" fill="none" />
-    <path d="M 380.937 -182.235 A 11.863 11.863 0 0 0 380.937 -197.057" fill="none" />
-    <path d="M 379.456 -195.872 A 5.030 5.030 0 0 0 371.601 -195.872" fill="none" />
-    <path d="M 371.601 -183.420 A 5.030 5.030 0 0 0 379.456 -183.420" fill="none" />
-    <path d="M 371.601 -195.872 A 9.966 9.966 0 0 0 371.601 -183.420" fill="none" />
-    <path d="M 379.456 -183.420 A 9.966 9.966 0 0 0 379.456 -195.872" fill="none" />
-    <circle cx="376.503" cy="-189.699" r="0.606" />
-    <circle cx="376.503" cy="-189.699" r="1.027" />
     <line x1="-362.773" y1="-206.367" x2="-386.773" y2="-206.367" />
     <line x1="-326.773" y1="-311.417" x2="-386.773" y2="-311.417" />
     <line x1="-386.773" y1="-309.392" x2="-326.773" y2="-309.392" />
@@ -1147,16 +1119,6 @@
     <path d="M -330.707 -334.167 A 4.813 4.813 0 0 0 -335.519 -338.980" fill="none" />
     <path d="M -377.706 -338.980 A 4.813 4.813 0 0 0 -382.519 -334.167" fill="none" />
     <circle cx="-379.763" cy="-326.042" r="1.012" />
-    <path d="M 445.656 -335.139 A 6.926 6.926 0 0 0 445.656 -324.322" fill="none" />
-    <path d="M 460.477 -324.322 A 6.926 6.926 0 0 0 460.477 -335.139" fill="none" />
-    <path d="M 445.656 -324.322 A 11.863 11.863 0 0 0 460.477 -324.322" fill="none" />
-    <path d="M 460.477 -335.139 A 11.863 11.863 0 0 0 445.656 -335.139" fill="none" />
-    <path d="M 446.840 -333.658 A 5.030 5.030 0 0 0 446.840 -325.803" fill="none" />
-    <path d="M 459.292 -325.803 A 5.030 5.030 0 0 0 459.292 -333.658" fill="none" />
-    <path d="M 446.840 -325.803 A 9.966 9.966 0 0 0 459.292 -325.803" fill="none" />
-    <path d="M 459.292 -333.658 A 9.966 9.966 0 0 0 446.840 -333.658" fill="none" />
-    <circle cx="453.013" cy="-330.706" r="0.606" />
-    <circle cx="453.013" cy="-330.706" r="1.027" />
     <line x1="-529.773" y1="-130.367" x2="-529.773" y2="-169.367" />
     <line x1="-557.773" y1="-169.367" x2="-557.773" y2="-129.367" />
     <line x1="-630.773" y1="-129.367" x2="-630.773" y2="-169.367" />
@@ -1178,30 +1140,14 @@
     <circle cx="-380.027" cy="-254.986" r="1.012" />
     <line x1="41.227" y1="-197.367" x2="-23.100" y2="-197.367" />
     <path d="M -23.100 -197.367 A 7.673 7.673 0 0 0 -30.773 -189.694" fill="none" />
-    <path d="M 336.455 -299.004 A 1.432 1.432 0 0 0 335.023 -300.436" fill="none" />
-    <path d="M 335.023 -279.480 A 1.432 1.432 0 0 0 336.455 -280.912" fill="none" />
     <line x1="-327.542" y1="-299.004" x2="-327.542" y2="-280.912" />
-    <path d="M 327.542 -280.912 A 1.432 1.432 0 0 0 328.974 -279.480" fill="none" />
     <line x1="-328.974" y1="-279.480" x2="-335.023" y2="-279.480" />
-    <path d="M 328.974 -300.436 A 1.432 1.432 0 0 0 327.542 -299.004" fill="none" />
     <line x1="-335.023" y1="-300.436" x2="-328.974" y2="-300.436" />
-    <path d="M 352.550 -294.665 A 10.159 10.159 0 0 0 339.820 -294.665" fill="none" />
     <line x1="-336.455" y1="-280.912" x2="-336.455" y2="-299.004" />
-    <path d="M 339.820 -285.310 A 10.159 10.159 0 0 0 352.550 -285.310" fill="none" />
-    <path d="M 339.820 -294.665 A 6.002 6.002 0 0 0 339.820 -285.310" fill="none" />
-    <path d="M 352.550 -285.310 A 6.002 6.002 0 0 0 352.550 -294.665" fill="none" />
-    <path d="M 377.091 -212.053 A 1.432 1.432 0 0 0 378.523 -210.621" fill="none" />
-    <path d="M 378.523 -231.577 A 1.432 1.432 0 0 0 377.091 -230.145" fill="none" />
     <line x1="-386.003" y1="-212.053" x2="-386.003" y2="-230.145" />
-    <path d="M 386.003 -230.145 A 1.432 1.432 0 0 0 384.572 -231.577" fill="none" />
     <line x1="-384.572" y1="-231.577" x2="-378.523" y2="-231.577" />
-    <path d="M 384.572 -210.621 A 1.432 1.432 0 0 0 386.003 -212.053" fill="none" />
     <line x1="-378.523" y1="-210.621" x2="-384.572" y2="-210.621" />
-    <path d="M 360.996 -216.391 A 10.159 10.159 0 0 0 373.726 -216.391" fill="none" />
     <line x1="-377.091" y1="-230.145" x2="-377.091" y2="-212.053" />
-    <path d="M 373.726 -225.746 A 10.159 10.159 0 0 0 360.996 -225.746" fill="none" />
-    <path d="M 373.726 -216.391 A 6.002 6.002 0 0 0 373.726 -225.746" fill="none" />
-    <path d="M 360.996 -225.746 A 6.002 6.002 0 0 0 360.996 -216.391" fill="none" />
     <path d="M -419.890 -335.139 A 6.926 6.926 0 0 0 -419.890 -324.322" fill="none" />
     <path d="M -405.069 -324.322 A 6.926 6.926 0 0 0 -405.069 -335.139" fill="none" />
     <path d="M -419.890 -324.322 A 11.863 11.863 0 0 0 -405.069 -324.322" fill="none" />

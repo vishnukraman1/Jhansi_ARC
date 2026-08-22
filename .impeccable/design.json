@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-22T18:11:00.000Z",
+  "title": "Design System: V. Kraman Studio",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Obsidian Soot",
+        "canonical": "#121212",
+        "tonalRamp": ["#000000", "#121212", "#262626", "#404040", "#595959", "#888888", "#b3b3b3", "#e0e0de"]
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Gallery Off-White",
+        "canonical": "#F7F7F5",
+        "tonalRamp": ["#E0E0DE", "#EBEBE9", "#F2F2F0", "#F7F7F5", "#FAFAF9", "#FCFCFB", "#FEFEFD", "#FFFFFF"]
+      },
+      "neutral-border": {
+        "role": "neutral",
+        "displayName": "Framing Grey",
+        "canonical": "#E0E0DE",
+        "tonalRamp": ["#737373", "#8C8C8C", "#A6A6A6", "#BFBFBF", "#D1D1CF", "#E0E0DE", "#EDEDEB", "#F7F7F5"]
+      },
+      "accent-blueprint": {
+        "role": "secondary",
+        "displayName": "Blueprint Cyan",
+        "canonical": "#3B82F6",
+        "tonalRamp": ["#1E3A8A", "#1E40AF", "#1D4ED8", "#2563EB", "#3B82F6", "#60A5FA", "#93C5FD", "#BFDBFE"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Monumental titles and studio criteria."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headers and curation highlights."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Component cards and drawing titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Architectural narratives, CV, and case study essays."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Secondary metadata and subheadings."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Geographic coordinates, matrix values, and technical badges."
+      },
+      "micro": {
+        "displayName": "Micro",
+        "purpose": "Architectural blueprint stamps, coordinate stamps, and fine specs."
+      },
+      "nano": {
+        "displayName": "Nano",
+        "purpose": "CAD drawing dimension annotations and node indices."
+      }
+    },
+    "shadows": [
+      {
+        "name": "drafting-glass-float",
+        "value": "0 20px 25px -5px rgba(0, 0, 0, 0.5)",
+        "purpose": "Floating CAD viewport in dark drafting presentation."
+      },
+      {
+        "name": "hud-micro-badge",
+        "value": "0 10px 15px -3px rgba(0, 0, 0, 0.4)",
+        "purpose": "Floating live dimension HUD on vector plan hover."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-architectural",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Subtle spatial transitions mimicking natural daylight."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Monolith Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid obsidian button with monospace uppercase lettering and micro-radius.",
+      "html": "<button class=\"ds-btn-primary\">EXAMINE CASE STUDY</button>",
+      "css": ".ds-btn-primary { background: #121212; color: #F7F7F5; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 12px 24px; border: 1px solid #121212; border-radius: 2px; cursor: pointer; transition: all 0.2s ease; } .ds-btn-primary:hover { background: #888888; border-color: #888888; color: #F7F7F5; }"
+    },
+    {
+      "name": "Drafting Coordinate Badge",
+      "kind": "chip",
+      "refersTo": "label",
+      "description": "Subtle monospace architectural coordinate tag.",
+      "html": "<span class=\"ds-coord-badge\">SYSTEM AT-260 \\ 47.5596° N, 7.5886° E</span>",
+      "css": ".ds-coord-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: #888888; text-transform: uppercase; border-left: 1px solid #E0E0DE; padding-left: 8px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Alpine Drafting Atelier",
+    "overview": "The interface operates with the silent confidence of a master physical architecture monograph and the technical precision of an AutoCAD/Revit drafting station. Layouts breathe with generous, disciplined whitespace.",
+    "keyCharacteristics": [
+      "Tectonic structural alignment with hair-thin 1px grid guides.",
+      "Dual drafting canvases: high-contrast dark drafting mode vs. crisp daylight print sheet.",
+      "Tactile material palette celebrating raw concrete, charred Shou Sugi Ban, and mass-timber.",
+      "Zero decorative clutter; all visual weight is derived from architectural photography and vector blueprints."
+    ],
+    "rules": [
+      {
+        "name": "The Rarity of Blueprint Rule",
+        "body": "Blueprint Cyan (#3B82F6) is never used for general decoration or standard text. It is strictly reserved for live interactive vector geometry, active room zones, and technical hover states.",
+        "section": "colors"
+      },
+      {
+        "name": "The Monospace Discipline Rule",
+        "body": "All numbers, geographic coordinates, dimensions, scale ratios, dates, and technical specifications must be rendered in JetBrains Mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "All project cards, narrative panels, and navigation elements are completely flat at rest, defined by a 1px #E0E0DE structural border.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do maintain strict visual alignment with the 12-column grid and 1px framing borders.",
+      "Do display real technical dimensions in imperial/metric architectural formats (e.g. 13'8\" × 14'0\" or 12.50m).",
+      "Do preserve the stark contrast between pure obsidian #121212 and gallery off-white #F7F7F5.",
+      "Do keep narratives structured into Problem, Process, and Solution."
+    ],
+    "donts": [
+      "Don't introduce colorful decorative gradients, saturated buttons, or bubbly pill-shaped UI components.",
+      "Don't use generic stock placeholder copy; preserve rich architectural terminology (mass-timber, thermal flywheel, board-formed concrete).",
+      "Don't allow line lengths in architectural narratives to exceed 75ch.",
+      "Don't use standard sans-serif for numbers, coordinates, or matrix labels; always use JetBrains Mono."
+    ]
+  }
+}

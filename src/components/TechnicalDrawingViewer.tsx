@@ -1,10 +1,5 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Loader2, AlertCircle, Sun, Moon, Move } from 'lucide-react';
+import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Loader2, AlertCircle, Sun, Moon, Move, Ruler, Check } from 'lucide-react';
 import { TechnicalDrawing } from '../types';
 
 interface RoomMetadata {
@@ -32,6 +27,42 @@ const ROOM_DATABASE: Record<string, RoomMetadata> = {
   'COVERED': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition' },
   'PORCH': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition' }
 };
+
+interface QuickRoomChip {
+  id: string;
+  name: string;
+  pan: { x: number; y: number };
+  zoom: number;
+}
+
+const QUICK_ROOM_CHIPS: QuickRoomChip[] = [
+  { id: 'all', name: 'Full Plan', pan: { x: 0, y: 0 }, zoom: 100 },
+  { id: 'great-room', name: 'Great Room', pan: { x: 90, y: 110 }, zoom: 145 },
+  { id: 'master', name: 'Master Suite', pan: { x: 260, y: 120 }, zoom: 145 },
+  { id: 'kitchen', name: 'Gourmet Kitchen', pan: { x: -60, y: 70 }, zoom: 155 },
+  { id: 'garage', name: '2-Car Garage', pan: { x: -20, y: -90 }, zoom: 135 },
+  { id: 'deck', name: 'Cantilevered Deck', pan: { x: -140, y: 120 }, zoom: 155 },
+  { id: 'bed2', name: 'Bedrooms 2 & 3', pan: { x: 240, y: -20 }, zoom: 140 },
+];
+
+function formatArchitecturalDistance(inches: number): string {
+  if (!inches || isNaN(inches)) return "0'0\"";
+  const feet = Math.floor(inches / 12);
+  const remInches = inches % 12;
+  const wholeInches = Math.floor(remInches);
+  const frac = remInches - wholeInches;
+  let fracStr = "";
+  if (frac >= 0.875) {
+    return `${feet}'-${wholeInches + 1}"`;
+  } else if (frac >= 0.625) {
+    fracStr = " ¾";
+  } else if (frac >= 0.375) {
+    fracStr = " ½";
+  } else if (frac >= 0.125) {
+    fracStr = " ¼";
+  }
+  return `${feet}'-${wholeInches}${fracStr}"`;
+}
 
 interface TechnicalDrawingViewerProps {
   drawing: TechnicalDrawing;
@@ -66,16 +97,45 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
   } | null>(null);
   const [spotlightLayer, setSpotlightLayer] = useState<'grid' | 'dim' | 'anno' | null>(null);
 
+  // Quick-Jump and Caliper Tool states
+  const [activeRoomChip, setActiveRoomChip] = useState<string>('all');
+  const [isMeasuring, setIsMeasuring] = useState<boolean>(false);
+  const [measureP1, setMeasureP1] = useState<{ x: number; y: number } | null>(null);
+  const [measureP2, setMeasureP2] = useState<{ x: number; y: number } | null>(null);
+  const [isMeasureLocked, setIsMeasureLocked] = useState<boolean>(false);
+
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 15, 300));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 15, 40));
   const handleResetZoom = () => {
     setZoomLevel(100);
     setPan({ x: 0, y: 0 });
+    setActiveRoomChip('all');
     setHoveredHUD(null);
+    setMeasureP1(null);
+    setMeasureP2(null);
+    setIsMeasureLocked(false);
+    document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => el.classList.remove('active'));
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
+
+    if (isMeasuring) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      if (!measureP1 || isMeasureLocked) {
+        setMeasureP1({ x: clickX, y: clickY });
+        setMeasureP2({ x: clickX, y: clickY });
+        setIsMeasureLocked(false);
+      } else {
+        setMeasureP2({ x: clickX, y: clickY });
+        setIsMeasureLocked(true);
+      }
+      return;
+    }
+
     setIsDragging(true);
     setHoveredHUD(null);
     setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
@@ -85,6 +145,13 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    if (isMeasuring && measureP1 && !isMeasureLocked) {
+      setMeasureP2({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      return;
+    }
+
     if (isDragging) {
       setPan({
         x: e.clientX - dragStart.x,
@@ -94,7 +161,6 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
     }
 
     const target = e.target as HTMLElement;
-    const rect = e.currentTarget.getBoundingClientRect();
 
     // 1. Check if hovering directly on an architectural room zone polygon
     const roomZone = target.closest('.cad-room-zone') as SVGPolygonElement | null;
@@ -242,7 +308,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
   return (
     <div 
-      className={`rounded-sm p-6 border shadow-2xl overflow-hidden flex flex-col h-[620px] relative transition-colors duration-300 ${
+      className={`rounded-sm p-6 border shadow-2xl overflow-hidden flex flex-col h-[640px] relative transition-colors duration-300 ${
         isDark 
           ? 'bg-[#121212] text-[#F7F7F5] border-[#E0E0DE]/20' 
           : 'bg-[#F7F7F5] text-[#121212] border-[#121212]/20'
@@ -250,7 +316,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
       id="cad-viewer"
     >
       {/* Header Panel */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 mb-4 gap-3 ${
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 mb-3 gap-3 ${
         isDark ? 'border-[#E0E0DE]/20' : 'border-[#121212]/20'
       }`}>
         <div>
@@ -271,84 +337,140 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
         {/* Toolbar controls */}
         <div className="flex items-center gap-2 self-start sm:self-center flex-wrap">
+          {/* Precision Caliper Tool Toggle */}
+          <button
+            onClick={() => {
+              setIsMeasuring(!isMeasuring);
+              setMeasureP1(null);
+              setMeasureP2(null);
+              setIsMeasureLocked(false);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
+              isMeasuring
+                ? 'bg-[#38bdf8] text-[#0f172a] font-bold shadow-xs'
+                : (isDark ? 'bg-[#1E1E1E] hover:bg-[#282828] text-[#F7F7F5] border border-[#E0E0DE]/20 shadow-xs' : 'bg-white hover:bg-[#F2F2F0] text-[#121212] border border-[#121212]/20 shadow-xs')
+            }`}
+            title="Toggle Precision CAD Caliper (Click 2 points on drawing to measure real-world distance)"
+            id="measure-toggle-btn"
+          >
+            <Ruler size={13} />
+            <span className="text-[11px] font-medium hidden sm:inline">{isMeasuring ? 'Measuring...' : 'Measure'}</span>
+          </button>
+
           {/* Dual Presentation Theme Toggle */}
           <button
             onClick={() => setThemeMode(isDark ? 'light' : 'dark')}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
               isDark 
-                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#F7F7F5]' 
-                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#121212]'
+                ? 'bg-[#1E1E1E] hover:bg-[#282828] text-[#F7F7F5] border border-[#E0E0DE]/20 shadow-xs' 
+                : 'bg-white hover:bg-[#F2F2F0] text-[#121212] border border-[#121212]/20 shadow-xs'
             }`}
             title="Switch Canvas Presentation Mode"
             id="theme-toggle-btn"
           >
             {isDark ? <Sun size={13} className="text-amber-400" /> : <Moon size={13} className="text-indigo-600" />}
-            <span className="text-[11px]">{isDark ? 'Drafting' : 'Print Sheet'}</span>
+            <span className="text-[11px] font-medium">{isDark ? 'Drafting' : 'Print Sheet'}</span>
           </button>
 
-          <div className={`h-6 w-[1px] mx-0.5 ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`}></div>
+          {/* Unified Zoom Control Segment */}
+          <div className={`flex items-center rounded-sm border p-0.5 ${
+            isDark ? 'bg-[#1E1E1E] border-[#E0E0DE]/20' : 'bg-white border-[#121212]/20'
+          }`}>
+            <button
+              onClick={handleZoomOut}
+              className={`p-1.5 rounded-xs transition-colors cursor-pointer ${
+                isDark 
+                  ? 'hover:bg-[#2E2E2E] text-[#888888] hover:text-[#F7F7F5]' 
+                  : 'hover:bg-[#F2F2F0] text-[#555555] hover:text-[#121212]'
+              }`}
+              title="Zoom Out"
+              id="zoom-out-btn"
+            >
+              <ZoomOut size={13} />
+            </button>
+            <span className={`text-[11px] font-mono w-12 text-center font-medium ${isDark ? 'text-[#CCCCCC]' : 'text-[#333333]'}`}>
+              {zoomLevel}%
+            </span>
+            <button
+              onClick={handleZoomIn}
+              className={`p-1.5 rounded-xs transition-colors cursor-pointer ${
+                isDark 
+                  ? 'hover:bg-[#2E2E2E] text-[#888888] hover:text-[#F7F7F5]' 
+                  : 'hover:bg-[#F2F2F0] text-[#555555] hover:text-[#121212]'
+              }`}
+              title="Zoom In"
+              id="zoom-in-btn"
+            >
+              <ZoomIn size={13} />
+            </button>
+            <div className={`h-4 w-[1px] mx-1 ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`} />
+            <button
+              onClick={handleResetZoom}
+              className={`text-[10px] font-mono px-2 py-1 rounded-xs transition-colors cursor-pointer ${
+                isDark 
+                  ? 'hover:bg-[#2E2E2E] text-[#888888] hover:text-[#F7F7F5]' 
+                  : 'hover:bg-[#F2F2F0] text-[#555555] hover:text-[#121212]'
+              }`}
+              title="Reset Pan & Zoom (Fit To Canvas)"
+              id="zoom-reset-btn"
+            >
+              Fit
+            </button>
+          </div>
 
-          <button
-            onClick={handleZoomOut}
-            className={`p-1.5 rounded-sm transition cursor-pointer ${
-              isDark 
-                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5]' 
-                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#555555] hover:text-[#121212]'
-            }`}
-            title="Zoom Out"
-            id="zoom-out-btn"
-          >
-            <ZoomOut size={14} />
-          </button>
-          <span className={`text-xs font-mono w-11 text-center ${isDark ? 'text-[#888888]' : 'text-[#555555]'}`}>
-            {zoomLevel}%
-          </span>
-          <button
-            onClick={handleZoomIn}
-            className={`p-1.5 rounded-sm transition cursor-pointer ${
-              isDark 
-                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5]' 
-                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#555555] hover:text-[#121212]'
-            }`}
-            title="Zoom In"
-            id="zoom-in-btn"
-          >
-            <ZoomIn size={14} />
-          </button>
-          <button
-            onClick={handleResetZoom}
-            className={`text-[10px] font-mono px-2 py-1.5 rounded-sm transition cursor-pointer ${
-              isDark 
-                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5]' 
-                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#555555] hover:text-[#121212]'
-            }`}
-            title="Reset Pan & Zoom (Double-click Canvas)"
-            id="zoom-reset-btn"
-          >
-            100%
-          </button>
-          <div className={`h-6 w-[1px] mx-0.5 ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`}></div>
+          {/* Export Action */}
           <a
             href={drawing.svgUrl || '#'}
             download={drawing.svgUrl ? `${drawing.name.toLowerCase().replace(/\s+/g, '-')}.svg` : `${drawing.name}.dwg`}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
               isDark 
-                ? 'bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5]' 
-                : 'bg-[#121212]/10 hover:bg-[#121212]/20 text-[#555555] hover:text-[#121212]'
+                ? 'bg-[#1E1E1E] hover:bg-[#282828] text-[#F7F7F5] border border-[#E0E0DE]/20 shadow-xs' 
+                : 'bg-white hover:bg-[#F2F2F0] text-[#121212] border border-[#121212]/20 shadow-xs'
             }`}
-            title="Export DWG/SVG"
+            title="Export DWG/SVG Vector File"
             id="export-drawing-btn"
           >
             <Download size={13} />
-            <span className="hidden md:inline">{drawing.svgUrl ? 'SVG' : 'DWG'}</span>
+            <span className="text-[11px] hidden sm:inline font-medium">{drawing.svgUrl ? 'SVG' : 'DWG'}</span>
           </a>
         </div>
+      </div>
+
+      {/* Quick-Jump Spatial Navigation Ribbon */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 mb-2 text-xs font-mono select-none">
+        <span className={`text-[10px] uppercase tracking-wider mr-1 shrink-0 ${isDark ? 'text-[#777777]' : 'text-[#888888]'}`}>
+          SPATIAL FOCUS:
+        </span>
+        {QUICK_ROOM_CHIPS.map((chip) => {
+          const isSelected = activeRoomChip === chip.id;
+          return (
+            <button
+              key={chip.id}
+              onClick={() => {
+                setActiveRoomChip(chip.id);
+                setPan(chip.pan);
+                setZoomLevel(chip.zoom);
+                document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => {
+                  if (chip.id !== 'all' && el.id === `zone-${chip.id}`) el.classList.add('active');
+                  else el.classList.remove('active');
+                });
+              }}
+              className={`px-2.5 py-1 rounded-sm text-[11px] whitespace-nowrap transition-all duration-200 cursor-pointer border ${
+                isSelected
+                  ? (isDark ? 'bg-[#38bdf8]/15 border-[#38bdf8] text-[#38bdf8] font-semibold shadow-xs' : 'bg-[#0284c7]/10 border-[#0284c7] text-[#0284c7] font-semibold shadow-xs')
+                  : (isDark ? 'bg-[#1E1E1E]/80 hover:bg-[#282828] text-[#AAAAAA] border-[#E0E0DE]/10 hover:text-white' : 'bg-white/80 hover:bg-[#F2F2F0] text-[#555555] border-[#121212]/10 hover:text-black')
+              }`}
+            >
+              {chip.name}
+            </button>
+          );
+        })}
       </div>
 
       {/* Main Drafting Canvas Container */}
       <div 
         className={`flex-1 rounded-sm border relative overflow-hidden flex items-center justify-center p-4 transition-colors duration-300 select-none ${
-          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+          isMeasuring ? 'cursor-crosshair' : (isDragging ? 'cursor-grabbing' : 'cursor-grab')
         } ${
           isDark 
             ? 'bg-[#121212] border-[#E0E0DE]/20' 
@@ -388,28 +510,28 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
             }
             #dynamic-svg-root .cad-${spotlightLayer} {
               opacity: 1 !important;
-              filter: drop-shadow(0 0 5px ${isDark ? 'rgba(59, 130, 246, 0.7)' : 'rgba(37, 99, 235, 0.7)'}) !important;
+              filter: drop-shadow(0 0 5px ${isDark ? 'rgba(56, 189, 248, 0.7)' : 'rgba(2, 132, 199, 0.7)'}) !important;
             }
           ` : ''}
         `}</style>
 
         {/* Sleek Architectural HUD Micro-Badge */}
-        {hoveredHUD && !isDragging && (
+        {hoveredHUD && !isDragging && !isMeasuring && (
           <div 
             className={`absolute pointer-events-none z-30 transition-all duration-100 ease-out px-2.5 py-1 rounded-sm shadow-xl border backdrop-blur-md flex items-center gap-2 whitespace-nowrap ${
               isDark 
-                ? 'bg-[#121212]/95 text-[#F7F7F5] border-[#3b82f6]/60 shadow-black/90' 
-                : 'bg-white/95 text-[#121212] border-[#2563eb]/60 shadow-slate-400'
+                ? 'bg-[#121212]/95 text-[#F7F7F5] border-[#38bdf8]/60 shadow-black/90' 
+                : 'bg-white/95 text-[#121212] border-[#0284c7]/60 shadow-slate-400'
             }`}
             style={{ 
               left: Math.min(Math.max(hoveredHUD.x + 12, 10), 440), 
               top: Math.max(hoveredHUD.y - 32, 10) 
             }}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6] animate-pulse shrink-0"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] animate-pulse shrink-0"></span>
             <span className="text-[11px] font-mono font-bold tracking-wider uppercase">{hoveredHUD.title}</span>
             {hoveredHUD.dimensions && (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#3b82f6]/15 text-[#3b82f6] rounded-xs font-semibold">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#38bdf8]/15 text-[#38bdf8] rounded-xs font-semibold">
                 {hoveredHUD.dimensions}
               </span>
             )}
@@ -421,6 +543,82 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
           </div>
         )}
 
+        {/* Interactive Caliper Measure Live Line & Dimension Overlay */}
+        {measureP1 && measureP2 && (
+          <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible">
+            {(() => {
+              const dx = measureP2.x - measureP1.x;
+              const dy = measureP2.y - measureP1.y;
+              const screenDist = Math.hypot(dx, dy);
+              // Scale distance based on viewport zoom & viewBox width (1018 drawing inches)
+              const cadInches = (screenDist / (zoomLevel / 100)) * (1018 / 620);
+              const distStr = formatArchitecturalDistance(cadInches);
+              const midX = (measureP1.x + measureP2.x) / 2;
+              const midY = (measureP1.y + measureP2.y) / 2;
+              const angle = Math.atan2(dy, dx);
+              const tickLen = 8;
+              const perpX = -Math.sin(angle) * tickLen;
+              const perpY = Math.cos(angle) * tickLen;
+
+              return (
+                <g className="transition-opacity duration-150">
+                  <line
+                    x1={measureP1.x - perpX}
+                    y1={measureP1.y - perpY}
+                    x2={measureP1.x + perpX}
+                    y2={measureP1.y + perpY}
+                    stroke="#38bdf8"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1={measureP2.x - perpX}
+                    y1={measureP2.y - perpY}
+                    x2={measureP2.x + perpX}
+                    y2={measureP2.y + perpY}
+                    stroke="#38bdf8"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1={measureP1.x}
+                    y1={measureP1.y}
+                    x2={measureP2.x}
+                    y2={measureP2.y}
+                    stroke="#38bdf8"
+                    strokeWidth="2"
+                    strokeDasharray="4,4"
+                  />
+                  <g transform={`translate(${midX}, ${midY - 14})`}>
+                    <rect
+                      x="-44"
+                      y="-12"
+                      width="88"
+                      height="24"
+                      rx="2"
+                      fill={isDark ? '#0f172a' : '#ffffff'}
+                      stroke="#38bdf8"
+                      strokeWidth="1.5"
+                      filter="drop-shadow(0 2px 6px rgba(0,0,0,0.5))"
+                    />
+                    <text
+                      x="0"
+                      y="4"
+                      textAnchor="middle"
+                      fill={isDark ? '#f8fafc' : '#0f172a'}
+                      fontSize="11"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      {distStr}
+                    </text>
+                  </g>
+                </g>
+              );
+            })()}
+          </svg>
+        )}
+
         {/* Fine Architectural Grid Pattern Overlay */}
         <div 
           className="absolute inset-0 pointer-events-none transition-opacity duration-300" 
@@ -428,7 +626,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
             opacity: showGrid ? (isDark ? 0.15 : 0.08) : 0,
             backgroundImage: isDark
               ? 'radial-gradient(circle, #404040 1px, transparent 1px), linear-gradient(to right, #262626 1px, transparent 1px), linear-gradient(to bottom, #262626 1px, transparent 1px)'
-              : 'radial-gradient(circle, #9ca3af 1px, transparent 1px), linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)',
+              : 'radial-gradient(circle, #888888 1px, transparent 1px), linear-gradient(to right, #E0E0DE 1px, transparent 1px), linear-gradient(to bottom, #E0E0DE 1px, transparent 1px)',
             backgroundSize: '16px 16px, 80px 80px, 80px 80px',
             backgroundPosition: 'center center'
           }}
@@ -436,7 +634,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
         {/* Vector SVG Render Viewport */}
         <div 
-          className="w-full h-full max-w-2xl max-h-[480px] transition-transform duration-75 ease-out flex items-center justify-center pointer-events-none"
+          className="w-full h-full max-w-full max-h-full transition-transform duration-75 ease-out flex items-center justify-center pointer-events-none"
           style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel / 100})` }}
         >
           {drawing.svgUrl ? (
@@ -886,45 +1084,66 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
             onClick={() => setShowGrid(!showGrid)}
             onMouseEnter={() => setSpotlightLayer('grid')}
             onMouseLeave={() => setSpotlightLayer(null)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
               showGrid 
-                ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
-                : (isDark ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/20 hover:text-[#F7F7F5]' : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/20 hover:text-[#121212]')
+                ? (isDark 
+                    ? 'bg-[#1E1E1E] text-[#F7F7F5] border border-[#3B82F6]/60 shadow-[0_0_12px_rgba(59,130,246,0.15)] ring-1 ring-[#3B82F6]/30' 
+                    : 'bg-white text-[#121212] border border-[#2563EB]/60 shadow-xs ring-1 ring-[#2563EB]/20')
+                : (isDark 
+                    ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/15 hover:border-[#E0E0DE]/30 hover:text-[#F7F7F5]' 
+                    : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/15 hover:border-[#121212]/30 hover:text-[#121212]')
             }`}
             id="toggle-grid-btn"
           >
-            {showGrid ? <Eye size={12} /> : <EyeOff size={12} />}
+            {showGrid ? <Eye size={12} className={isDark ? "text-[#3B82F6]" : "text-[#2563EB]"} /> : <EyeOff size={12} className="opacity-60" />}
             <span>Grid.dwg</span>
+            {showGrid && (
+              <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[#3B82F6]' : 'bg-[#2563EB]'}`} />
+            )}
           </button>
 
           <button
             onClick={() => setShowDimensions(!showDimensions)}
             onMouseEnter={() => setSpotlightLayer('dim')}
             onMouseLeave={() => setSpotlightLayer(null)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
               showDimensions 
-                ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
-                : (isDark ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/20 hover:text-[#F7F7F5]' : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/20 hover:text-[#121212]')
+                ? (isDark 
+                    ? 'bg-[#1E1E1E] text-[#F7F7F5] border border-[#3B82F6]/60 shadow-[0_0_12px_rgba(59,130,246,0.15)] ring-1 ring-[#3B82F6]/30' 
+                    : 'bg-white text-[#121212] border border-[#2563EB]/60 shadow-xs ring-1 ring-[#2563EB]/20')
+                : (isDark 
+                    ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/15 hover:border-[#E0E0DE]/30 hover:text-[#F7F7F5]' 
+                    : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/15 hover:border-[#121212]/30 hover:text-[#121212]')
             }`}
             id="toggle-dimensions-btn"
           >
-            {showDimensions ? <Eye size={12} /> : <EyeOff size={12} />}
+            {showDimensions ? <Eye size={12} className={isDark ? "text-[#3B82F6]" : "text-[#2563EB]"} /> : <EyeOff size={12} className="opacity-60" />}
             <span>Dimensions.dwg</span>
+            {showDimensions && (
+              <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[#3B82F6]' : 'bg-[#2563EB]'}`} />
+            )}
           </button>
 
           <button
             onClick={() => setShowAnnotations(!showAnnotations)}
             onMouseEnter={() => setSpotlightLayer('anno')}
             onMouseLeave={() => setSpotlightLayer(null)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
               showAnnotations 
-                ? (isDark ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' : 'bg-[#121212] text-[#F7F7F5] border border-[#121212]')
-                : (isDark ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/20 hover:text-[#F7F7F5]' : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/20 hover:text-[#121212]')
+                ? (isDark 
+                    ? 'bg-[#1E1E1E] text-[#F7F7F5] border border-[#3B82F6]/60 shadow-[0_0_12px_rgba(59,130,246,0.15)] ring-1 ring-[#3B82F6]/30' 
+                    : 'bg-white text-[#121212] border border-[#2563EB]/60 shadow-xs ring-1 ring-[#2563EB]/20')
+                : (isDark 
+                    ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/15 hover:border-[#E0E0DE]/30 hover:text-[#F7F7F5]' 
+                    : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/15 hover:border-[#121212]/30 hover:text-[#121212]')
             }`}
             id="toggle-annotations-btn"
           >
-            {showAnnotations ? <Eye size={12} /> : <EyeOff size={12} />}
+            {showAnnotations ? <Eye size={12} className={isDark ? "text-[#3B82F6]" : "text-[#2563EB]"} /> : <EyeOff size={12} className="opacity-60" />}
             <span>Labels.dwg</span>
+            {showAnnotations && (
+              <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[#3B82F6]' : 'bg-[#2563EB]'}`} />
+            )}
           </button>
         </div>
       </div>

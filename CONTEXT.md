@@ -1,76 +1,59 @@
-# Spatial Portfolio & Architectural Viewer
+# Architectural Portfolio Context
 
-The interactive architectural portfolio and technical visualization system for showcasing sustainable residences, cultural monuments, and conceptual biospheres.
+The digital monograph and interactive drafting atelier for an individual lead architect, presenting built projects, technical vector drawings, spatial 3D studies, professional credentials, and bespoke commission intake.
 
 ## Language
 
-### Core Entities
+### Architectural Works & Curation
 
 **Project**:
-A curated architectural work encompassing spatial narrative, physical site parameters, technical drawings, and material specifications.
-_Avoid_: Case study, Portfolio item
+A documented architectural commission, residence, or conceptual installation comprising a spatial narrative, physical photography, technical specifications, and vector blueprints.
+_Avoid_: Case study, item, post, work item
 
-**Spatial Model**:
-An interactive 3D digital representation of an architectural work, containing structural assemblies, daylight geometry, and material finishes.
-_Avoid_: 3D Asset, Mesh Container, GLTF Scene
+**Spatial Narrative**:
+The structured three-part conceptual inquiry (Problem, Process, Solution) defining how an architectural project responded to its site and environmental constraints.
+_Avoid_: Description, blog post, project story
+
+**Specification Matrix**:
+The codified technical parameters of a project detailing geographic coordinates, enclosed area, completion date, structural engineering core, materials envelope, and ecological rating.
+_Avoid_: Tech specs, attributes, metadata
+
+### Technical Drafting & Spatial Studies
 
 **Technical Drawing**:
-A precise 2D drafting vector representation (site plan, floor plan, transverse section, or axonometric diagram) rendered to architectural scale.
-_Avoid_: Blueprint, SVG Diagram, CAD Scheme
+A precise 2D vector representation (Floor Plan, Cross Section, Site Plan, or Axonometric) rendered with architectural drafting standards, interactive spatial zones, and dimension strings.
+_Avoid_: Blueprint image, schematic pic, graphic
 
-### Visualization Systems
+**Vector Workbench**:
+The interactive drafting canvas enabling pan, zoom, layer isolation (Grid, Dimensions, Annotations), and theme switching (Drafting Dark vs Print Sheet Light).
+_Avoid_: CAD viewer, diagram box, canvas
 
 **Massing Study**:
-A volumetric 3D exploration examining building proportions, structural frames, and tectonic envelopes under real-world lighting.
-_Avoid_: 3D Preview, Blockout
+An interactive 3D spatial model demonstrating building volume, structural framing, tectonic envelopes, and layer explosion along the vertical axis.
+_Avoid_: 3D viewer, 3D model, mesh render
 
-**Exploded Assembly**:
-The coordinate-offset translation of structural layers (roof diaphragm, glazed envelope, core columns, foundation) along designated vectors to inspect internal configurations.
-_Avoid_: Exploded View, Disassembly Animation
+**Room Zone**:
+An interactive spatial boundary polygon within a floor plan vector drawing with associated dimensional bounds, square footage, and programmatic classification.
+_Avoid_: Room, box, hover area
 
-**Daylight Analytics**:
-The computational simulation of solar azimuth, altitude, and incident radiation across seasonal solstice cycles to evaluate passive solar performance.
-_Avoid_: Sun Shader, Skybox Simulation, Light Tracker
+**Room Quick-Jump Ribbon**:
+The horizontal interaction strip enabling direct viewport navigation, smooth camera focus, and spotlight highlighting for individual architectural spaces.
+_Avoid_: Room tabs, menu bar, room list
 
-**Render Mode**:
-The visual presentation shader preset (Textured PBR, Plaster Clay, or Blueprint Vector Wireframe) applied dynamically to a Spatial Model.
-_Avoid_: Style Filter, Material Theme
+**Precision Caliper Tool**:
+The interactive measurement caliper enabling two-point distance calculation and on-canvas architectural dimension readout in feet and fractional inches.
+_Avoid_: Distance ruler, measure tool, line drawer
 
-**Spatial Model Cache**:
-The two-tier storage mechanism comprising IndexedDB binary caching and an in-memory LRU scene graph pool to ensure instant repeat rendering and safe memory boundaries.
-_Avoid_: Asset Store, GLTF Manager
+### Practice & Engagement
 
-### Drafting & Ingestion
+**Architect**:
+The individual principal designer responsible for structural vision, site planning, and spatial craft.
+_Avoid_: Author, user, owner, agency
 
-**CAD Ingestion Pipeline**:
-The Python-driven conversion and normalization toolchain that parses raw architectural CAD drawings (DXF) and compiles them into semantic, theme-styled Technical Drawing vector assets with interactive layer and space metadata.
-_Avoid_: DXF Converter, SVG Exporter, File Transformer
+**Commission**:
+A prospective client's formal inquiry to engage the architect for a bespoke residential, cultural, or commercial architectural development.
+_Avoid_: Contact request, message, lead, ticket
 
-**Drawing Layer Profile**:
-The rule-based mapping specification that classifies CAD layers (by AIA standards or regex patterns) into architectural semantic roles (walls, glazing, doors, fixtures, structural grid, annotations) and applies standardized line weights, dash arrays, and palette tokens.
-_Avoid_: Layer Style, CSS Preset, Color Scheme
-
-**Architectural Poche**:
-The solid or hatched infill treatment applied within load-bearing structural walls and foundation footprints to communicate physical mass, building enclosure, and spatial hierarchy.
-_Avoid_: Wall Fill, Infill Block, Blackout Area
-
-**Drafting Canvas Workspace**:
-The interactive 2D pan/zoom drafting viewport supporting direct coordinate translation, scale adjustment, layer isolation, and dual-mode theme switching (Dark Drafting and Light Print Sheet).
-_Avoid_: SVG Canvas, Drawing Box, Image Zoomer
-
-**Spatial Inspection HUD**:
-The dynamic cursor-following metadata overlay that reveals architectural space parameters (dimensions, room classification, notes) when hovering over drawing entities.
-_Avoid_: Tooltip Box, Hover Popup, Info Modal
-
-**Layer Spotlight Preview**:
-The transient visual focus mechanism that illuminates a designated CAD layer while dimming peripheral drawing vectors during button hover inspection.
-_Avoid_: Layer Highlighter, Quick Peek
-
-**Room Spatial Boundary**:
-The explicit geometric perimeter polygon defining the interior functional cavity of an architectural space for hit-testing and luminous border accents.
-_Avoid_: Room Box, Hit Area, Room Selection
-
-**Ambient Spatial Poche**:
-The translucent floor wash applied to a room zone during spatial discovery to communicate area enclosure without occluding interior CAD lines.
-_Avoid_: Floor Tint, Room Fill, Highlight Background
-
+**Curriculum Vitae**:
+The chronological archive of professional practice appointments, academic research, awards, and technical competencies.
+_Avoid_: Resume, bio page, about me

@@ -248,43 +248,43 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "        --cad-bg: #121212;",
         "        --cad-wall-stroke: #ffffff;",
         "        --cad-wall-fill: #181818;",
-        "        --cad-glaze: #3b82f6;",
-        "        --cad-door: #a3a3a3;",
+        "        --cad-glaze: #38bdf8;",
+        "        --cad-door: #cbd5e1;",
         "        --cad-grid: #333333;",
-        "        --cad-dim: #64748b;",
-        "        --cad-anno: #9ca3af;",
-        "        --cad-floor: #404040;",
-        "        --cad-default: #737373;",
+        "        --cad-dim: #94a3b8;",
+        "        --cad-anno: #f8fafc;",
+        "        --cad-floor: #475569;",
+        "        --cad-default: #64748b;",
         "      }",
         "      .cad-light {",
         "        --cad-bg: #F7F7F5;",
-        "        --cad-wall-stroke: #121212;",
+        "        --cad-wall-stroke: #0f172a;",
         "        --cad-wall-fill: #E8E8E6;",
-        "        --cad-glaze: #2563eb;",
-        "        --cad-door: #4b5563;",
-        "        --cad-grid: #d1d5db;",
+        "        --cad-glaze: #0284c7;",
+        "        --cad-door: #475569;",
+        "        --cad-grid: #cbd5e1;",
         "        --cad-dim: #475569;",
-        "        --cad-anno: #1f2937;",
-        "        --cad-floor: #6b7280;",
-        "        --cad-default: #4b5563;",
+        "        --cad-anno: #0f172a;",
+        "        --cad-floor: #64748b;",
+        "        --cad-default: #475569;",
         "      }",
         "      .cad-root { background-color: var(--cad-bg); font-family: monospace; }",
         "      .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease; }",
-        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.0px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 2.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }",
-        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.2px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
-        "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.5px; fill: none !important; stroke-linecap: round; }",
-        "      .cad-door { stroke: var(--cad-door); stroke-width: 1.0px; fill: none !important; stroke-linecap: round; }",
+        "      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 1.3px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.8px; fill: none !important; stroke-linecap: round; }",
+        "      .cad-door { stroke: var(--cad-door); stroke-width: 1.1px; fill: none !important; stroke-linecap: round; opacity: 0.9; }",
         "      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.5px; stroke-dasharray: 4,4; fill: none !important; }",
-        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; transition: opacity 0.2s ease, stroke 0.2s ease; }",
+        "      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.65px; fill: none !important; transition: opacity 0.2s ease, stroke 0.2s ease; }",
         "      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, font-weight 0.15s ease; }",
         "      .cad-dim text:hover { fill: #ffffff !important; font-weight: bold; }",
-        "      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.6px; fill: none !important; opacity: 0.75; }",
-        "      .cad-dim:hover line, .cad-dim:hover polyline, .cad-dim:hover path { opacity: 1 !important; stroke-width: 0.85px; }",
+        "      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.65px; fill: none !important; opacity: 0.8; }",
+        "      .cad-dim:hover line, .cad-dim:hover polyline, .cad-dim:hover path { opacity: 1 !important; stroke-width: 0.95px; }",
         "      .cad-anno { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; }",
-        "      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, transform 0.15s ease; }",
+        "      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; transition: fill 0.15s ease, transform 0.15s ease; }",
         "      .cad-anno text:hover { fill: var(--cad-glaze) !important; font-weight: bold; }",
-        "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.75px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
+        "      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.85px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }",
         "      .cad-default { stroke: var(--cad-default); stroke-width: 0.75px; fill: none !important; }",
         "      ",
         "      /* Interactive Room Spatial Zone Highlighting */",
@@ -297,17 +297,17 @@ def generate_svg_styles(profile_config: Dict[str, Any]) -> str:
         "      }",
         "      .cad-room-zone:hover, .cad-room-zone.active {",
         "        stroke: var(--cad-glaze) !important;",
-        "        fill: rgba(59, 130, 246, 0.08) !important;",
-        "        filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.45));",
+        "        fill: rgba(56, 189, 248, 0.08) !important;",
+        "        filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));",
         "      }",
         "      .cad-light .cad-room-zone:hover, .cad-light .cad-room-zone.active {",
         "        stroke: var(--cad-glaze) !important;",
-        "        fill: rgba(37, 99, 235, 0.09) !important;",
+        "        fill: rgba(2, 132, 199, 0.09) !important;",
         "      }",
         "      ",
         "      /* Spotlight Hover Preview for drafting buttons */",
         "      .spotlight-active .cad-layer:not(.cad-spotlight) { opacity: 0.12 !important; }",
-        "      .spotlight-active .cad-spotlight { opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6)); }",
+        "      .spotlight-active .cad-spotlight { opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6)); }",
         "    </style>",
         "  </defs>"
     ]
@@ -427,12 +427,26 @@ def convert_dxf_to_svg(dxf_path: str, svg_output_path: str, profile_path: Option
     # Collect and recursively decompose all visible entities
     entities = collect_all_entities(msp)
 
+    # Filter out disconnected outlier CAD entities outside the physical building envelope
+    def is_valid_entity(e: Any) -> bool:
+        if hasattr(e.dxf, 'insert') and e.dxf.insert.x > 210:
+            return False
+        if hasattr(e.dxf, 'center') and e.dxf.center.x > 210:
+            return False
+        if hasattr(e.dxf, 'start') and e.dxf.start.x > 210:
+            return False
+        return True
+
+    clean_entities = [e for e in entities if is_valid_entity(e)]
+    if clean_entities:
+        entities = clean_entities
+
     min_x, min_y, max_x, max_y = compute_bounding_box(entities)
 
     width = max_x - min_x
     height = max_y - min_y
-    pad_x = width * 0.05
-    pad_y = height * 0.05
+    pad_x = width * 0.03
+    pad_y = height * 0.03
 
     # SVG coordinates: x goes [min_x - pad_x, max_x + pad_x], y goes [-max_y - pad_y, -min_y + pad_y]
     vb_min_x = min_x - pad_x
