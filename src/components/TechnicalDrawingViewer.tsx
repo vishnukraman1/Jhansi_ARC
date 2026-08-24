@@ -391,6 +391,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
   const isDark = themeMode === 'dark';
   const lodClass = zoomLevel < 120 ? 'lod-macro' : (zoomLevel <= 200 ? 'lod-detail' : 'lod-inspect');
+  const hasRoomZones = svgContent.includes('cad-room-zone') || svgContent.includes('cad-room-badge');
 
   return (
     <div 
@@ -418,27 +419,29 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
         </div>
 
         {/* Spatial Focus Quick Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto select-none pr-1">
-          <span className={`text-[9px] font-mono uppercase tracking-widest mr-1 shrink-0 ${isDark ? 'text-[#71717a]' : 'text-[#94a3b8]'}`}>
-            ROOMS:
-          </span>
-          {QUICK_ROOM_CHIPS.map((chip) => {
-            const isSelected = activeRoomChip === chip.id;
-            return (
-              <button
-                key={chip.id}
-                onClick={() => handleRoomSelect(chip.id)}
-                className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono whitespace-nowrap transition-all duration-150 cursor-pointer border ${
-                  isSelected
-                    ? (isDark ? 'bg-[#38bdf8]/20 border-[#38bdf8] text-[#38bdf8] font-bold shadow-xs' : 'bg-[#0284c7]/15 border-[#0284c7] text-[#0284c7] font-bold shadow-xs')
-                    : (isDark ? 'bg-[#18181b]/70 hover:bg-[#27272a] text-[#a1a1aa] border-transparent hover:text-white' : 'bg-white/70 hover:bg-[#e2e8f0] text-[#64748b] border-transparent hover:text-black')
-                }`}
-              >
-                {chip.name}
-              </button>
-            );
-          })}
-        </div>
+        {hasRoomZones && (
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto select-none pr-1">
+            <span className={`text-[9px] font-mono uppercase tracking-widest mr-1 shrink-0 ${isDark ? 'text-[#71717a]' : 'text-[#94a3b8]'}`}>
+              ROOMS:
+            </span>
+            {QUICK_ROOM_CHIPS.map((chip) => {
+              const isSelected = activeRoomChip === chip.id;
+              return (
+                <button
+                  key={chip.id}
+                  onClick={() => handleRoomSelect(chip.id)}
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono whitespace-nowrap transition-all duration-150 cursor-pointer border ${
+                    isSelected
+                      ? (isDark ? 'bg-[#38bdf8]/20 border-[#38bdf8] text-[#38bdf8] font-bold shadow-xs' : 'bg-[#0284c7]/15 border-[#0284c7] text-[#0284c7] font-bold shadow-xs')
+                      : (isDark ? 'bg-[#18181b]/70 hover:bg-[#27272a] text-[#a1a1aa] border-transparent hover:text-white' : 'bg-white/70 hover:bg-[#e2e8f0] text-[#64748b] border-transparent hover:text-black')
+                  }`}
+                >
+                  {chip.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Main Drafting Canvas Container (Edge-to-Edge) */}

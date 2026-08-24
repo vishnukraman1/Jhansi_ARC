@@ -520,13 +520,9 @@ def convert_entity_to_svg(entity: Any) -> Optional[str]:
                 'BOLLARD', 'GAS FAU', 'TEMP.', 'WH', 'GAS', 'PLATFORM', 'DOOR', 'D-D', 'A6'
             ])
             
-            # Extract CAD character height in drawing units
-            height = getattr(entity.dxf, 'height', None)
-            if not height or height <= 0:
-                height = getattr(entity.dxf, 'char_height', 6.0)
-            
-            # Cap font size gracefully between 3.5 and 12.0 so sheet titles don't overpower
-            capped_height = min(max(float(height), 3.5), 12.0)
+            # Use CAD character height in drawing units
+            height = getattr(entity.dxf, 'height', None) or getattr(entity.dxf, 'char_height', None)
+            capped_height = float(height) if height and float(height) > 0 else 6.0
             
             # Extract rotation angle
             rotation = getattr(entity.dxf, 'rotation', 0.0)
@@ -587,19 +583,21 @@ def convert_dxf_to_svg(dxf_path: str, svg_output_path: str, profile_path: Option
     # Collect and recursively decompose all visible entities
     entities = collect_all_entities(msp)
 
-    # Filter out disconnected outlier CAD entities outside the physical building envelope
-    def is_valid_entity(e: Any) -> bool:
-        if hasattr(e.dxf, 'insert') and e.dxf.insert.x > 210:
-            return False
-        if hasattr(e.dxf, 'center') and e.dxf.center.x > 210:
-            return False
-        if hasattr(e.dxf, 'start') and e.dxf.start.x > 210:
-            return False
-        return True
+    # Filter out disconnected outlier CAD entities only for Bishop Overland floor plan
+    is_bishop_overland = any('BISHOP' in str(getattr(e.dxf, 'layer', '')).upper() for e in entities) or any(getattr(e.dxf, 'text', '') == '%%u2 CAR GARAGE' for e in entities if e.dxftype() in ('TEXT', 'MTEXT'))
+    if is_bishop_overland:
+        def is_valid_entity(e: Any) -> bool:
+            if hasattr(e.dxf, 'insert') and e.dxf.insert.x > 210:
+                return False
+            if hasattr(e.dxf, 'center') and e.dxf.center.x > 210:
+                return False
+            if hasattr(e.dxf, 'start') and e.dxf.start.x > 210:
+                return False
+            return True
 
-    clean_entities = [e for e in entities if is_valid_entity(e)]
-    if clean_entities:
-        entities = clean_entities
+        clean_entities = [e for e in entities if is_valid_entity(e)]
+        if clean_entities:
+            entities = clean_entities
 
     min_x, min_y, max_x, max_y = compute_bounding_box(entities)
 

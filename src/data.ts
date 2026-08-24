@@ -27,20 +27,20 @@ export const projects: Project[] = [
     },
     technicalDrawings: [
       {
+        id: 'oh-draw-mb',
+        name: 'Master Bedroom Suite & Interior Plan (DXF Vector)',
+        type: 'Floor Plan',
+        description: 'Detailed interior architectural AutoCAD vectorization of the Master Bedroom suite, joinery cuts, electrical elevation, and custom casework.',
+        svgType: 'floor-plan',
+        svgUrl: '/drawings/master-bedroom.svg'
+      },
+      {
         id: 'oh-draw-cad',
         name: 'Bishop Overland Architectural Plan (DXF Vector)',
         type: 'Floor Plan',
         description: 'AutoCAD DXF vectorization featuring complete structural walls, dimension strings, door swings, and casework.',
         svgType: 'floor-plan',
         svgUrl: '/drawings/floorplan.svg'
-      },
-      {
-        id: 'oh-draw-mb',
-        name: 'Master Bedroom Suite & Joinery Detail (DXF Vector)',
-        type: 'Floor Plan',
-        description: 'Detailed interior architectural AutoCAD vectorization of the Master Bedroom suite, joinery cuts, electrical elevation, and custom casework.',
-        svgType: 'floor-plan',
-        svgUrl: '/drawings/master-bedroom.svg'
       },
       {
         id: 'oh-draw-1',

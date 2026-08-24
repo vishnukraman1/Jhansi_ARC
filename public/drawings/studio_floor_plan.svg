@@ -164,7 +164,7 @@
     <line x1="0.000" y1="-60.000" x2="200.000" y2="-60.000" />
   </g>
   <g id="layer-a-anno" class="cad-anno" data-layer="A-ANNO">
-    <text x="80.000" y="-50.000" font-size="3.50" dominant-baseline="central" text-anchor="middle" data-label="LIVING AREA" class="cad-text-node">LIVING AREA</text>
+    <text x="80.000" y="-50.000" font-size="2.50" dominant-baseline="central" text-anchor="middle" data-label="LIVING AREA" class="cad-text-node">LIVING AREA</text>
   </g>
   <g id="layer-room-zones" class="cad-rooms">
     <polygon id="zone-garage" class="cad-room-zone" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21&#x27;2&quot; × 20&#x27;10&quot;" data-area="441 SQ FT" points="-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6" />
