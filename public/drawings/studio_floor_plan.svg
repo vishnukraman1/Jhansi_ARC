@@ -26,6 +26,9 @@
         --cad-default: #475569;
       }
       .cad-root { background-color: var(--cad-bg); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+      .cad-root line, .cad-root polyline, .cad-root polygon, .cad-root path, .cad-root circle, .cad-root rect {
+        vector-effect: non-scaling-stroke !important;
+      }
       .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease, stroke-width 0.2s ease; }
       
       /* 4-Tier AIA / ISO Architectural Line-Weight Standard */

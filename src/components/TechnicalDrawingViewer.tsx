@@ -840,7 +840,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
               {!isLoading && !loadError && svgContent && (
                 <div
                   id="dynamic-svg-root"
-                  className={`w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full ${
+                  className={`w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full [&_line]:[vector-effect:non-scaling-stroke] [&_polyline]:[vector-effect:non-scaling-stroke] [&_polygon]:[vector-effect:non-scaling-stroke] [&_path]:[vector-effect:non-scaling-stroke] [&_circle]:[vector-effect:non-scaling-stroke] [&_rect]:[vector-effect:non-scaling-stroke] ${
                     !isDark ? 'cad-light' : ''
                   } ${viewPreset === 'technical' ? 'show-technical' : ''} ${lodClass}`}
                   dangerouslySetInnerHTML={{ __html: svgContent }}
