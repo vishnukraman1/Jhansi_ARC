@@ -391,7 +391,7 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
   const isDark = themeMode === 'dark';
   const lodClass = zoomLevel < 120 ? 'lod-macro' : (zoomLevel <= 200 ? 'lod-detail' : 'lod-inspect');
-  const hasRoomZones = svgContent.includes('cad-room-zone') || svgContent.includes('cad-room-badge');
+  const hasRoomZones = Boolean(svgContent && (svgContent.includes('cad-room-zone') || svgContent.includes('cad-room-badge')));
 
   return (
     <div 
