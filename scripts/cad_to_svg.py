@@ -638,32 +638,36 @@ def convert_dxf_to_svg(dxf_path: str, svg_output_path: str, profile_path: Option
             svg_lines.append(f'    {elem}')
         svg_lines.append('  </g>')
 
-    # Inject interactive room zones for spatial boundary highlight and HUD discovery
-    svg_lines.append('  <g id="layer-room-zones" class="cad-rooms">')
-    for zone in ROOM_ZONES:
-        dim_escaped = html.escape(zone.get("dim", ""), quote=True)
-        name_escaped = html.escape(zone.get("name", ""), quote=True)
-        area_escaped = html.escape(zone.get("area", ""), quote=True)
-        svg_lines.append(f'    <polygon id="zone-{zone["id"]}" class="cad-room-zone" data-room-id="{zone["id"]}" data-room-name="{name_escaped}" data-dim="{dim_escaped}" data-area="{area_escaped}" points="{zone["points"]}" />')
-    svg_lines.append('  </g>')
+    # Inject interactive room zones only if the drawing corresponds to the configured room zones
+    is_bishop_overland = abs(min_x) < 2000 and abs(max_x) < 2000 and (width < 2000)
 
-    # Inject embedded high-contrast architectural room badges
-    svg_lines.append('  <g id="layer-room-badges" class="cad-room-badges">')
-    for zone in ROOM_ZONES:
-        cx = zone.get('cx', 0.0)
-        cy = zone.get('cy', 0.0)
-        num = zone.get('num', '00')
-        title = html.escape(zone.get('name', '').upper(), quote=False)
-        dim_area = html.escape(f"{zone.get('dim', '')} · {zone.get('area', '')}", quote=False)
-        dim_escaped = html.escape(zone.get("dim", ""), quote=True)
-        name_escaped = html.escape(zone.get("name", ""), quote=True)
-        area_escaped = html.escape(zone.get("area", ""), quote=True)
-        svg_lines.append(f'    <g id="badge-{zone["id"]}" class="cad-room-badge-group" data-room-id="{zone["id"]}" data-room-name="{name_escaped}" data-dim="{dim_escaped}" data-area="{area_escaped}" transform="translate({cx:.1f}, {cy:.1f})">')
-        svg_lines.append(f'      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />')
-        svg_lines.append(f'      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">{num}. {title}</text>')
-        svg_lines.append(f'      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">{dim_area}</text>')
-        svg_lines.append('    </g>')
-    svg_lines.append('  </g>')
+    if is_bishop_overland:
+        # Inject interactive room zones for spatial boundary highlight and HUD discovery
+        svg_lines.append('  <g id="layer-room-zones" class="cad-rooms">')
+        for zone in ROOM_ZONES:
+            dim_escaped = html.escape(zone.get("dim", ""), quote=True)
+            name_escaped = html.escape(zone.get("name", ""), quote=True)
+            area_escaped = html.escape(zone.get("area", ""), quote=True)
+            svg_lines.append(f'    <polygon id="zone-{zone["id"]}" class="cad-room-zone" data-room-id="{zone["id"]}" data-room-name="{name_escaped}" data-dim="{dim_escaped}" data-area="{area_escaped}" points="{zone["points"]}" />')
+        svg_lines.append('  </g>')
+
+        # Inject embedded high-contrast architectural room badges
+        svg_lines.append('  <g id="layer-room-badges" class="cad-room-badges">')
+        for zone in ROOM_ZONES:
+            cx = zone.get('cx', 0.0)
+            cy = zone.get('cy', 0.0)
+            num = zone.get('num', '00')
+            title = html.escape(zone.get('name', '').upper(), quote=False)
+            dim_area = html.escape(f"{zone.get('dim', '')} · {zone.get('area', '')}", quote=False)
+            dim_escaped = html.escape(zone.get("dim", ""), quote=True)
+            name_escaped = html.escape(zone.get("name", ""), quote=True)
+            area_escaped = html.escape(zone.get("area", ""), quote=True)
+            svg_lines.append(f'    <g id="badge-{zone["id"]}" class="cad-room-badge-group" data-room-id="{zone["id"]}" data-room-name="{name_escaped}" data-dim="{dim_escaped}" data-area="{area_escaped}" transform="translate({cx:.1f}, {cy:.1f})">')
+            svg_lines.append(f'      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />')
+            svg_lines.append(f'      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">{num}. {title}</text>')
+            svg_lines.append(f'      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">{dim_area}</text>')
+            svg_lines.append('    </g>')
+        svg_lines.append('  </g>')
 
     svg_lines.append('</svg>\n')
     svg_content = "\n".join(svg_lines)

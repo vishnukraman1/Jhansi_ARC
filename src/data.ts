@@ -35,6 +35,14 @@ export const projects: Project[] = [
         svgUrl: '/drawings/floorplan.svg'
       },
       {
+        id: 'oh-draw-mb',
+        name: 'Master Bedroom Suite & Joinery Detail (DXF Vector)',
+        type: 'Floor Plan',
+        description: 'Detailed interior architectural AutoCAD vectorization of the Master Bedroom suite, joinery cuts, electrical elevation, and custom casework.',
+        svgType: 'floor-plan',
+        svgUrl: '/drawings/master-bedroom.svg'
+      },
+      {
         id: 'oh-draw-1',
         name: 'Optimized House Schematic Plan',
         type: 'Floor Plan',
