@@ -7,3 +7,6 @@ coverage/
 .env*
 !.env.example
 .scratch/
+__pycache__/
+*.pyc
+test/fixtures/

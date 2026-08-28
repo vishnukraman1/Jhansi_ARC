@@ -75,6 +75,22 @@ export default function AboutCV() {
                 </p>
               </div>
             </div>
+
+            {/* Resume / Portfolio PDF Download Action */}
+            <div className="pt-4">
+              <a
+                href="#download-cv"
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert("Curriculum Vitae dossier download initiated (PDF).");
+                }}
+                className="inline-flex items-center gap-2 bg-[#121212] hover:bg-[#888888] text-[#F7F7F5] px-5 py-3 text-[10px] font-mono uppercase tracking-widest rounded-sm transition cursor-pointer"
+                id="download-cv-btn"
+              >
+                <Compass size={13} />
+                <span>Download Complete Dossier (PDF)</span>
+              </a>
+            </div>
           </div>
 
         </div>

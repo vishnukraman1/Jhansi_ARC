@@ -1,0 +1,236 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6.000 -124.200 212.000 148.400" width="100%" height="100%" class="cad-root w-full h-full font-mono select-none" id="cad-drawing-root">
+  <defs>
+    <style>
+      :root, .cad-root {
+        --cad-bg: #0a0a0c;
+        --cad-wall-stroke: #ffffff;
+        --cad-wall-fill: #18181b;
+        --cad-glaze: #38bdf8;
+        --cad-door: #cbd5e1;
+        --cad-grid: #27272a;
+        --cad-dim: #94a3b8;
+        --cad-anno: #f8fafc;
+        --cad-floor: #3f3f46;
+        --cad-default: #71717a;
+      }
+      .cad-light {
+        --cad-bg: #f8f9fa;
+        --cad-wall-stroke: #0f172a;
+        --cad-wall-fill: #e2e8f0;
+        --cad-glaze: #0284c7;
+        --cad-door: #475569;
+        --cad-grid: #cbd5e1;
+        --cad-dim: #475569;
+        --cad-anno: #0f172a;
+        --cad-floor: #64748b;
+        --cad-default: #475569;
+      }
+      .cad-root { background-color: var(--cad-bg); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+      .cad-root line, .cad-root polyline, .cad-root polygon, .cad-root path, .cad-root circle, .cad-root rect {
+        vector-effect: non-scaling-stroke !important;
+      }
+      .cad-wall, .cad-glaze, .cad-door, .cad-grid, .cad-dim, .cad-anno, .cad-floor, .cad-default { transition: opacity 0.25s ease, stroke-width 0.2s ease; }
+      
+      /* 4-Tier AIA / ISO Architectural Line-Weight Standard */
+      .cad-wall { stroke: var(--cad-wall-stroke); stroke-width: 1.3px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-wall polygon, .cad-wall polyline, .cad-wall line, .cad-wall path { fill: none !important; }
+      .cad-wall-inner { stroke: var(--cad-wall-stroke); stroke-width: 0.95px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; }
+      .cad-glaze { stroke: var(--cad-glaze); stroke-width: 1.3px; fill: none !important; stroke-linecap: round; filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.4)); }
+      .cad-door { stroke: var(--cad-door); stroke-width: 0.75px; stroke-dasharray: 4,3; fill: none !important; stroke-linecap: round; opacity: 0.85; }
+      .cad-grid { stroke: var(--cad-grid); stroke-width: 0.4px; stroke-dasharray: 4,4; fill: none !important; opacity: 0.35; }
+      .cad-dim { stroke: var(--cad-dim); stroke-width: 0.45px; fill: none !important; opacity: 0.35; transition: opacity 0.25s ease, stroke 0.2s ease; }
+      .cad-dim text { stroke: none !important; fill: var(--cad-dim) !important; font-family: monospace; font-weight: 500; cursor: pointer; transition: fill 0.15s ease, font-weight 0.15s ease; }
+      .cad-dim:hover, .cad-dim.active { opacity: 1 !important; }
+      .cad-dim text:hover { fill: #ffffff !important; font-weight: bold; }
+      .cad-dim line, .cad-dim polyline, .cad-dim path { stroke: var(--cad-dim); stroke-width: 0.45px; fill: none !important; opacity: 0.7; }
+      .cad-dim:hover line, .cad-dim:hover polyline, .cad-dim:hover path { opacity: 1 !important; stroke-width: 0.75px; }
+      
+      .cad-anno { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; }
+      .cad-anno text { fill: var(--cad-anno) !important; stroke: none !important; font-family: monospace; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; transition: fill 0.15s ease, transform 0.15s ease; }
+      .cad-anno text:hover { fill: var(--cad-glaze) !important; font-weight: bold; }
+      .cad-floor { stroke: var(--cad-floor); stroke-width: 0.6px; fill: none !important; stroke-linejoin: round; stroke-linecap: round; opacity: 0.55; }
+      .cad-default { stroke: var(--cad-default); stroke-width: 0.55px; fill: none !important; opacity: 0.55; }
+      
+      /* Semantic Level-of-Detail (LOD) Dynamic Rules */
+      .lod-macro .cad-dim { opacity: 0 !important; pointer-events: none; }
+      .lod-macro .cad-grid { opacity: 0 !important; pointer-events: none; }
+      .lod-macro .cad-floor { opacity: 0.25 !important; }
+      .lod-detail .cad-dim { opacity: 0.45 !important; }
+      .lod-detail .cad-door { opacity: 0.85 !important; }
+      .lod-inspect .cad-dim { opacity: 0.95 !important; }
+      .lod-inspect .cad-contractor-note { display: inline !important; opacity: 0.85; }
+      
+      /* Interactive Room Spatial Zone Highlighting */
+      .cad-room-zone {
+        cursor: pointer;
+        stroke: transparent;
+        stroke-width: 2.5px;
+        fill: transparent;
+        transition: stroke 0.2s ease, fill 0.2s ease, filter 0.2s ease;
+      }
+      .cad-room-zone:hover, .cad-room-zone.active {
+        stroke: var(--cad-glaze) !important;
+        fill: rgba(56, 189, 248, 0.12) !important;
+        filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
+      }
+      .cad-light .cad-room-zone:hover, .cad-light .cad-room-zone.active {
+        stroke: var(--cad-glaze) !important;
+        fill: rgba(2, 132, 199, 0.12) !important;
+      }
+      
+      /* Contractor micro-notes are tucked away by default to ensure serene clarity */
+      .cad-contractor-note {
+        display: none !important;
+        opacity: 0.7;
+      }
+      .show-technical .cad-contractor-note {
+        display: inline !important;
+      }
+      
+      /* Floating Architectural Room Typography */
+      .cad-room-badge-group {
+        cursor: pointer;
+        pointer-events: all;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+      }
+      .cad-room-badge-group:hover, .cad-room-badge-group.active {
+        transform: scale(1.08);
+      }
+      .cad-badge-plate {
+        fill: rgba(14, 14, 18, 0.75);
+        stroke: rgba(255, 255, 255, 0.15);
+        stroke-width: 0.8px;
+        transition: fill 0.2s ease, stroke 0.2s ease, filter 0.2s ease;
+      }
+      .cad-room-badge-group:hover .cad-badge-plate, .cad-room-badge-group.active .cad-badge-plate {
+        fill: rgba(14, 14, 18, 0.95);
+        stroke: #38bdf8;
+        stroke-width: 1.2px;
+        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6));
+      }
+      .cad-light .cad-badge-plate {
+        fill: rgba(255, 255, 255, 0.88);
+        stroke: rgba(0, 0, 0, 0.15);
+        stroke-width: 0.8px;
+      }
+      .cad-light .cad-room-badge-group:hover .cad-badge-plate, .cad-light .cad-room-badge-group.active .cad-badge-plate {
+        fill: #ffffff;
+        stroke: #0284c7;
+        filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.4));
+      }
+      .cad-badge-title {
+        fill: #f8fafc;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 8.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      .cad-light .cad-badge-title {
+        fill: #0f172a;
+      }
+      .cad-badge-sub {
+        fill: #94a3b8;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 6.5px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        opacity: 0.85;
+      }
+      .cad-light .cad-badge-sub {
+        fill: #475569;
+      }
+      .cad-room-badge-group:hover .cad-badge-sub, .cad-room-badge-group.active .cad-badge-sub {
+        fill: #38bdf8;
+        opacity: 1;
+        font-weight: 600;
+      }
+      .cad-light .cad-room-badge-group:hover .cad-badge-sub, .cad-light .cad-room-badge-group.active .cad-badge-sub {
+        fill: #0284c7;
+        opacity: 1;
+      }
+      
+      /* Spotlight Hover Preview for drafting buttons */
+      .spotlight-active .cad-layer:not(.cad-spotlight) { opacity: 0.12 !important; }
+      .spotlight-active .cad-spotlight { opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6)); }
+    </style>
+  </defs>
+  <g id="layer-a-wall" class="cad-wall" data-layer="A-WALL">
+    <polyline points="0.000,-0.000 200.000,-0.000 200.000,-120.000 0.000,-120.000 0.000,-0.000" fill="none" />
+  </g>
+  <g id="layer-a-glaz" class="cad-glaze" data-layer="A-GLAZ">
+    <line x1="40.000" y1="-0.000" x2="160.000" y2="-0.000" />
+  </g>
+  <g id="layer-a-door" class="cad-door" data-layer="A-DOOR">
+    <path d="M 120.000 -0.000 A 20.000 20.000 0 0 0 100.000 -20.000" fill="none" />
+  </g>
+  <g id="layer-s-grid" class="cad-grid" data-layer="S-GRID">
+    <line x1="0.000" y1="-60.000" x2="200.000" y2="-60.000" />
+  </g>
+  <g id="layer-a-anno" class="cad-anno" data-layer="A-ANNO">
+    <text x="80.000" y="-50.000" font-size="2.50" dominant-baseline="central" text-anchor="middle" data-label="LIVING AREA" class="cad-text-node">LIVING AREA</text>
+  </g>
+  <g id="layer-room-zones" class="cad-rooms">
+    <polygon id="zone-garage" class="cad-room-zone" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21&#x27;2&quot; × 20&#x27;10&quot;" data-area="441 SQ FT" points="-212.8,-39.4 41.2,-39.4 41.2,210.6 -212.8,210.6" />
+    <polygon id="zone-great-room" class="cad-room-zone" data-room-id="great-room" data-room-name="Great Room" data-dim="17&#x27;0&quot; × 17&#x27;8&quot;" data-area="300 SQ FT" points="-322.8,-341.4 -118.8,-341.4 -118.8,-129.4 -322.8,-129.4" />
+    <polygon id="zone-dining" class="cad-room-zone" data-room-id="dining" data-room-name="Dining Room" data-dim="13&#x27;0&quot; × 10&#x27;11&quot;" data-area="142 SQ FT" points="-114.8,-341.4 41.2,-341.4 41.2,-210.0 -114.8,-210.0" />
+    <polygon id="zone-kitchen" class="cad-room-zone" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13&#x27;0&quot; × 14&#x27;2&quot;" data-area="184 SQ FT" points="-114.8,-210.0 41.2,-210.0 41.2,-39.4 -114.8,-39.4" />
+    <polygon id="zone-deck" class="cad-room-zone" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11&#x27;1&quot; × 11&#x27;8&quot;" data-area="129 SQ FT" points="47.2,-320.0 180.0,-320.0 180.0,-180.0 47.2,-180.0" />
+    <polygon id="zone-entry" class="cad-room-zone" data-room-id="entry" data-room-name="Main Entry &amp; Porch" data-dim="8&#x27;8&quot; × 10&#x27;5&quot;" data-area="90 SQ FT" points="-322.8,-125.4 -218.8,-125.4 -218.8,0.0 -322.8,0.0" />
+    <polygon id="zone-master" class="cad-room-zone" data-room-id="master" data-room-name="Master Suite" data-dim="13&#x27;8&quot; × 14&#x27;0&quot;" data-area="191 SQ FT" points="-642.8,-341.4 -478.8,-341.4 -478.8,-173.4 -642.8,-173.4" />
+    <polygon id="zone-master-bath" class="cad-room-zone" data-room-id="master-bath" data-room-name="Ensuite Bath &amp; W.I.C." data-dim="12&#x27;4&quot; × 14&#x27;0&quot;" data-area="172 SQ FT" points="-474.8,-341.4 -326.8,-341.4 -326.8,-173.4 -474.8,-173.4" />
+    <polygon id="zone-bed2" class="cad-room-zone" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13&#x27;8&quot; × 10&#x27;10&quot;" data-area="148 SQ FT" points="-642.8,-169.4 -478.8,-169.4 -478.8,-39.4 -642.8,-39.4" />
+    <polygon id="zone-bed3" class="cad-room-zone" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12&#x27;4&quot; × 10&#x27;10&quot;" data-area="133 SQ FT" points="-474.8,-169.4 -326.8,-169.4 -326.8,-39.4 -474.8,-39.4" />
+  </g>
+  <g id="layer-room-badges" class="cad-room-badges">
+    <g id="badge-garage" class="cad-room-badge-group" data-room-id="garage" data-room-name="Two-Car Garage" data-dim="21&#x27;2&quot; × 20&#x27;10&quot;" data-area="441 SQ FT" transform="translate(-85.8, 85.6)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">01. TWO-CAR GARAGE</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">21'2" × 20'10" · 441 SQ FT</text>
+    </g>
+    <g id="badge-great-room" class="cad-room-badge-group" data-room-id="great-room" data-room-name="Great Room" data-dim="17&#x27;0&quot; × 17&#x27;8&quot;" data-area="300 SQ FT" transform="translate(-220.8, -235.4)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">02. GREAT ROOM</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">17'0" × 17'8" · 300 SQ FT</text>
+    </g>
+    <g id="badge-dining" class="cad-room-badge-group" data-room-id="dining" data-room-name="Dining Room" data-dim="13&#x27;0&quot; × 10&#x27;11&quot;" data-area="142 SQ FT" transform="translate(-36.8, -275.7)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">03. DINING ROOM</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'0" × 10'11" · 142 SQ FT</text>
+    </g>
+    <g id="badge-kitchen" class="cad-room-badge-group" data-room-id="kitchen" data-room-name="Gourmet Kitchen" data-dim="13&#x27;0&quot; × 14&#x27;2&quot;" data-area="184 SQ FT" transform="translate(-36.8, -124.7)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">04. GOURMET KITCHEN</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'0" × 14'2" · 184 SQ FT</text>
+    </g>
+    <g id="badge-deck" class="cad-room-badge-group" data-room-id="deck" data-room-name="Cantilevered Deck" data-dim="11&#x27;1&quot; × 11&#x27;8&quot;" data-area="129 SQ FT" transform="translate(113.6, -250.0)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">05. CANTILEVERED DECK</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">11'1" × 11'8" · 129 SQ FT</text>
+    </g>
+    <g id="badge-entry" class="cad-room-badge-group" data-room-id="entry" data-room-name="Main Entry &amp; Porch" data-dim="8&#x27;8&quot; × 10&#x27;5&quot;" data-area="90 SQ FT" transform="translate(-260.0, -35.0)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">06. MAIN ENTRY &amp; PORCH</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">8'8" × 10'5" · 90 SQ FT</text>
+    </g>
+    <g id="badge-master" class="cad-room-badge-group" data-room-id="master" data-room-name="Master Suite" data-dim="13&#x27;8&quot; × 14&#x27;0&quot;" data-area="191 SQ FT" transform="translate(-560.8, -257.4)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">07. MASTER SUITE</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'8" × 14'0" · 191 SQ FT</text>
+    </g>
+    <g id="badge-master-bath" class="cad-room-badge-group" data-room-id="master-bath" data-room-name="Ensuite Bath &amp; W.I.C." data-dim="12&#x27;4&quot; × 14&#x27;0&quot;" data-area="172 SQ FT" transform="translate(-400.8, -257.4)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">08. ENSUITE BATH &amp; W.I.C.</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">12'4" × 14'0" · 172 SQ FT</text>
+    </g>
+    <g id="badge-bed2" class="cad-room-badge-group" data-room-id="bed2" data-room-name="Guest Bedroom 2" data-dim="13&#x27;8&quot; × 10&#x27;10&quot;" data-area="148 SQ FT" transform="translate(-560.8, -60.0)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">09. GUEST BEDROOM 2</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">13'8" × 10'10" · 148 SQ FT</text>
+    </g>
+    <g id="badge-bed3" class="cad-room-badge-group" data-room-id="bed3" data-room-name="Guest Bedroom 3" data-dim="12&#x27;4&quot; × 10&#x27;10&quot;" data-area="133 SQ FT" transform="translate(-400.8, -60.0)">
+      <rect x="-58" y="-14" width="116" height="28" rx="3" class="cad-badge-plate" />
+      <text x="0" y="-2" text-anchor="middle" class="cad-badge-title">10. GUEST BEDROOM 3</text>
+      <text x="0" y="7" text-anchor="middle" class="cad-badge-sub">12'4" × 10'10" · 133 SQ FT</text>
+    </g>
+  </g>
+</svg>

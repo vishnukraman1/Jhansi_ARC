@@ -355,14 +355,17 @@ export default function CustomCADViewer({ onBack }: CustomCADViewerProps) {
                 <button
                   key={layer}
                   onClick={() => toggleLayer(layer)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
                     isVisible 
-                      ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' 
-                      : 'bg-[#121212] text-[#888888] border border-transparent hover:text-[#F7F7F5]'
+                      ? 'bg-[#1E1E1E] text-[#F7F7F5] border border-[#3B82F6]/60 shadow-[0_0_12px_rgba(59,130,246,0.15)] ring-1 ring-[#3B82F6]/30' 
+                      : 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/15 hover:border-[#E0E0DE]/30 hover:text-[#F7F7F5]'
                   }`}
                 >
-                  {isVisible ? <Eye size={12} /> : <EyeOff size={12} />}
+                  {isVisible ? <Eye size={12} className="text-[#3B82F6]" /> : <EyeOff size={12} className="opacity-60" />}
                   <span>{layer}.dwg</span>
+                  {isVisible && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
+                  )}
                 </button>
               );
             })}

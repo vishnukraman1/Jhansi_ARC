@@ -47,12 +47,13 @@ export default function Navbar({ activeSection, setActiveSection, setSelectedPro
         </button>
         
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-8" role="navigation" aria-label="Main Navigation">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
               className="group flex items-center gap-1.5 cursor-pointer relative py-2"
+              aria-current={activeSection === item.id ? 'page' : undefined}
               id={`nav-item-${item.id}`}
             >
               <span className="font-mono text-[10px] text-[#888888] group-hover:text-[#121212] transition-colors">
@@ -76,8 +77,9 @@ export default function Navbar({ activeSection, setActiveSection, setSelectedPro
         {/* Mobile Menu Toggle Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 text-[#888888] hover:text-[#121212] transition"
+          className="md:hidden p-2 text-[#888888] hover:text-[#121212] transition cursor-pointer"
           aria-label="Toggle menu"
+          aria-expanded={isOpen}
           id="mobile-menu-toggle"
         >
           {isOpen ? <X size={20} /> : <Menu size={20} />}

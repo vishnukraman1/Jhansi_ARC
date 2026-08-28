@@ -11,6 +11,7 @@
     scroll-behavior: smooth;
     background-color: #F7F7F5;
     color: #121212;
+    caret-color: #121212;
   }
 
   body {
@@ -20,6 +21,17 @@
     overflow-x: hidden;
     background-color: #F7F7F5;
     color: #121212;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: #121212;
+    color: #F7F7F5;
+  }
+
+  :focus-visible {
+    outline: 2px solid #121212;
+    outline-offset: 2px;
   }
 
   /* Custom subtle scrollbar */
@@ -34,7 +46,7 @@
 
   ::-webkit-scrollbar-thumb {
     background: #E0E0DE;
-    border-radius: 3px;
+    border-radius: 2px;
   }
 
   ::-webkit-scrollbar-thumb:hover {

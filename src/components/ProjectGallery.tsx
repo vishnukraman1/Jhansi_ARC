@@ -73,7 +73,16 @@ export default function ProjectGallery({ onSelectProject }: ProjectGalleryProps)
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.5, ease: 'easeOut', delay: index * 0.05 }}
-                className="group relative flex flex-col cursor-pointer bg-[#F7F7F5] border border-[#E0E0DE] overflow-hidden shadow-sm hover:shadow-md transition-all rounded-sm"
+                tabIndex={0}
+                role="button"
+                aria-label={`View case study for ${project.title}, ${project.category} in ${project.location}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectProject(project.id);
+                  }
+                }}
+                className="group relative flex flex-col cursor-pointer bg-[#F7F7F5] border border-[#E0E0DE] overflow-hidden shadow-sm hover:shadow-md transition-all rounded-sm focus-visible:outline-2 focus-visible:outline-[#121212] focus-visible:outline-offset-2"
                 onClick={() => onSelectProject(project.id)}
                 id={`project-card-${project.id}`}
               >

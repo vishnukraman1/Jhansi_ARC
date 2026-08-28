@@ -1,11 +1,68 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { useState, useEffect } from 'react';
-import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Loader2, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Eye, EyeOff, Layers, Download, ZoomIn, ZoomOut, Loader2, AlertCircle, Sun, Moon, Move, Ruler, Check } from 'lucide-react';
 import { TechnicalDrawing } from '../types';
+
+interface RoomMetadata {
+  name: string;
+  dimensions?: string;
+  area?: string;
+  category?: string;
+  notes?: string;
+}
+
+const ROOM_DATABASE: Record<string, RoomMetadata> = {
+  'GREAT ROOM': { name: 'Great Room', dimensions: "17'0\" × 17'8\"", area: '300 sq ft', category: 'Living & Dining' },
+  'MASTER': { name: 'Master Suite', dimensions: "13'8\" × 14'0\"", area: '191 sq ft', category: 'Primary Suite' },
+  'KITCHEN': { name: 'Gourmet Kitchen', dimensions: "13'0\" × 14'2\"", area: '184 sq ft', category: 'Culinary Area' },
+  '2 CAR GARAGE': { name: 'Two-Car Garage', dimensions: "21'2\" × 20'10\"", area: '441 sq ft', category: 'Vehicle & Utility' },
+  'BEDROOM 2': { name: 'Guest Bedroom 2', dimensions: "13'8\" × 10'10\"", area: '148 sq ft', category: 'Secondary Suite' },
+  'BEDROOM 3': { name: 'Guest Bedroom 3', dimensions: "12'4\" × 10'10\"", area: '133 sq ft', category: 'Secondary Suite' },
+  'DECK': { name: 'Cantilevered Deck', dimensions: "11'1\" × 11'8\"", area: '129 sq ft', category: 'Outdoor Living' },
+  'ENTRY': { name: 'Main Entry & Porch', dimensions: "8'8\" × 10'5\"", area: '90 sq ft', category: 'Circulation' },
+  'UTIL.': { name: 'Utility & Laundry', dimensions: "7'0\" × 6'7\"", area: '46 sq ft', category: 'Service' },
+  'Pantry': { name: 'Pantry', dimensions: "5'2\" × 6'0\"", area: '31 sq ft', category: 'Storage' },
+  'W.I.C.': { name: 'Walk-In Closet', dimensions: "8'1\" × 2'6\"", area: '20 sq ft', category: 'Wardrobe' },
+  'BATH': { name: 'Ensuite Bath & W.I.C.', dimensions: "12'4\" × 14'0\"", area: '172 sq ft', category: 'Sanitary & Wardrobe' },
+  'TOIL.': { name: 'Powder Room', dimensions: "5'0\" × 5'7\"", area: '28 sq ft', category: 'Sanitary' },
+  'COVERED': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition' },
+  'PORCH': { name: 'Covered Front Porch', dimensions: "7'2\" × 4'4\"", area: '31 sq ft', category: 'Outdoor Transition' }
+};
+
+interface QuickRoomChip {
+  id: string;
+  name: string;
+  pan: { x: number; y: number };
+  zoom: number;
+}
+
+const QUICK_ROOM_CHIPS: QuickRoomChip[] = [
+  { id: 'all', name: 'Full Plan', pan: { x: 0, y: 0 }, zoom: 100 },
+  { id: 'great-room', name: 'Great Room', pan: { x: 90, y: 110 }, zoom: 145 },
+  { id: 'master', name: 'Master Suite', pan: { x: 260, y: 120 }, zoom: 145 },
+  { id: 'kitchen', name: 'Gourmet Kitchen', pan: { x: -60, y: 70 }, zoom: 155 },
+  { id: 'garage', name: '2-Car Garage', pan: { x: -20, y: -90 }, zoom: 135 },
+  { id: 'deck', name: 'Cantilevered Deck', pan: { x: -140, y: 120 }, zoom: 155 },
+  { id: 'bed2', name: 'Bedrooms 2 & 3', pan: { x: 240, y: -20 }, zoom: 140 },
+];
+
+function formatArchitecturalDistance(inches: number): string {
+  if (!inches || isNaN(inches)) return "0'0\"";
+  const feet = Math.floor(inches / 12);
+  const remInches = inches % 12;
+  const wholeInches = Math.floor(remInches);
+  const frac = remInches - wholeInches;
+  let fracStr = "";
+  if (frac >= 0.875) {
+    return `${feet}'-${wholeInches + 1}"`;
+  } else if (frac >= 0.625) {
+    fracStr = " ¾";
+  } else if (frac >= 0.375) {
+    fracStr = " ½";
+  } else if (frac >= 0.125) {
+    fracStr = " ¼";
+  }
+  return `${feet}'-${wholeInches}${fracStr}"`;
+}
 
 interface TechnicalDrawingViewerProps {
   drawing: TechnicalDrawing;
@@ -13,18 +70,286 @@ interface TechnicalDrawingViewerProps {
 }
 
 export default function TechnicalDrawingViewer({ drawing, projectTitle }: TechnicalDrawingViewerProps) {
-  const [showGrid, setShowGrid] = useState(true);
-  const [showDimensions, setShowDimensions] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
+  const [showDimensions, setShowDimensions] = useState(false);
   const [showAnnotations, setShowAnnotations] = useState(true);
+  const [viewPreset, setViewPreset] = useState<'presentation' | 'technical'>('presentation');
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
 
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 10, 150));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 10, 80));
-  const handleResetZoom = () => setZoomLevel(100);
+  // Interactive CAD Pan & Zoom state
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  // Spatial Inspection Hover HUD & Layer Spotlight
+  const [hoveredHUD, setHoveredHUD] = useState<{
+    title: string;
+    dimensions?: string;
+    area?: string;
+    category?: string;
+    notes?: string;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [spotlightLayer, setSpotlightLayer] = useState<'grid' | 'dim' | 'anno' | null>(null);
+
+  // Quick-Jump and Caliper Tool states
+  const [activeRoomChip, setActiveRoomChip] = useState<string>('all');
+  const [isMeasuring, setIsMeasuring] = useState<boolean>(false);
+  const [measureP1, setMeasureP1] = useState<{ x: number; y: number } | null>(null);
+  const [measureP2, setMeasureP2] = useState<{ x: number; y: number } | null>(null);
+  const [isMeasureLocked, setIsMeasureLocked] = useState<boolean>(false);
+
+  // Persistent Selected Room Spec Card
+  const [selectedRoomCard, setSelectedRoomCard] = useState<{
+    id: string;
+    num: string;
+    name: string;
+    dimensions: string;
+    area: string;
+    category: string;
+    features: string[];
+  } | null>(null);
+
+  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 15, 300));
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 15, 40));
+  const handleResetZoom = () => {
+    setZoomLevel(100);
+    setPan({ x: 0, y: 0 });
+    setActiveRoomChip('all');
+    setSelectedRoomCard(null);
+    setHoveredHUD(null);
+    setMeasureP1(null);
+    setMeasureP2(null);
+    setIsMeasureLocked(false);
+    document.querySelectorAll('#dynamic-svg-root .cad-room-zone, #dynamic-svg-root .cad-room-badge-group').forEach((el) => el.classList.remove('active'));
+  };
+
+  const handleRoomSelect = (roomId: string) => {
+    if (roomId === 'all') {
+      handleResetZoom();
+      return;
+    }
+
+    const chip = QUICK_ROOM_CHIPS.find((c) => c.id === roomId);
+    if (chip) {
+      setActiveRoomChip(roomId);
+      setPan(chip.pan);
+      setZoomLevel(chip.zoom);
+    }
+
+    // Highlight room zone & badge in SVG
+    document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => {
+      if (el.id === `zone-${roomId}`) el.classList.add('active');
+      else el.classList.remove('active');
+    });
+
+    document.querySelectorAll('#dynamic-svg-root .cad-room-badge-group').forEach((el) => {
+      if (el.id === `badge-${roomId}`) el.classList.add('active');
+      else el.classList.remove('active');
+    });
+
+    const zoneMap: Record<string, { num: string; name: string; dim: string; area: string; cat: string; feat: string[] }> = {
+      'great-room': { num: '02', name: 'Great Room', dim: "17'0\" × 17'8\"", area: '300 SQ FT', cat: 'Primary Living & Social Core', feat: ['Open-concept layout', 'South-facing passive solar gain', 'Direct timber deck connection'] },
+      'master': { num: '07', name: 'Master Suite', dim: "13'8\" × 14'0\"", area: '191 SQ FT', cat: 'Primary Bedroom Suite', feat: ['Private ensuite access', 'Integrated walk-in wardrobe', 'Double-glazed daylight window'] },
+      'kitchen': { num: '04', name: 'Gourmet Kitchen', dim: "13'0\" × 14'2\"", area: '184 SQ FT', cat: 'Culinary & Prep Zone', feat: ['Custom island millwork', 'Walk-in pantry access', 'Quartz countertop prep'] },
+      'garage': { num: '01', name: 'Two-Car Garage', dim: "21'2\" × 20'10\"", area: '441 SQ FT', cat: 'Vehicle & Utility Storage', feat: ['Fire-rated 20-min door', 'Dual-vehicle clearance', 'Integrated mechanical closet'] },
+      'deck': { num: '05', name: 'Cantilevered Deck', dim: "11'1\" × 11'8\"", area: '129 SQ FT', cat: 'Outdoor Living Terrace', feat: ['Charred cedar planking', 'Panoramic valley vista', 'Covered overhang protection'] },
+      'bed2': { num: '09', name: 'Guest Bedroom 2', dim: "13'8\" × 10'10\"", area: '148 SQ FT', cat: 'Secondary Living Suite', feat: ['Full built-in wardrobe', 'North-west daylight aspect', 'Acoustically isolated partition'] },
+      'bed3': { num: '10', name: 'Guest Bedroom 3', dim: "12'4\" × 10'10\"", area: '133 SQ FT', cat: 'Secondary Living Suite', feat: ['Built-in closet', 'Optimal natural ventilation', 'Hardwood flooring'] },
+      'master-bath': { num: '08', name: 'Ensuite Bath & W.I.C.', dim: "12'4\" × 14'0\"", area: '172 SQ FT', cat: 'Primary Sanitary Suite', feat: ['Dual vanity fixtures', 'Walk-in shower enclosure', 'Full dressing room'] },
+      'dining': { num: '03', name: 'Dining Room', dim: "13'0\" × 10'11\"", area: '142 SQ FT', cat: 'Formal Dining Area', feat: ['Adjacent to kitchen island', 'Direct garden views', 'Custom pendant lighting'] },
+      'entry': { num: '06', name: 'Main Entry & Porch', dim: "8'8\" × 10'5\"", area: '90 SQ FT', cat: 'Circulation & Draft Airlock', feat: ['Covered timber porch', 'Draft airlock vestibule', 'Integrated coat storage'] }
+    };
+
+    const details = zoneMap[roomId];
+    if (details) {
+      setSelectedRoomCard({
+        id: roomId,
+        num: details.num,
+        name: details.name,
+        dimensions: details.dim,
+        area: details.area,
+        category: details.cat,
+        features: details.feat
+      });
+    }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+
+    if (isMeasuring) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      if (!measureP1 || isMeasureLocked) {
+        setMeasureP1({ x: clickX, y: clickY });
+        setMeasureP2({ x: clickX, y: clickY });
+        setIsMeasureLocked(false);
+      } else {
+        setMeasureP2({ x: clickX, y: clickY });
+        setIsMeasureLocked(true);
+      }
+      return;
+    }
+
+    const target = e.target as HTMLElement;
+
+    // Check if clicked directly on an embedded room badge or zone polygon
+    const badge = target.closest('.cad-room-badge-group') as SVGElement | null;
+    if (badge) {
+      const roomId = badge.getAttribute('data-room-id');
+      if (roomId) {
+        handleRoomSelect(roomId);
+        return;
+      }
+    }
+
+    const roomZone = target.closest('.cad-room-zone') as SVGPolygonElement | null;
+    if (roomZone) {
+      const roomId = roomZone.getAttribute('data-room-id');
+      if (roomId) {
+        handleRoomSelect(roomId);
+        return;
+      }
+    }
+
+    setIsDragging(true);
+    setHoveredHUD(null);
+    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (_) {}
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    if (isMeasuring && measureP1 && !isMeasureLocked) {
+      setMeasureP2({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      return;
+    }
+
+    if (isDragging) {
+      setPan({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y,
+      });
+      return;
+    }
+
+    const target = e.target as HTMLElement;
+
+    // 1. Check if hovering directly on an architectural room zone polygon
+    const roomZone = target.closest('.cad-room-zone') as SVGPolygonElement | null;
+    if (roomZone) {
+      const roomName = roomZone.getAttribute('data-room-name') || '';
+      const dim = roomZone.getAttribute('data-dim') || '';
+      const area = roomZone.getAttribute('data-area') || '';
+
+      // Activate zone class
+      document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => {
+        if (el === roomZone) el.classList.add('active');
+        else el.classList.remove('active');
+      });
+
+      const dbData = Object.values(ROOM_DATABASE).find((r) => r.name.toLowerCase() === roomName.toLowerCase());
+
+      setHoveredHUD({
+        title: roomName || 'Architectural Space',
+        dimensions: dim || dbData?.dimensions,
+        area: area || dbData?.area,
+        category: dbData?.category || 'Designated Living Area',
+        notes: dbData?.notes || 'Custom architectural volume with perimeter wall definition.',
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+      return;
+    }
+
+    // 2. Check if hovering on room text or dimension text
+    const textNode = target.closest('text');
+    if (textNode) {
+      const label = textNode.getAttribute('data-label') || textNode.textContent || '';
+      const clean = label.trim().toUpperCase();
+
+      const matchedKey = Object.keys(ROOM_DATABASE).find((k) => clean.includes(k.toUpperCase()));
+
+      if (matchedKey) {
+        const data = ROOM_DATABASE[matchedKey];
+        
+        // Synchronize polygon highlight for this room
+        const matchedZoneId = Object.entries({
+          'GARAGE': 'garage',
+          'GREAT ROOM': 'great-room',
+          'DINING': 'dining',
+          'KITCHEN': 'kitchen',
+          'DECK': 'deck',
+          'ENTRY': 'entry',
+          'MASTER': 'master',
+          'BATH': 'master-bath',
+          'BEDROOM 2': 'bed2',
+          'BEDROOM 3': 'bed3'
+        }).find(([k]) => clean.includes(k))?.[1];
+
+        document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => {
+          if (matchedZoneId && el.id === `zone-${matchedZoneId}`) el.classList.add('active');
+          else el.classList.remove('active');
+        });
+
+        setHoveredHUD({
+          title: data.name,
+          dimensions: data.dimensions,
+          area: data.area,
+          category: data.category,
+          notes: data.notes,
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+        return;
+      }
+
+      if (/\d+['"]/.test(clean)) {
+        document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => el.classList.remove('active'));
+        setHoveredHUD({
+          title: `Dimension: ${label.trim()}`,
+          category: 'Architectural Measurement String',
+          notes: 'Standard centerline / wall opening dimension.',
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+        return;
+      }
+    }
+
+    // Clear active zone highlights when over empty canvas
+    document.querySelectorAll('#dynamic-svg-root .cad-room-zone').forEach((el) => el.classList.remove('active'));
+    if (hoveredHUD) {
+      setHoveredHUD(null);
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      setIsDragging(false);
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 15 : -15;
+    setZoomLevel((prev) => Math.max(40, Math.min(300, prev + delta)));
+  };
 
   useEffect(() => {
     if (!drawing.svgUrl) {
@@ -64,66 +389,77 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
     };
   }, [drawing.svgUrl]);
 
+  const isDark = themeMode === 'dark';
+  const lodClass = zoomLevel < 120 ? 'lod-macro' : (zoomLevel <= 200 ? 'lod-detail' : 'lod-inspect');
+  const hasRoomZones = Boolean(svgContent && (svgContent.includes('cad-room-zone') || svgContent.includes('cad-room-badge')));
+
   return (
-    <div className="bg-[#121212] text-[#F7F7F5] rounded-sm p-6 border border-[#E0E0DE]/20 shadow-2xl overflow-hidden flex flex-col h-[580px] relative" id="cad-viewer">
-      {/* Header Panel */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E0E0DE]/20 pb-4 mb-4 gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono tracking-wider uppercase text-[#888888] bg-[#F7F7F5]/10 px-2 py-0.5 rounded-sm">
-              {drawing.type}
-            </span>
-            <span className="text-xs font-mono text-[#888888]">
-              {drawing.svgUrl ? 'Vector SVG | Dynamic Asset' : 'Scale 1:100 | Vector DWG'}
+    <div 
+      className={`rounded-sm border shadow-2xl overflow-hidden flex flex-col h-[700px] relative transition-colors duration-300 ${
+        isDark 
+          ? 'bg-[#0a0a0c] text-[#F7F7F5] border-[#E0E0DE]/15' 
+          : 'bg-[#f8f9fa] text-[#121212] border-[#121212]/15'
+      }`} 
+      id="cad-viewer"
+    >
+      {/* Top Floating Glass Navigation Header */}
+      <div className={`absolute top-3 left-3 right-3 z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 rounded-sm backdrop-blur-md transition-colors pointer-events-none ${
+        isDark ? 'bg-[#121216]/60 border border-[#E0E0DE]/10' : 'bg-white/60 border border-[#121212]/10'
+      }`}>
+        <div className="flex items-center gap-2.5 pointer-events-auto pl-1">
+          <span className="w-2 h-2 rounded-full bg-[#38bdf8] animate-pulse shrink-0"></span>
+          <div className="flex items-baseline gap-2">
+            <h4 className={`text-xs font-mono font-bold uppercase tracking-wider ${isDark ? 'text-[#F7F7F5]' : 'text-[#121212]'}`}>
+              {drawing.name}
+            </h4>
+            <span className={`text-[10px] font-mono ${isDark ? 'text-[#71717a]' : 'text-[#a1a1aa]'}`}>
+              {drawing.svgUrl ? '· VECTOR SVG' : '· DWG'}
             </span>
           </div>
-          <h4 className="text-md font-sans font-medium mt-1 text-[#F7F7F5]">{drawing.name}</h4>
         </div>
 
-        {/* Toolbar controls */}
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <button
-            onClick={handleZoomOut}
-            className="p-1.5 bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] rounded-sm transition cursor-pointer"
-            title="Zoom Out"
-            id="zoom-out-btn"
-          >
-            <ZoomOut size={15} />
-          </button>
-          <span className="text-xs font-mono text-[#888888] w-10 text-center">{zoomLevel}%</span>
-          <button
-            onClick={handleZoomIn}
-            className="p-1.5 bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] rounded-sm transition cursor-pointer"
-            title="Zoom In"
-            id="zoom-in-btn"
-          >
-            <ZoomIn size={15} />
-          </button>
-          <button
-            onClick={handleResetZoom}
-            className="text-[10px] font-mono bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] px-2 py-1.5 rounded-sm transition cursor-pointer"
-            title="Reset Zoom"
-            id="zoom-reset-btn"
-          >
-            100%
-          </button>
-          <div className="h-6 w-[1px] bg-[#E0E0DE]/20 mx-1"></div>
-          <a
-            href={drawing.svgUrl || '#'}
-            download={drawing.svgUrl ? `${drawing.name.toLowerCase().replace(/\s+/g, '-')}.svg` : `${drawing.name}.dwg`}
-            className="flex items-center gap-1.5 bg-[#F7F7F5]/10 hover:bg-[#F7F7F5]/20 text-[#888888] hover:text-[#F7F7F5] px-3 py-1.5 rounded-sm text-xs font-mono transition cursor-pointer"
-            title="Export DWG/SVG"
-            id="export-drawing-btn"
-          >
-            <Download size={13} />
-            <span className="hidden md:inline">{drawing.svgUrl ? 'SVG' : 'DWG'}</span>
-          </a>
-        </div>
+        {/* Spatial Focus Quick Chips */}
+        {hasRoomZones && (
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto select-none pr-1">
+            <span className={`text-[9px] font-mono uppercase tracking-widest mr-1 shrink-0 ${isDark ? 'text-[#71717a]' : 'text-[#94a3b8]'}`}>
+              ROOMS:
+            </span>
+            {QUICK_ROOM_CHIPS.map((chip) => {
+              const isSelected = activeRoomChip === chip.id;
+              return (
+                <button
+                  key={chip.id}
+                  onClick={() => handleRoomSelect(chip.id)}
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono whitespace-nowrap transition-all duration-150 cursor-pointer border ${
+                    isSelected
+                      ? (isDark ? 'bg-[#38bdf8]/20 border-[#38bdf8] text-[#38bdf8] font-bold shadow-xs' : 'bg-[#0284c7]/15 border-[#0284c7] text-[#0284c7] font-bold shadow-xs')
+                      : (isDark ? 'bg-[#18181b]/70 hover:bg-[#27272a] text-[#a1a1aa] border-transparent hover:text-white' : 'bg-white/70 hover:bg-[#e2e8f0] text-[#64748b] border-transparent hover:text-black')
+                  }`}
+                >
+                  {chip.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* Main Drafting Canvas Container */}
-      <div className="flex-1 bg-[#121212] rounded-sm border border-[#E0E0DE]/20 relative overflow-hidden flex items-center justify-center p-4">
-        {/* Dynamic style sheet to drive CAD layer visibility */}
+      {/* Main Drafting Canvas Container (Edge-to-Edge) */}
+      <div 
+        className={`flex-1 w-full h-full relative overflow-hidden flex items-center justify-center transition-colors duration-300 select-none ${
+          isMeasuring ? 'cursor-crosshair' : (isDragging ? 'cursor-grabbing' : 'cursor-grab')
+        }`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onPointerLeave={() => {
+          if (hoveredHUD) setHoveredHUD(null);
+        }}
+        onWheel={handleWheel}
+        onDoubleClick={handleResetZoom}
+      >
+        {/* Dynamic style sheet to drive CAD layer visibility, theme tokens, and spotlight preview */}
         <style>{`
           #dynamic-svg-root .cad-grid,
           #dynamic-svg-root .cad-grid-layer,
@@ -140,15 +476,342 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
           #dynamic-svg-root [data-layer="ANNO"] {
             display: ${showAnnotations ? 'inline' : 'none'} !important;
           }
+          ${spotlightLayer ? `
+            #dynamic-svg-root g[class*="cad-"]:not(.cad-${spotlightLayer}) {
+              opacity: 0.12 !important;
+              transition: opacity 0.2s ease !important;
+            }
+            #dynamic-svg-root .cad-${spotlightLayer} {
+              opacity: 1 !important;
+              filter: drop-shadow(0 0 5px ${isDark ? 'rgba(56, 189, 248, 0.7)' : 'rgba(2, 132, 199, 0.7)'}) !important;
+            }
+          ` : ''}
         `}</style>
+
+        {/* Floating Frosted Glass HUD (Bottom-Center Dock) */}
+        <div 
+          className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-30 transition-all duration-200 flex items-center gap-2 p-1.5 rounded-full border shadow-2xl backdrop-blur-xl ${
+            isDragging ? 'opacity-30 scale-95 pointer-events-none' : 'opacity-100 scale-100'
+          } ${
+            isDark 
+              ? 'bg-[#141418]/90 border-[#E0E0DE]/20 text-[#F7F7F5] shadow-black/90' 
+              : 'bg-white/90 border-[#121212]/20 text-[#121212] shadow-slate-400'
+          }`}
+        >
+          {/* View Mode Segment */}
+          <div className={`flex items-center rounded-full border p-0.5 ${
+            isDark ? 'bg-[#1E1E24] border-[#E0E0DE]/10' : 'bg-[#F2F2F6] border-[#121212]/10'
+          }`}>
+            <button
+              onClick={() => {
+                setViewPreset('presentation');
+                setShowDimensions(false);
+                setShowGrid(false);
+                setShowAnnotations(true);
+              }}
+              className={`px-3 py-1 rounded-full text-[11px] font-mono transition-all duration-150 cursor-pointer ${
+                viewPreset === 'presentation'
+                  ? (isDark ? 'bg-[#38bdf8] text-[#0a0a0c] font-bold shadow-xs' : 'bg-[#0284c7] text-white font-bold shadow-xs')
+                  : (isDark ? 'text-[#888888] hover:text-[#F7F7F5]' : 'text-[#666666] hover:text-[#121212]')
+              }`}
+              title="Serene Presentation View"
+            >
+              🏛️ Presentation
+            </button>
+            <button
+              onClick={() => {
+                setViewPreset('technical');
+                setShowDimensions(true);
+                setShowGrid(true);
+                setShowAnnotations(true);
+              }}
+              className={`px-3 py-1 rounded-full text-[11px] font-mono transition-all duration-150 cursor-pointer ${
+                viewPreset === 'technical'
+                  ? (isDark ? 'bg-[#38bdf8] text-[#0a0a0c] font-bold shadow-xs' : 'bg-[#0284c7] text-white font-bold shadow-xs')
+                  : (isDark ? 'text-[#888888] hover:text-[#F7F7F5]' : 'text-[#666666] hover:text-[#121212]')
+              }`}
+              title="Technical Blueprint with Dimensions"
+            >
+              📐 Blueprint
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className={`h-4 w-[1px] ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`} />
+
+          {/* Precision Caliper Tool */}
+          <button
+            onClick={() => {
+              setIsMeasuring(!isMeasuring);
+              setMeasureP1(null);
+              setMeasureP2(null);
+              setIsMeasureLocked(false);
+            }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono transition-all duration-150 cursor-pointer ${
+              isMeasuring
+                ? 'bg-[#38bdf8] text-[#0a0a0c] font-bold shadow-xs'
+                : (isDark ? 'hover:bg-[#282830] text-[#A0A0AA]' : 'hover:bg-[#EAEAEF] text-[#555566]')
+            }`}
+            title="Measure Real-World Distance"
+          >
+            <Ruler size={12} />
+            <span className="hidden sm:inline">{isMeasuring ? 'Measuring' : 'Measure'}</span>
+          </button>
+
+          {/* Theme Mode Toggle */}
+          <button
+            onClick={() => setThemeMode(isDark ? 'light' : 'dark')}
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              isDark ? 'hover:bg-[#282830] text-amber-400' : 'hover:bg-[#EAEAEF] text-indigo-600'
+            }`}
+            title="Toggle Drafting/Print Sheet Theme"
+          >
+            {isDark ? <Sun size={13} /> : <Moon size={13} />}
+          </button>
+
+          {/* Divider */}
+          <div className={`h-4 w-[1px] ${isDark ? 'bg-[#E0E0DE]/20' : 'bg-[#121212]/20'}`} />
+
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleZoomOut}
+              className={`p-1 rounded-full transition-colors cursor-pointer ${
+                isDark ? 'hover:bg-[#282830] text-[#888888] hover:text-[#F7F7F5]' : 'hover:bg-[#EAEAEF] text-[#555555] hover:text-[#121212]'
+              }`}
+              title="Zoom Out"
+            >
+              <ZoomOut size={12} />
+            </button>
+            <span className={`text-[10px] font-mono w-9 text-center font-medium ${isDark ? 'text-[#CCCCCC]' : 'text-[#333333]'}`}>
+              {zoomLevel}%
+            </span>
+            <button
+              onClick={handleZoomIn}
+              className={`p-1 rounded-full transition-colors cursor-pointer ${
+                isDark ? 'hover:bg-[#282830] text-[#888888] hover:text-[#F7F7F5]' : 'hover:bg-[#EAEAEF] text-[#555555] hover:text-[#121212]'
+              }`}
+              title="Zoom In"
+            >
+              <ZoomIn size={12} />
+            </button>
+            <button
+              onClick={handleResetZoom}
+              className={`text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-wider transition-colors cursor-pointer ${
+                isDark ? 'bg-[#1E1E22] hover:bg-[#282830] text-[#A0A0AA] hover:text-white' : 'bg-[#F2F2F5] hover:bg-[#EAEAEF] text-[#555566] hover:text-black'
+              }`}
+              title="Fit to Screen"
+            >
+              Fit
+            </button>
+          </div>
+        </div>
+        {/* Dynamic style sheet to drive CAD layer visibility, theme tokens, and spotlight preview */}
+        <style>{`
+          #dynamic-svg-root .cad-grid,
+          #dynamic-svg-root .cad-grid-layer,
+          #dynamic-svg-root [data-layer="GRID"] {
+            display: ${showGrid ? 'inline' : 'none'} !important;
+          }
+          #dynamic-svg-root .cad-dim,
+          #dynamic-svg-root .cad-dim-layer,
+          #dynamic-svg-root [data-layer="DIM"] {
+            display: ${showDimensions ? 'inline' : 'none'} !important;
+          }
+          #dynamic-svg-root .cad-anno,
+          #dynamic-svg-root .cad-anno-layer,
+          #dynamic-svg-root [data-layer="ANNO"] {
+            display: ${showAnnotations ? 'inline' : 'none'} !important;
+          }
+          ${spotlightLayer ? `
+            #dynamic-svg-root g[class*="cad-"]:not(.cad-${spotlightLayer}) {
+              opacity: 0.12 !important;
+              transition: opacity 0.2s ease !important;
+            }
+            #dynamic-svg-root .cad-${spotlightLayer} {
+              opacity: 1 !important;
+              filter: drop-shadow(0 0 5px ${isDark ? 'rgba(56, 189, 248, 0.7)' : 'rgba(2, 132, 199, 0.7)'}) !important;
+            }
+          ` : ''}
+        `}</style>
+
+        {/* Sleek Architectural HUD Micro-Badge */}
+        {hoveredHUD && !isDragging && !isMeasuring && !selectedRoomCard && (
+          <div 
+            className={`absolute pointer-events-none z-30 transition-all duration-100 ease-out px-2.5 py-1 rounded-sm shadow-xl border backdrop-blur-md flex items-center gap-2 whitespace-nowrap ${
+              isDark 
+                ? 'bg-[#121212]/95 text-[#F7F7F5] border-[#38bdf8]/60 shadow-black/90' 
+                : 'bg-white/95 text-[#121212] border-[#0284c7]/60 shadow-slate-400'
+            }`}
+            style={{ 
+              left: Math.min(Math.max(hoveredHUD.x + 12, 10), 440), 
+              top: Math.max(hoveredHUD.y - 32, 10) 
+            }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] animate-pulse shrink-0"></span>
+            <span className="text-[11px] font-mono font-bold tracking-wider uppercase">{hoveredHUD.title}</span>
+            {hoveredHUD.dimensions && (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#38bdf8]/15 text-[#38bdf8] rounded-xs font-semibold">
+                {hoveredHUD.dimensions}
+              </span>
+            )}
+            {hoveredHUD.area && (
+              <span className={`text-[10px] font-mono ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
+                · {hoveredHUD.area}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Persistent Click-to-Inspect Architectural Spec Card */}
+        {selectedRoomCard && (
+          <div 
+            className={`absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[360px] p-3.5 rounded-sm border shadow-2xl backdrop-blur-xl z-30 transition-all duration-200 ${
+              isDark 
+                ? 'bg-[#111114]/95 border-[#38bdf8]/60 text-[#f8fafc] shadow-black/90' 
+                : 'bg-white/95 border-[#0284c7]/60 text-[#0f172a] shadow-slate-400'
+            }`}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-[#38bdf8]/20 text-[#38bdf8]">
+                    {selectedRoomCard.num}
+                  </span>
+                  <h5 className="font-mono font-bold text-xs tracking-wider uppercase">
+                    {selectedRoomCard.name}
+                  </h5>
+                </div>
+                <p className={`text-[10px] font-mono mt-0.5 ${isDark ? 'text-[#a1a1aa]' : 'text-[#64748b]'}`}>
+                  {selectedRoomCard.category}
+                </p>
+              </div>
+              <button 
+                onClick={() => {
+                  setSelectedRoomCard(null);
+                  handleResetZoom();
+                }}
+                className={`text-xs px-1.5 py-0.5 rounded-xs transition-colors cursor-pointer ${
+                  isDark ? 'hover:bg-[#27272a] text-[#a1a1aa] hover:text-white' : 'hover:bg-[#f1f5f9] text-[#64748b] hover:text-black'
+                }`}
+                title="Close & Reset Zoom"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={`grid grid-cols-2 gap-2 mt-2 pt-2 border-t text-[11px] font-mono ${isDark ? 'border-[#27272a]' : 'border-[#e2e8f0]'}`}>
+              <div>
+                <span className={`block text-[9px] uppercase tracking-wider ${isDark ? 'text-[#71717a]' : 'text-[#94a3b8]'}`}>Dimensions</span>
+                <span className="font-semibold text-[11px]">{selectedRoomCard.dimensions}</span>
+              </div>
+              <div>
+                <span className={`block text-[9px] uppercase tracking-wider ${isDark ? 'text-[#71717a]' : 'text-[#94a3b8]'}`}>Floor Area</span>
+                <span className="font-semibold text-[11px] text-[#38bdf8]">{selectedRoomCard.area}</span>
+              </div>
+            </div>
+
+            {selectedRoomCard.features && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {selectedRoomCard.features.map((feat, idx) => (
+                  <span 
+                    key={idx} 
+                    className={`text-[9px] font-mono px-1.5 py-0.5 rounded-xs border ${
+                      isDark ? 'bg-[#18181b] border-[#27272a] text-[#d4d4d8]' : 'bg-[#f8fafc] border-[#e2e8f0] text-[#334155]'
+                    }`}
+                  >
+                    ✓ {feat}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Interactive Caliper Measure Live Line & Dimension Overlay */}
+        {measureP1 && measureP2 && (
+          <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible">
+            {(() => {
+              const dx = measureP2.x - measureP1.x;
+              const dy = measureP2.y - measureP1.y;
+              const screenDist = Math.hypot(dx, dy);
+              // Scale distance based on viewport zoom & viewBox width (1018 drawing inches)
+              const cadInches = (screenDist / (zoomLevel / 100)) * (1018 / 620);
+              const distStr = formatArchitecturalDistance(cadInches);
+              const midX = (measureP1.x + measureP2.x) / 2;
+              const midY = (measureP1.y + measureP2.y) / 2;
+              const angle = Math.atan2(dy, dx);
+              const tickLen = 8;
+              const perpX = -Math.sin(angle) * tickLen;
+              const perpY = Math.cos(angle) * tickLen;
+
+              return (
+                <g className="transition-opacity duration-150">
+                  <line
+                    x1={measureP1.x - perpX}
+                    y1={measureP1.y - perpY}
+                    x2={measureP1.x + perpX}
+                    y2={measureP1.y + perpY}
+                    stroke="#38bdf8"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1={measureP2.x - perpX}
+                    y1={measureP2.y - perpY}
+                    x2={measureP2.x + perpX}
+                    y2={measureP2.y + perpY}
+                    stroke="#38bdf8"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1={measureP1.x}
+                    y1={measureP1.y}
+                    x2={measureP2.x}
+                    y2={measureP2.y}
+                    stroke="#38bdf8"
+                    strokeWidth="2"
+                    strokeDasharray="4,4"
+                  />
+                  <g transform={`translate(${midX}, ${midY - 14})`}>
+                    <rect
+                      x="-44"
+                      y="-12"
+                      width="88"
+                      height="24"
+                      rx="2"
+                      fill={isDark ? '#0f172a' : '#ffffff'}
+                      stroke="#38bdf8"
+                      strokeWidth="1.5"
+                      filter="drop-shadow(0 2px 6px rgba(0,0,0,0.5))"
+                    />
+                    <text
+                      x="0"
+                      y="4"
+                      textAnchor="middle"
+                      fill={isDark ? '#f8fafc' : '#0f172a'}
+                      fontSize="11"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      {distStr}
+                    </text>
+                  </g>
+                </g>
+              );
+            })()}
+          </svg>
+        )}
 
         {/* Fine Architectural Grid Pattern Overlay */}
         <div 
-          className="absolute inset-0 opacity-15 pointer-events-none transition-opacity duration-300" 
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300" 
           style={{
-            backgroundImage: showGrid 
+            opacity: showGrid ? (isDark ? 0.15 : 0.08) : 0,
+            backgroundImage: isDark
               ? 'radial-gradient(circle, #404040 1px, transparent 1px), linear-gradient(to right, #262626 1px, transparent 1px), linear-gradient(to bottom, #262626 1px, transparent 1px)'
-              : 'none',
+              : 'radial-gradient(circle, #888888 1px, transparent 1px), linear-gradient(to right, #E0E0DE 1px, transparent 1px), linear-gradient(to bottom, #E0E0DE 1px, transparent 1px)',
             backgroundSize: '16px 16px, 80px 80px, 80px 80px',
             backgroundPosition: 'center center'
           }}
@@ -156,13 +819,13 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
 
         {/* Vector SVG Render Viewport */}
         <div 
-          className="w-full h-full max-w-lg max-h-96 transition-all duration-300 ease-out flex items-center justify-center"
-          style={{ transform: `scale(${zoomLevel / 100})` }}
+          className="w-full h-full max-w-full max-h-full transition-transform duration-75 ease-out flex items-center justify-center pointer-events-none"
+          style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel / 100})` }}
         >
           {drawing.svgUrl ? (
-            <div className="w-full h-full flex items-center justify-center relative">
+            <div className="w-full h-full flex items-center justify-center relative pointer-events-auto">
               {isLoading && (
-                <div className="flex flex-col items-center gap-3 text-[#888888]">
+                <div className={`flex flex-col items-center gap-3 ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
                   <Loader2 className="animate-spin text-[#3b82f6]" size={24} />
                   <span className="text-xs font-mono tracking-wider uppercase">Loading Architectural Vector Asset...</span>
                 </div>
@@ -177,7 +840,9 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
               {!isLoading && !loadError && svgContent && (
                 <div
                   id="dynamic-svg-root"
-                  className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full"
+                  className={`w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:max-w-full [&_line]:[vector-effect:non-scaling-stroke] [&_polyline]:[vector-effect:non-scaling-stroke] [&_polygon]:[vector-effect:non-scaling-stroke] [&_path]:[vector-effect:non-scaling-stroke] [&_circle]:[vector-effect:non-scaling-stroke] [&_rect]:[vector-effect:non-scaling-stroke] ${
+                    !isDark ? 'cad-light' : ''
+                  } ${viewPreset === 'technical' ? 'show-technical' : ''} ${lodClass}`}
                   dangerouslySetInnerHTML={{ __html: svgContent }}
                 />
               )}
@@ -586,50 +1251,84 @@ export default function TechnicalDrawingViewer({ drawing, projectTitle }: Techni
       </div>
 
       {/* Layer Control Dashboard Panel */}
-      <div className="mt-4 border-t border-[#E0E0DE]/20 pt-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-1.5 text-[#888888]">
-          <Layers size={14} className="text-[#888888]" />
-          <span className="text-[10px] font-mono tracking-wider uppercase">DRAFTING LAYERS:</span>
+      <div className={`mt-4 border-t pt-4 flex flex-wrap items-center justify-between gap-4 ${
+        isDark ? 'border-[#E0E0DE]/20' : 'border-[#121212]/20'
+      }`}>
+        <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-1.5 ${isDark ? 'text-[#888888]' : 'text-[#666666]'}`}>
+            <Layers size={14} />
+            <span className="text-[10px] font-mono tracking-wider uppercase">DRAFTING LAYERS:</span>
+          </div>
+          <span className={`hidden md:flex items-center gap-1 text-[10px] font-mono ${isDark ? 'text-[#666666]' : 'text-[#888888]'}`}>
+            <Move size={10} /> Drag to pan · Scroll to zoom
+          </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setShowGrid(!showGrid)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+            onMouseEnter={() => setSpotlightLayer('grid')}
+            onMouseLeave={() => setSpotlightLayer(null)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
               showGrid 
-                ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' 
-                : 'bg-[#121212] text-[#888888] border border-transparent hover:text-[#F7F7F5]'
+                ? (isDark 
+                    ? 'bg-[#1E1E1E] text-[#F7F7F5] border border-[#3B82F6]/60 shadow-[0_0_12px_rgba(59,130,246,0.15)] ring-1 ring-[#3B82F6]/30' 
+                    : 'bg-white text-[#121212] border border-[#2563EB]/60 shadow-xs ring-1 ring-[#2563EB]/20')
+                : (isDark 
+                    ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/15 hover:border-[#E0E0DE]/30 hover:text-[#F7F7F5]' 
+                    : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/15 hover:border-[#121212]/30 hover:text-[#121212]')
             }`}
             id="toggle-grid-btn"
           >
-            {showGrid ? <Eye size={12} /> : <EyeOff size={12} />}
+            {showGrid ? <Eye size={12} className={isDark ? "text-[#3B82F6]" : "text-[#2563EB]"} /> : <EyeOff size={12} className="opacity-60" />}
             <span>Grid.dwg</span>
+            {showGrid && (
+              <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[#3B82F6]' : 'bg-[#2563EB]'}`} />
+            )}
           </button>
 
           <button
             onClick={() => setShowDimensions(!showDimensions)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+            onMouseEnter={() => setSpotlightLayer('dim')}
+            onMouseLeave={() => setSpotlightLayer(null)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
               showDimensions 
-                ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' 
-                : 'bg-[#121212] text-[#888888] border border-transparent hover:text-[#F7F7F5]'
+                ? (isDark 
+                    ? 'bg-[#1E1E1E] text-[#F7F7F5] border border-[#3B82F6]/60 shadow-[0_0_12px_rgba(59,130,246,0.15)] ring-1 ring-[#3B82F6]/30' 
+                    : 'bg-white text-[#121212] border border-[#2563EB]/60 shadow-xs ring-1 ring-[#2563EB]/20')
+                : (isDark 
+                    ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/15 hover:border-[#E0E0DE]/30 hover:text-[#F7F7F5]' 
+                    : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/15 hover:border-[#121212]/30 hover:text-[#121212]')
             }`}
             id="toggle-dimensions-btn"
           >
-            {showDimensions ? <Eye size={12} /> : <EyeOff size={12} />}
+            {showDimensions ? <Eye size={12} className={isDark ? "text-[#3B82F6]" : "text-[#2563EB]"} /> : <EyeOff size={12} className="opacity-60" />}
             <span>Dimensions.dwg</span>
+            {showDimensions && (
+              <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[#3B82F6]' : 'bg-[#2563EB]'}`} />
+            )}
           </button>
 
           <button
             onClick={() => setShowAnnotations(!showAnnotations)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition-colors cursor-pointer ${
+            onMouseEnter={() => setSpotlightLayer('anno')}
+            onMouseLeave={() => setSpotlightLayer(null)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono transition-all duration-200 cursor-pointer ${
               showAnnotations 
-                ? 'bg-[#F7F7F5] text-[#121212] border border-[#E0E0DE]' 
-                : 'bg-[#121212] text-[#888888] border border-transparent hover:text-[#F7F7F5]'
+                ? (isDark 
+                    ? 'bg-[#1E1E1E] text-[#F7F7F5] border border-[#3B82F6]/60 shadow-[0_0_12px_rgba(59,130,246,0.15)] ring-1 ring-[#3B82F6]/30' 
+                    : 'bg-white text-[#121212] border border-[#2563EB]/60 shadow-xs ring-1 ring-[#2563EB]/20')
+                : (isDark 
+                    ? 'bg-[#121212] text-[#888888] border border-[#E0E0DE]/15 hover:border-[#E0E0DE]/30 hover:text-[#F7F7F5]' 
+                    : 'bg-[#F7F7F5] text-[#777777] border border-[#121212]/15 hover:border-[#121212]/30 hover:text-[#121212]')
             }`}
             id="toggle-annotations-btn"
           >
-            {showAnnotations ? <Eye size={12} /> : <EyeOff size={12} />}
+            {showAnnotations ? <Eye size={12} className={isDark ? "text-[#3B82F6]" : "text-[#2563EB]"} /> : <EyeOff size={12} className="opacity-60" />}
             <span>Labels.dwg</span>
+            {showAnnotations && (
+              <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[#3B82F6]' : 'bg-[#2563EB]'}`} />
+            )}
           </button>
         </div>
       </div>
